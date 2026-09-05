@@ -95,6 +95,6 @@ class ScenarioResponse(BaseSchema):
     policy_version: str = "scenario-v1.0"
     dataset_version: str = "demo-day2-v1"
     model_version: str = "baseline-v1"
-    data_quality: DataQuality = DataQuality.VALID
+    data_quality: DataQuality = DataQuality.SYNTHETIC
     warnings: List[str] = Field(default_factory=list)
     screening_grade: str = SCREENING_GRADE_NOTICE

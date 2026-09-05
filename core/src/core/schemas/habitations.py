@@ -80,7 +80,7 @@ class HabitationRiskDossier(BaseSchema):
     model_version: str = "baseline-v1"
     scoring_version: str = "priority-v1.0"
     dataset_version: str = "v1.0"
-    data_quality: str = "observed"
+    data_quality: str = "synthetic"
     confidence: float = 1.0
     calculated_at: Optional[datetime] = None
 

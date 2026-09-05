@@ -253,7 +253,7 @@ class ScenarioService:
             policy_version="scenario-v1.0",
             dataset_version="demo-day2-v1",
             model_version="baseline-v1",
-            data_quality=DataQuality.VALID,
+            data_quality=DataQuality.SYNTHETIC,
             warnings=outcome.warnings,
             screening_grade=outcome.screening_grade,
         )

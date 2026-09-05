@@ -272,7 +272,7 @@ class HabitationsService:
             model_version=r.get("model_version") or "baseline-v1",
             scoring_version=r.get("scoring_version") or self.scoring_config.scoring_version,
             dataset_version=r.get("dataset_version") or "v1.0",
-            data_quality=r.get("data_quality") or "observed",
+            data_quality=r.get("data_quality") or "synthetic",
             confidence=float(r.get("confidence") if r.get("confidence") is not None else 1.0),
             calculated_at=r.get("calculated_at") or datetime.now(timezone.utc),
             vulnerability=VulnerabilityBreakdownDTO(

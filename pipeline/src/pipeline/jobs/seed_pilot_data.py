@@ -622,7 +622,7 @@ def seed_database(db_url: Optional[str] = None) -> None:
                             :hazard_intensity, :prz_overlap_pct, :decayed_loss, :v_index,
                             :ps, :caseload, :tier, :rationale,
                             CAST(:contributing_factors AS jsonb), 'landslide', :model_ver, 'priority-v1.0',
-                            :dataset_ver, 'observed', 0.95, :now, :pipeline_run_id,
+                            :dataset_ver, 'synthetic', 0.95, :now, :pipeline_run_id,
                             :active_deformation, :fatal_event_last_3_monsoons,
                             :mitigation_cost, :relocation_cost, :adverse_trend
                         );

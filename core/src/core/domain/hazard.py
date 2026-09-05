@@ -3,17 +3,19 @@
 Section refs: docs/PRD1.md §6.3, §14.1
 """
 
-from typing import Mapping
+from datetime import datetime, timezone
+from typing import Any, Mapping, Optional
 from core.constants import (
+    ACTIVE_ALERT_MHI_LIVE,
     BETA,
+    CAUTION_MHI_MIN,
     HAZARD_WEIGHTS,
-    PRZ_MHI_STATIC,
+    MAX_TRIGGER_AGE_HOURS,
     PRZ_ANY_SUSCEPTIBILITY,
     PRZ_FATAL_EVENT_MHI,
-    CAUTION_MHI_MIN,
-    ACTIVE_ALERT_MHI_LIVE,
+    PRZ_MHI_STATIC,
 )
-from core.enums import Hazard, ZoneClass
+from core.enums import DataQuality, Hazard, ZoneClass
 
 
 def compute_hazard_score(
@@ -126,3 +128,51 @@ def classify_zone(
         return ZoneClass.CAUTION
 
     return ZoneClass.NONE
+
+
+def evaluate_trigger_freshness(
+    valid_at: datetime,
+    as_of: Optional[datetime] = None,
+    max_age_hours: float = MAX_TRIGGER_AGE_HOURS,
+    source: Optional[str] = None,
+) -> dict[str, Any]:
+    """Evaluates dynamic trigger freshness according to H5 canonical rules.
+    
+    Age is computed as (as_of - valid_at).
+    - Fresh: 0.0 <= age_hours <= max_age_hours
+    - Stale: age_hours > max_age_hours
+    
+    Returns a dict with:
+        age_hours: float (rounded to 2 decimal places)
+        is_fresh: bool
+        status: 'fresh' | 'stale' | 'future'
+        data_quality: DataQuality (STALE if stale; SYNTHETIC if synthetic/demo; VALID otherwise)
+    """
+    as_of_dt = as_of or datetime.now(timezone.utc)
+    if valid_at.tzinfo is None:
+        valid_at = valid_at.replace(tzinfo=timezone.utc)
+    if as_of_dt.tzinfo is None:
+        as_of_dt = as_of_dt.replace(tzinfo=timezone.utc)
+
+    diff_seconds = (as_of_dt - valid_at).total_seconds()
+    age_hours = round(diff_seconds / 3600.0, 4)
+
+    is_fresh = (0.0 <= age_hours <= max_age_hours)
+
+    if age_hours > max_age_hours:
+        quality = DataQuality.STALE
+        status = "stale"
+    elif age_hours < 0.0:
+        quality = DataQuality.SYNTHETIC if (source == "SYNTHETIC_DEMO" or (source and source.startswith("SYNTHETIC"))) else DataQuality.VALID
+        status = "future"
+    else:
+        is_synthetic = (source == "SYNTHETIC_DEMO" or (source and source.startswith("SYNTHETIC")))
+        quality = DataQuality.SYNTHETIC if is_synthetic else DataQuality.VALID
+        status = "fresh"
+
+    return {
+        "age_hours": round(age_hours, 2),
+        "is_fresh": is_fresh,
+        "status": status,
+        "data_quality": quality,
+    }

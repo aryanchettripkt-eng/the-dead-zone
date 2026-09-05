@@ -5,11 +5,12 @@ Section refs: docs/PRD1.md §6.3, §9.5, §9.6, FR-3.10, FR-3.12
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any, Optional
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from core.constants import ACTIVE_ALERT_MHI_LIVE, PRZ_MHI_STATIC
+from core.constants import ACTIVE_ALERT_MHI_LIVE, MAX_TRIGGER_AGE_HOURS, PRZ_MHI_STATIC
 
 
 class AlertsRepository:
@@ -18,21 +19,39 @@ class AlertsRepository:
     def __init__(self, db: Session) -> None:
         self.db = db
 
-    def get_latest_snapshot_valid_at(self) -> Optional[datetime]:
+    def get_latest_snapshot_valid_at(
+        self,
+        as_of: Optional[datetime] = None,
+        max_age_hours: Optional[int] = None,
+    ) -> Optional[datetime]:
         """Returns the latest authoritative snapshot timestamp persisted in mhi_snapshot, if any.
         
         Prefers the latest snapshot that has associated live (non-forecast) triggers,
         falling back to the maximum snapshot timestamp in mhi_snapshot.
+        If as_of and max_age_hours are provided, restricts to snapshots within max_age_hours of as_of.
         """
+        params: dict[str, Any] = {
+            "as_of": as_of,
+            "max_age_hours": float(max_age_hours) if max_age_hours is not None else None,
+        }
         query = text("""
             SELECT COALESCE(
                 (SELECT MAX(m.valid_at)
                  FROM mhi_snapshot m
-                 JOIN hazard_dynamic hd ON m.valid_at = hd.valid_at AND hd.forecast_cycle_at IS NULL),
-                (SELECT MAX(valid_at) FROM mhi_snapshot)
+                 JOIN hazard_dynamic hd ON m.valid_at = hd.valid_at AND hd.forecast_cycle_at IS NULL
+                 WHERE (:as_of IS NULL OR (
+                     m.valid_at <= :as_of 
+                     AND (:max_age_hours IS NULL OR EXTRACT(EPOCH FROM (:as_of - m.valid_at)) / 3600.0 <= :max_age_hours)
+                 ))),
+                (SELECT MAX(valid_at)
+                 FROM mhi_snapshot
+                 WHERE (:as_of IS NULL OR (
+                     valid_at <= :as_of 
+                     AND (:max_age_hours IS NULL OR EXTRACT(EPOCH FROM (:as_of - valid_at)) / 3600.0 <= :max_age_hours)
+                 )))
             ) as max_valid;
         """)
-        row = self.db.execute(query).mappings().first()
+        row = self.db.execute(query, params).mappings().first()
         return row["max_valid"] if row and row.get("max_valid") else None
 
     def query_active_alerts(
@@ -43,29 +62,45 @@ class AlertsRepository:
         limit: int = 100,
         offset: int = 0,
         valid_at: Optional[datetime] = None,
+        as_of: Optional[datetime] = None,
+        max_age_hours: Optional[int] = None,
     ) -> tuple[list[dict[str, Any]], int, int]:
         """Queries H3 cells where dynamic live trigger causes MHI_live >= 0.75 and MHI_static < 0.75
-        evaluated against the authoritative latest snapshot (or valid_at if specified).
+        evaluated against the authoritative latest fresh snapshot (or valid_at if specified).
+        
+        Enforces H5 freshness: live triggers older than max_age_hours do NOT qualify as active alerts.
         
         Returns:
             (records, total_cells_count, total_exposed_population)
         """
+        as_of_time = as_of or datetime.now(timezone.utc)
+        effective_max_age = max_age_hours if max_age_hours is not None else MAX_TRIGGER_AGE_HOURS
+
         target_valid_at = valid_at
         if target_valid_at is None:
-            target_valid_at = self.get_latest_snapshot_valid_at()
+            target_valid_at = self.get_latest_snapshot_valid_at(as_of=as_of_time, max_age_hours=effective_max_age)
 
         if target_valid_at is None:
+            return [], 0, 0
+
+        # Boundary guard: verify target_valid_at directly
+        diff_hours = (as_of_time - target_valid_at).total_seconds() / 3600.0
+        if diff_hours > effective_max_age or target_valid_at > as_of_time:
             return [], 0, 0
 
         where_clauses = [
             "m.valid_at = :snapshot_valid_at",
             "m.mhi_live >= :min_mhi",
             "m.mhi_static < :prz_threshold",
+            "m.valid_at <= :as_of",
+            "EXTRACT(EPOCH FROM (:as_of - m.valid_at)) / 3600.0 <= :max_age_hours",
         ]
         params: dict[str, Any] = {
             "snapshot_valid_at": target_valid_at,
             "min_mhi": float(min_mhi),
             "prz_threshold": float(PRZ_MHI_STATIC),
+            "as_of": as_of_time,
+            "max_age_hours": float(effective_max_age),
             "limit": limit,
             "offset": offset,
         }
@@ -110,6 +145,7 @@ class AlertsRepository:
                 m.zone_class,
                 hd.source as trigger_source,
                 hd.ingested_at,
+                ROUND((EXTRACT(EPOCH FROM (:as_of - m.valid_at)) / 3600.0)::numeric, 2)::float AS age_hours,
                 count(*) OVER() as full_count,
                 sum(g.population) OVER() as full_exposed_pop
             FROM mhi_snapshot m

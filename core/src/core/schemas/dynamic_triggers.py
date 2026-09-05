@@ -8,20 +8,18 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from enum import StrEnum
 from typing import Any, Optional
-from pydantic import Field
+from typing_extensions import Self
+from pydantic import Field, model_validator
 
 from core.constants import FORECAST_HORIZON_HOURS, SCREENING_GRADE_NOTICE
 from core.schemas.common import BaseSchema
+from core.enums import DataQuality
 
 
 class TriggerType(StrEnum):
     """Classification of trigger data product."""
     OBSERVED = "observed"
     FORECAST = "forecast"
-
-
-from core.enums import DataQuality
-
 
 
 class TriggerSource(StrEnum):
@@ -71,6 +69,23 @@ class CanonicalTriggerRecord(BaseSchema):
     )
     screening_grade: str = Field(default=SCREENING_GRADE_NOTICE, description="Screening grade notice.")
 
+    @model_validator(mode="after")
+    def validate_demo_data_honesty(self) -> Self:
+        is_synthetic = (
+            self.source == "SYNTHETIC_DEMO"
+            or self.source.startswith("SYNTHETIC")
+            or "DEMO" in self.source
+        )
+        if is_synthetic:
+            # Synthetic data must never be presented as real observed/provider data (M3)
+            if self.data_quality == DataQuality.VALID:
+                self.data_quality = DataQuality.SYNTHETIC
+            # Must not claim a real external provider unless genuine
+            real_providers = ("NASA/JAXA", "NASA", "ECMWF", "IMD", "CWC", "Sentinel")
+            if self.provider in real_providers or not self.provider:
+                self.provider = "SYNTHETIC"
+        return self
+
 
 class TriggerValidationReport(BaseSchema):
     """Report generated during batch trigger ingestion and schema validation."""
@@ -81,3 +96,14 @@ class TriggerValidationReport(BaseSchema):
     data_quality: DataQuality = DataQuality.VALID
     source: str = "UNKNOWN"
     processed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    @model_validator(mode="after")
+    def validate_report_honesty(self) -> Self:
+        is_synthetic = (
+            self.source == "SYNTHETIC_DEMO"
+            or self.source.startswith("SYNTHETIC")
+            or "DEMO" in self.source
+        )
+        if is_synthetic and self.data_quality == DataQuality.VALID:
+            self.data_quality = DataQuality.SYNTHETIC
+        return self

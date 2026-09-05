@@ -41,6 +41,10 @@ class Settings(BaseSettings):
         default="v1.0.0",
         description="Default machine learning model version tag.",
     )
+    MAX_TRIGGER_AGE_HOURS: int = Field(
+        default=24,
+        description="Maximum dynamic live trigger age in hours to qualify as active alert.",
+    )
 
     # ML Model Checkpoint Paths
     MODEL_CHECKPOINT_PATH: str | None = Field(

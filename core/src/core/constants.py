@@ -30,6 +30,9 @@ ACTIVE_ALERT_MHI_LIVE: float = 0.75
 # FR-3.12 — forecast horizon, pilot districts only
 FORECAST_HORIZON_HOURS: int = 72
 
+# FR-3.10 / H5 — dynamic trigger freshness (max age in hours for live alert serving)
+MAX_TRIGGER_AGE_HOURS: int = 24
+
 # FR-4.1 — antecedent rainfall index
 ARI_DECAY_K: float = 0.9
 ARI_WINDOW_DAYS: int = 15

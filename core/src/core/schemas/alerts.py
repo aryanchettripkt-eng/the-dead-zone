@@ -6,7 +6,7 @@ Endpoints: GET /alerts/active, GET /alerts/forecast
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from pydantic import Field
-from core.enums import ZoneClass
+from core.enums import DataQuality, ZoneClass
 from core.schemas.common import BaseSchema, SCREENING_GRADE_NOTICE
 
 
@@ -22,6 +22,8 @@ class ActiveAlertItem(BaseSchema):
     dominant_hazard: str
     trigger_source: Optional[str] = None
     valid_at: Optional[datetime] = None
+    age_hours: Optional[float] = Field(default=None, description="Age of dynamic trigger observation in hours.")
+    data_quality: Optional[DataQuality] = Field(default=None, description="Data quality / provenance classification.")
     exposed_population: float = 0.0
     exposed_built_area_m2: float = 0.0
     centroid: list[float] = Field(description="[longitude, latitude]")
@@ -42,6 +44,7 @@ class ForecastAlertItem(BaseSchema):
     forecast_cycle_at: Optional[datetime] = None
     valid_at: Optional[datetime] = None
     horizon_hours: int = Field(ge=1, le=72)
+    data_quality: Optional[DataQuality] = Field(default=None, description="Data quality / provenance classification.")
     exposed_population: float = 0.0
     centroid: list[float]
     screening_grade: str = SCREENING_GRADE_NOTICE

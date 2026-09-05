@@ -7,16 +7,20 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional
+from typing import Any, Optional
 from sqlalchemy.orm import Session
 
 from api.repositories.alerts_repo import AlertsRepository
+from core.config import settings
 from core.constants import (
     ACTIVE_ALERT_MHI_LIVE,
     FORECAST_HORIZON_HOURS,
+    MAX_TRIGGER_AGE_HOURS,
     PRZ_MHI_STATIC,
     SCREENING_GRADE_NOTICE,
 )
+from core.domain.hazard import evaluate_trigger_freshness
+from core.enums import DataQuality
 from core.errors import InvalidParametersError
 from core.h3_utils import h3_to_str
 from core.schemas.alerts import (
@@ -35,6 +39,17 @@ class AlertsService:
     def __init__(self, db: Session) -> None:
         self.repo = AlertsRepository(db)
 
+    def evaluate_alert_freshness(
+        self,
+        valid_at: datetime,
+        as_of: Optional[datetime] = None,
+        max_age_hours: Optional[int] = None,
+        source: Optional[str] = None,
+    ) -> dict[str, Any]:
+        """Evaluates trigger age and freshness according to canonical H5 rules."""
+        max_age = max_age_hours if max_age_hours is not None else MAX_TRIGGER_AGE_HOURS
+        return evaluate_trigger_freshness(valid_at, as_of=as_of, max_age_hours=max_age, source=source)
+
     def get_active_alerts(
         self,
         admin_id: Optional[int] = None,
@@ -42,6 +57,8 @@ class AlertsService:
         dominant_hazard: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
+        as_of: Optional[datetime] = None,
+        max_age_hours: Optional[int] = None,
     ) -> ActiveAlertsResponse:
         """Retrieves currently active dynamic alert cells exceeding MHI >= 0.75."""
         clamped_limit = min(max(limit, 1), 500)
@@ -53,6 +70,8 @@ class AlertsService:
             dominant_hazard=dominant_hazard,
             limit=clamped_limit,
             offset=clamped_offset,
+            as_of=as_of,
+            max_age_hours=max_age_hours if max_age_hours is not None else settings.MAX_TRIGGER_AGE_HOURS,
         )
 
         items: list[ActiveAlertItem] = []
@@ -62,6 +81,13 @@ class AlertsService:
             mhi_live = float(r.get("mhi_live") if r.get("mhi_live") is not None else 0.0)
             mhi_static = float(r.get("mhi_static") if r.get("mhi_static") is not None else 0.0)
             item_source = r.get("trigger_source") or r.get("source")
+            is_synthetic = bool(
+                item_source == "SYNTHETIC_DEMO"
+                or (item_source and item_source.startswith("SYNTHETIC"))
+                or (item_source and "DEMO" in item_source)
+            )
+            item_quality = DataQuality.SYNTHETIC if is_synthetic else DataQuality.VALID
+            age_hours_val = float(r["age_hours"]) if r.get("age_hours") is not None else None
 
             items.append(
                 ActiveAlertItem(
@@ -75,6 +101,8 @@ class AlertsService:
                     dominant_hazard=r.get("dominant_hazard") or "landslide",
                     trigger_source=item_source,
                     valid_at=r.get("valid_at"),
+                    age_hours=age_hours_val,
+                    data_quality=item_quality,
                     exposed_population=round(float(r.get("population") if r.get("population") is not None else 0.0), 2),
                     exposed_built_area_m2=round(float(r.get("built_area_m2") if r.get("built_area_m2") is not None else 0.0), 2),
                     centroid=[r["lon"], r["lat"]],
@@ -134,6 +162,14 @@ class AlertsService:
             item_cycle = r.get("forecast_cycle_at") or resolved_cycle
             item_horizon = r.get("horizon_hours") if r.get("horizon_hours") is not None else horizon_hours
 
+            item_source = r.get("source")
+            is_synthetic = bool(
+                item_source == "SYNTHETIC_DEMO"
+                or (item_source and item_source.startswith("SYNTHETIC"))
+                or (item_source and "DEMO" in item_source)
+            )
+            item_quality = DataQuality.SYNTHETIC if is_synthetic else DataQuality.VALID
+
             items.append(
                 ForecastAlertItem(
                     h3=h_str,
@@ -148,6 +184,7 @@ class AlertsService:
                     forecast_cycle_at=item_cycle,
                     valid_at=r.get("valid_at"),
                     horizon_hours=item_horizon,
+                    data_quality=item_quality,
                     exposed_population=round(float(r.get("population") if r.get("population") is not None else 0.0), 2),
                     centroid=[r["lon"], r["lat"]],
                     screening_grade=SCREENING_GRADE_NOTICE,

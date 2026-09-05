@@ -267,6 +267,18 @@ class TriggerParserV1(BaseTriggerParser):
             row_source = row.get(source_col, "").strip() if source_col else feed_source
             row_units = row.get(units_col, "").strip() if units_col else feed_units
 
+            effective_provider = feed_provider
+            is_synthetic_feed = (
+                row_source == "SYNTHETIC_DEMO"
+                or feed_source == "SYNTHETIC_DEMO"
+                or (row_source and row_source.startswith("SYNTHETIC"))
+            )
+            if is_synthetic_feed:
+                if quality_enum == DataQuality.VALID:
+                    quality_enum = DataQuality.SYNTHETIC
+                if effective_provider in ("NASA/JAXA", "NASA", "ECMWF", "IMD", "CWC", "Sentinel", "UNKNOWN"):
+                    effective_provider = "SYNTHETIC"
+
             records.append(
                 CanonicalTriggerRecord(
                     h3=raw_h3,
@@ -279,19 +291,27 @@ class TriggerParserV1(BaseTriggerParser):
                     forecast_cycle_at=forecast_cycle_dt,
                     horizon_hours=horizon_hours_val,
                     source=row_source,
-                    provider=feed_provider,
+                    provider=effective_provider,
                     data_quality=quality_enum,
                     model_version=feed_model_ver,
                     calculation_version=feed_calc_ver,
                 )
             )
 
+        has_synthetic = bool(records and all(r.data_quality == DataQuality.SYNTHETIC for r in records))
+        if has_synthetic or feed_source == "SYNTHETIC_DEMO" or (feed_source and feed_source.startswith("SYNTHETIC")):
+            report_quality = DataQuality.SYNTHETIC
+        elif errors:
+            report_quality = DataQuality.PARTIAL if records else DataQuality.INVALID
+        else:
+            report_quality = DataQuality.VALID
+
         report = TriggerValidationReport(
             total_records=total_rows,
             valid_records=len(records),
             invalid_records=len(errors),
             errors=errors,
-            data_quality=DataQuality.VALID if not errors else (DataQuality.PARTIAL if records else DataQuality.INVALID),
+            data_quality=report_quality,
             source=feed_source,
         )
 

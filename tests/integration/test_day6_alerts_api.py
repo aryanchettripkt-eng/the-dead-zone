@@ -54,6 +54,12 @@ class TestDay6AlertsAndAllocationAPI:
         assert "centroid" in item
         assert len(item["centroid"]) == 2
         assert "screening_grade" in item
+        assert "age_hours" in item
+        assert item["age_hours"] is not None
+        assert item["age_hours"] >= 0.0
+        assert "data_quality" in item
+        assert item["data_quality"] in ("synthetic", "valid")
+        assert item["trigger_source"] == "SYNTHETIC_DEMO"
 
     def test_get_forecast_alerts_structure_and_72h_validation(self, client):
         # 1. Valid 48h horizon query
@@ -79,6 +85,8 @@ class TestDay6AlertsAndAllocationAPI:
         assert "horizon_hours" in item
         assert 1 <= item["horizon_hours"] <= 48
         assert "screening_grade" in item
+        assert "data_quality" in item
+        assert item["data_quality"] in ("synthetic", "valid")
 
         # 2. Reject horizon > 72h (FR-3.12 constraint)
         res_invalid_high = client.get("/alerts/forecast?horizon=96")
@@ -193,3 +201,62 @@ class TestDay6AlertsAndAllocationAPI:
         data = res.json()
         # Should return 0 records cleanly rather than dumping the database
         assert data["total_active_cells"] == 0
+
+    def test_h5_live_alert_staleness_exclusion(self, client, db_session):
+        """H5: Proves stale live triggers do not qualify as current Active Alerts, while remaining stored."""
+        from datetime import datetime, timezone, timedelta
+        from sqlalchemy import text
+        from core.h3_utils import h3_to_str
+
+        # Pick a cell
+        cell_row = db_session.execute(text("SELECT h3 FROM grid_cell WHERE res = 8 LIMIT 1;")).mappings().first()
+        stale_h3 = cell_row["h3"]
+        stale_valid = datetime.now(timezone.utc) - timedelta(days=14)
+
+        # Clear existing rows for this specific cell at stale_valid
+        db_session.execute(text("DELETE FROM hazard_dynamic WHERE h3 = :h3 AND valid_at = :v;"), {"h3": stale_h3, "v": stale_valid})
+        db_session.execute(text("DELETE FROM mhi_snapshot WHERE h3 = :h3 AND valid_at = :v;"), {"h3": stale_h3, "v": stale_valid})
+
+        # Insert stale live trigger and mhi_snapshot exceeding 0.75
+        db_session.execute(
+            text("""
+                INSERT INTO hazard_dynamic (h3, hazard_type, valid_at, forecast_cycle_at, trigger_value, source)
+                VALUES (:h3, 'landslide', :v, NULL, 1.5, 'SYNTHETIC_DEMO');
+            """),
+            {"h3": stale_h3, "v": stale_valid},
+        )
+        db_session.execute(
+            text("""
+                INSERT INTO mhi_snapshot (h3, valid_at, mhi_static, mhi_live, dominant_hazard, zone_class)
+                VALUES (:h3, :v, 0.40, 0.88, 'landslide', 'active_alert');
+            """),
+            {"h3": stale_h3, "v": stale_valid},
+        )
+        db_session.commit()
+
+        # Query /alerts/active -> stale_h3 at stale_valid must NOT be returned as current active alert
+        res = client.get("/alerts/active?limit=100")
+        assert res.status_code == 200
+        active_items = res.json()["items"]
+        stale_hex = h3_to_str(stale_h3)
+        matching_stale = [x for x in active_items if x["h3"] == stale_hex and x.get("valid_at") == stale_valid.isoformat()]
+        assert len(matching_stale) == 0, "Stale live trigger must NOT qualify as current Active Alert"
+
+        # Stale record remains stored in database (non-destructive)
+        persisted = db_session.execute(
+            text("SELECT COUNT(*) FROM hazard_dynamic WHERE h3 = :h3 AND valid_at = :v;"),
+            {"h3": stale_h3, "v": stale_valid},
+        ).scalar()
+        assert persisted == 1, "Historical stale trigger must remain stored in hazard_dynamic"
+
+    def test_m3_habitation_risk_dossier_data_quality(self, client):
+        """M3: Proves /habitations/{id}/risk exposes honest data_quality ('synthetic')."""
+        hab_res = client.get("/habitations?limit=1")
+        assert hab_res.status_code == 200
+        hab_id = hab_res.json()["items"][0]["id"]
+
+        dossier_res = client.get(f"/habitations/{hab_id}/risk")
+        assert dossier_res.status_code == 200
+        dossier = dossier_res.json()
+        assert dossier["data_quality"] == "synthetic"
+        assert dossier["data_quality"] != "observed"

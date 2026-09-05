@@ -1933,6 +1933,29 @@
             ],
             "title": "Valid At"
           },
+          "age_hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Age Hours",
+            "description": "Age of dynamic trigger observation in hours."
+          },
+          "data_quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DataQuality"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Data quality / provenance classification."
+          },
           "exposed_population": {
             "type": "number",
             "title": "Exposed Population",
@@ -2909,6 +2932,17 @@
             "minimum": 1.0,
             "title": "Horizon Hours"
           },
+          "data_quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DataQuality"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Data quality / provenance classification."
+          },
           "exposed_population": {
             "type": "number",
             "title": "Exposed Population",
@@ -3237,7 +3271,7 @@
           "data_quality": {
             "type": "string",
             "title": "Data Quality",
-            "default": "observed"
+            "default": "synthetic"
           },
           "confidence": {
             "type": "number",
@@ -4329,7 +4363,7 @@
           },
           "data_quality": {
             "$ref": "#/components/schemas/DataQuality",
-            "default": "valid"
+            "default": "synthetic"
           },
           "warnings": {
             "items": {
