@@ -19,8 +19,19 @@ class AlertsRepository:
         self.db = db
 
     def get_latest_snapshot_valid_at(self) -> Optional[datetime]:
-        """Returns the latest authoritative snapshot timestamp persisted in mhi_snapshot, if any."""
-        query = text("SELECT MAX(valid_at) as max_valid FROM mhi_snapshot;")
+        """Returns the latest authoritative snapshot timestamp persisted in mhi_snapshot, if any.
+        
+        Prefers the latest snapshot that has associated live (non-forecast) triggers,
+        falling back to the maximum snapshot timestamp in mhi_snapshot.
+        """
+        query = text("""
+            SELECT COALESCE(
+                (SELECT MAX(m.valid_at)
+                 FROM mhi_snapshot m
+                 JOIN hazard_dynamic hd ON m.valid_at = hd.valid_at AND hd.forecast_cycle_at IS NULL),
+                (SELECT MAX(valid_at) FROM mhi_snapshot)
+            ) as max_valid;
+        """)
         row = self.db.execute(query).mappings().first()
         return row["max_valid"] if row and row.get("max_valid") else None
 
@@ -142,9 +153,6 @@ class AlertsRepository:
         Returns:
             (records, total_forecast_cells, total_exposed_population)
         """
-        where_clauses = [
-            "m.mhi_fcst >= :min_mhi",
-        ]
         params: dict[str, Any] = {
             "min_mhi": float(min_mhi),
             "horizon_hours": int(horizon_hours),
@@ -152,11 +160,10 @@ class AlertsRepository:
             "offset": offset,
         }
 
+        outer_where = ""
         if admin_id is not None:
-            where_clauses.append("(g.admin_id = :admin_id OR a.lgd_code = :admin_id)")
+            outer_where = "WHERE (g.admin_id = :admin_id OR a.lgd_code = :admin_id)"
             params["admin_id"] = int(admin_id)
-
-        where_sql = " AND ".join(where_clauses)
 
         sql = f"""
             WITH deduplicated_hazard_forecasts AS (
@@ -168,7 +175,8 @@ class AlertsRepository:
                     ROUND(EXTRACT(EPOCH FROM (valid_at - forecast_cycle_at)) / 3600.0)::int AS horizon_hours
                 FROM hazard_dynamic
                 WHERE forecast_cycle_at IS NOT NULL
-                  AND ROUND(EXTRACT(EPOCH FROM (valid_at - forecast_cycle_at)) / 3600.0)::int = :horizon_hours
+                  AND valid_at > forecast_cycle_at
+                  AND valid_at <= forecast_cycle_at + (:horizon_hours * INTERVAL '1 hour')
                 ORDER BY h3, valid_at, forecast_cycle_at DESC, ingested_at DESC, id DESC
             ),
             latest_snapshots AS (
@@ -186,8 +194,8 @@ class AlertsRepository:
                 FROM mhi_snapshot m
                 JOIN deduplicated_hazard_forecasts hd 
                   ON m.h3 = hd.h3 AND m.valid_at = hd.valid_at
-                WHERE {where_sql}
-                ORDER BY m.h3, m.valid_at DESC, hd.forecast_cycle_at DESC
+                WHERE m.mhi_fcst >= :min_mhi
+                ORDER BY m.h3, hd.forecast_cycle_at DESC, m.valid_at ASC
             )
             SELECT
                 g.h3,
@@ -211,6 +219,7 @@ class AlertsRepository:
             FROM latest_snapshots m
             JOIN grid_cell g ON m.h3 = g.h3
             LEFT JOIN admin_boundary a ON g.admin_id = a.id
+            {outer_where}
             ORDER BY m.mhi_fcst DESC, g.population DESC, g.h3 ASC
             LIMIT :limit OFFSET :offset;
         """

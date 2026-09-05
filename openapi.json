@@ -1895,8 +1895,9 @@
           "mhi_live": {
             "type": "number",
             "maximum": 1.0,
-            "minimum": 0.75,
-            "title": "Mhi Live"
+            "minimum": 0.0,
+            "title": "Mhi Live",
+            "description": "Active live MHI in [0, 1]."
           },
           "mhi_static": {
             "type": "number",
@@ -2852,8 +2853,9 @@
           "mhi_fcst": {
             "type": "number",
             "maximum": 1.0,
-            "minimum": 0.75,
-            "title": "Mhi Fcst"
+            "minimum": 0.0,
+            "title": "Mhi Fcst",
+            "description": "Forecast MHI in [0, 1]."
           },
           "mhi_static": {
             "type": "number",

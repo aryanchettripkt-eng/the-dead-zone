@@ -17,7 +17,7 @@ class ActiveAlertItem(BaseSchema):
     res: int
     admin_id: Optional[int] = None
     admin_name: Optional[str] = None
-    mhi_live: float = Field(ge=0.75, le=1.0)
+    mhi_live: float = Field(ge=0.0, le=1.0, description="Active live MHI in [0, 1].")
     mhi_static: float = Field(ge=0.0, le=1.0, description="Static baseline MHI.")
     dominant_hazard: str
     trigger_source: Optional[str] = None
@@ -35,7 +35,7 @@ class ForecastAlertItem(BaseSchema):
     res: int
     admin_id: Optional[int] = None
     admin_name: Optional[str] = None
-    mhi_fcst: float = Field(ge=0.75, le=1.0)
+    mhi_fcst: float = Field(ge=0.0, le=1.0, description="Forecast MHI in [0, 1].")
     mhi_static: float = Field(ge=0.0, le=1.0, description="Static baseline MHI.")
     dominant_hazard: str
     issuing_model: Optional[str] = None

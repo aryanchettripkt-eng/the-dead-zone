@@ -42,17 +42,18 @@ class TestDay6AlertsAndAllocationAPI:
         assert "items" in data
         assert isinstance(data["items"], list)
 
-        if data["total_active_cells"] > 0 and len(data["items"]) > 0:
-            item = data["items"][0]
-            assert "h3" in item
-            assert "mhi_live" in item
-            assert item["mhi_live"] >= 0.75
-            assert "mhi_static" in item
-            assert item["mhi_static"] < 0.75
-            assert "dominant_hazard" in item
-            assert "centroid" in item
-            assert len(item["centroid"]) == 2
-            assert "screening_grade" in item
+        assert data["total_active_cells"] >= 1
+        assert len(data["items"]) >= 1
+        item = data["items"][0]
+        assert "h3" in item
+        assert "mhi_live" in item
+        assert item["mhi_live"] >= 0.75
+        assert "mhi_static" in item
+        assert item["mhi_static"] < 0.75
+        assert "dominant_hazard" in item
+        assert "centroid" in item
+        assert len(item["centroid"]) == 2
+        assert "screening_grade" in item
 
     def test_get_forecast_alerts_structure_and_72h_validation(self, client):
         # 1. Valid 48h horizon query
@@ -67,16 +68,17 @@ class TestDay6AlertsAndAllocationAPI:
         assert data["horizon_hours"] == 48
         assert "items" in data
 
-        if data["total_forecast_cells"] > 0 and len(data["items"]) > 0:
-            item = data["items"][0]
-            assert "h3" in item
-            assert "mhi_fcst" in item
-            assert item["mhi_fcst"] >= 0.75
-            assert "mhi_static" in item
-            assert item["mhi_static"] < 0.75
-            assert "horizon_hours" in item
-            assert item["horizon_hours"] == 48
-            assert "screening_grade" in item
+        assert data["total_forecast_cells"] >= 1
+        assert len(data["items"]) >= 1
+        item = data["items"][0]
+        assert "h3" in item
+        assert "mhi_fcst" in item
+        assert item["mhi_fcst"] >= 0.75
+        assert "mhi_static" in item
+        assert item["mhi_static"] < 0.75
+        assert "horizon_hours" in item
+        assert 1 <= item["horizon_hours"] <= 48
+        assert "screening_grade" in item
 
         # 2. Reject horizon > 72h (FR-3.12 constraint)
         res_invalid_high = client.get("/alerts/forecast?horizon=96")
@@ -85,6 +87,55 @@ class TestDay6AlertsAndAllocationAPI:
         # 3. Reject horizon < 1h
         res_invalid_low = client.get("/alerts/forecast?horizon=0")
         assert res_invalid_low.status_code == 422
+
+    def test_forecast_horizon_boundary_semantics(self, client):
+        """H3 boundary test: verifies within-horizon semantics and boundary conditions on seeded alerts.
+        
+        Seeded forecasts exist at 24h, 48h, and 72h lead times.
+        - horizon=23: immediately outside 24h boundary -> excludes 24h (total 0)
+        - horizon=24: at 24h boundary -> includes 24h, excludes 48h (total 1)
+        - horizon=47: immediately outside 48h boundary -> includes 24h, excludes 48h (total 1)
+        - horizon=48: at 48h boundary -> includes 24h and 48h, excludes 72h (total 2)
+        - horizon=71: immediately outside 72h boundary -> includes 24h and 48h, excludes 72h (total 2)
+        - horizon=72: at 72h boundary -> includes 24h, 48h, and 72h (total 3)
+        """
+        # Horizon 23: excludes 24h
+        res_23 = client.get("/alerts/forecast?horizon=23")
+        assert res_23.status_code == 200
+        assert res_23.json()["total_forecast_cells"] == 0
+
+        # Horizon 24: includes 24h, excludes 48h and 72h
+        res_24 = client.get("/alerts/forecast?horizon=24")
+        assert res_24.status_code == 200
+        data_24 = res_24.json()
+        assert data_24["total_forecast_cells"] == 1
+        assert [x["horizon_hours"] for x in data_24["items"]] == [24]
+
+        # Horizon 47: includes 24h, excludes 48h
+        res_47 = client.get("/alerts/forecast?horizon=47")
+        assert res_47.status_code == 200
+        assert res_47.json()["total_forecast_cells"] == 1
+
+        # Horizon 48: includes 24h and 48h, excludes 72h
+        res_48 = client.get("/alerts/forecast?horizon=48")
+        assert res_48.status_code == 200
+        data_48 = res_48.json()
+        assert data_48["total_forecast_cells"] == 2
+        horizons_48 = {x["horizon_hours"] for x in data_48["items"]}
+        assert horizons_48 == {24, 48}
+
+        # Horizon 71: includes 24h and 48h, excludes 72h
+        res_71 = client.get("/alerts/forecast?horizon=71")
+        assert res_71.status_code == 200
+        assert res_71.json()["total_forecast_cells"] == 2
+
+        # Horizon 72: includes 24h, 48h, and 72h
+        res_72 = client.get("/alerts/forecast?horizon=72")
+        assert res_72.status_code == 200
+        data_72 = res_72.json()
+        assert data_72["total_forecast_cells"] == 3
+        horizons_72 = {x["horizon_hours"] for x in data_72["items"]}
+        assert horizons_72 == {24, 48, 72}
 
     def test_post_plan_allocate_success(self, officer_client):
         payload = {

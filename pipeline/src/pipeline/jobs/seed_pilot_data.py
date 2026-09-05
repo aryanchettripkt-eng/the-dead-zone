@@ -415,6 +415,7 @@ def seed_database(db_url: Optional[str] = None) -> None:
                     serving_version,
                     explanation,
                     mhi_snapshot,
+                    hazard_dynamic,
                     hazard_static,
                     grid_cell,
                     relocation_plan,
@@ -874,6 +875,93 @@ def seed_database(db_url: Optional[str] = None) -> None:
             logger.info(f"Seeded {len(demo_accounts)} demo accounts with jurisdiction assignments.")
         except Exception as auth_err:
             logger.debug(f"Auth user seeding bypassed (table may not exist in earlier migrations): {auth_err}")
+
+        # 6. Deterministically seed synthetic dynamic triggers (B6)
+        logger.info("Seeding deterministic synthetic dynamic triggers for alert verification (B6)...")
+        from datetime import timedelta
+
+        candidate_cells = conn.execute(
+            text("""
+                SELECT gc.h3, hs.susceptibility, ms.mhi_static
+                FROM grid_cell gc
+                JOIN admin_boundary ab ON gc.admin_id = ab.id
+                JOIN hazard_static hs ON gc.h3 = hs.h3 AND hs.hazard_type = 'landslide'
+                JOIN mhi_snapshot ms ON gc.h3 = ms.h3 AND ms.valid_at = :now
+                WHERE ab.name = 'Wayanad' AND gc.res = 8
+                  AND ms.mhi_static BETWEEN 0.35 AND 0.60
+                  AND hs.susceptibility >= 0.35
+                ORDER BY gc.h3 ASC
+                LIMIT 4;
+            """),
+            {"now": now},
+        ).fetchall()
+
+        if len(candidate_cells) >= 4:
+            dynamic_trigger_rows = [
+                # Cell 0: Active live trigger at valid_at = now
+                {
+                    "h3": int(candidate_cells[0][0]),
+                    "hazard_type": "landslide",
+                    "valid_at": now,
+                    "forecast_cycle_at": None,
+                    "trigger_value": 1.25,
+                    "source": "SYNTHETIC_DEMO",
+                    "pipeline_run_id": pipeline_run_id,
+                },
+                # Cell 1: Forecast trigger at valid_at = now + 24h (24h horizon)
+                {
+                    "h3": int(candidate_cells[1][0]),
+                    "hazard_type": "landslide",
+                    "valid_at": now + timedelta(hours=24),
+                    "forecast_cycle_at": now,
+                    "trigger_value": 1.25,
+                    "source": "SYNTHETIC_DEMO",
+                    "pipeline_run_id": pipeline_run_id,
+                },
+                # Cell 2: Forecast trigger at valid_at = now + 48h (48h horizon)
+                {
+                    "h3": int(candidate_cells[2][0]),
+                    "hazard_type": "landslide",
+                    "valid_at": now + timedelta(hours=48),
+                    "forecast_cycle_at": now,
+                    "trigger_value": 1.25,
+                    "source": "SYNTHETIC_DEMO",
+                    "pipeline_run_id": pipeline_run_id,
+                },
+                # Cell 3: Forecast trigger at valid_at = now + 72h (72h horizon)
+                {
+                    "h3": int(candidate_cells[3][0]),
+                    "hazard_type": "landslide",
+                    "valid_at": now + timedelta(hours=72),
+                    "forecast_cycle_at": now,
+                    "trigger_value": 1.25,
+                    "source": "SYNTHETIC_DEMO",
+                    "pipeline_run_id": pipeline_run_id,
+                },
+            ]
+            conn.execute(
+                text("""
+                    INSERT INTO hazard_dynamic (
+                        h3, hazard_type, valid_at, forecast_cycle_at, trigger_value, source, pipeline_run_id
+                    ) VALUES (
+                        :h3, :hazard_type, :valid_at, :forecast_cycle_at, :trigger_value, :source, :pipeline_run_id
+                    );
+                """),
+                dynamic_trigger_rows,
+            )
+            logger.info(f"Seeded {len(dynamic_trigger_rows)} deterministic synthetic dynamic triggers.")
+        else:
+            logger.warning(f"Could not find 4 candidate cells in Wayanad; found {len(candidate_cells)}.")
+
+    # 7. Execute production dynamic snapshot pipeline to derive MHI_live and MHI_fcst (B6)
+    logger.info("Computing and persisting dynamic hazard snapshots from synthetic triggers...")
+    from pipeline.jobs.compute_dynamic_hazard import compute_and_persist_dynamic_snapshots
+
+    dynamic_res = compute_and_persist_dynamic_snapshots(engine, pipeline_run_id=pipeline_run_id)
+    logger.info(
+        f"Dynamic snapshot computation completed: status={dynamic_res.status}, "
+        f"persisted={dynamic_res.snapshots_persisted}, timestamps={len(dynamic_res.valid_timestamps)}"
+    )
 
     logger.info("Pilot data seeding completed successfully!")
     logger.info(f"Seeded: {len(PILOT_DISTRICTS)} districts, {total_habitations_seeded} habitations, {total_sites_seeded} candidate sites, {total_cells_seeded} H3 cells.")

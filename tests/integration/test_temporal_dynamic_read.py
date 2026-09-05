@@ -166,8 +166,14 @@ class TestTemporalDynamicReadCorrectness:
 
     def test_h3_forecast_horizon_selection_and_no_duplication(self, client, db_session):
         """H3: Proves horizon parameter actually filters data, returns truthful provenance, and avoids duplicates."""
-        # Find two cells for testing distinct forecast horizons
-        cell_rows = db_session.execute(text("SELECT h3 FROM grid_cell LIMIT 2;")).mappings().all()
+        # Select test cells from Kodagu to avoid polluting or interacting with Wayanad seeded demo alerts
+        kodagu_id = db_session.execute(
+            text("SELECT id FROM admin_boundary WHERE name = 'Kodagu' LIMIT 1;")
+        ).scalar()
+        cell_rows = db_session.execute(
+            text("SELECT h3 FROM grid_cell WHERE admin_id = :aid LIMIT 2;"),
+            {"aid": kodagu_id},
+        ).mappings().all()
         assert len(cell_rows) >= 2
         cell_a = cell_rows[0]["h3"]
         cell_b = cell_rows[1]["h3"]
@@ -176,7 +182,7 @@ class TestTemporalDynamicReadCorrectness:
         valid_24h = cycle_time + timedelta(hours=24)  # 2026-08-31 00:00:00 UTC
         valid_48h = cycle_time + timedelta(hours=48)  # 2026-09-01 00:00:00 UTC
 
-        # Clean prior test rows
+        # Clean prior test rows strictly scoped to test cells
         db_session.execute(text("DELETE FROM hazard_dynamic WHERE h3 IN (:a, :b);"), {"a": cell_a, "b": cell_b})
         db_session.execute(text("DELETE FROM mhi_snapshot WHERE h3 IN (:a, :b);"), {"a": cell_a, "b": cell_b})
 
@@ -226,7 +232,7 @@ class TestTemporalDynamicReadCorrectness:
 
         # 1. Query horizon=24 -> MUST return Cell A (0.82), MUST NOT return Cell B (0.91)
         cycle_iso = cycle_time.strftime("%Y-%m-%dT%H:%M:%SZ")
-        res_24 = client.get("/alerts/forecast?horizon=24&limit=100")
+        res_24 = client.get(f"/alerts/forecast?horizon=24&admin={kodagu_id}&limit=100")
         assert res_24.status_code == 200
         data_24 = res_24.json()
         assert data_24["horizon_hours"] == 24
@@ -239,24 +245,28 @@ class TestTemporalDynamicReadCorrectness:
         assert items_24_a[0]["horizon_hours"] == 24
         assert items_24_a[0]["forecast_cycle_at"] == cycle_iso
 
-        # 2. Query horizon=48 -> MUST return Cell B (0.91), MUST NOT return Cell A (0.82)
-        res_48 = client.get("/alerts/forecast?horizon=48&limit=100")
+        # 2. Query horizon=48 -> MUST return Cell B (0.91) AND Cell A (0.82) since 24h <= 48h (within horizon)
+        res_48 = client.get(f"/alerts/forecast?horizon=48&admin={kodagu_id}&limit=100")
         assert res_48.status_code == 200
         data_48 = res_48.json()
         assert data_48["horizon_hours"] == 48
         items_48_a = [x for x in data_48["items"] if x["h3"] == hex_a]
         items_48_b = [x for x in data_48["items"] if x["h3"] == hex_b]
-        assert len(items_48_b) == 1, "Cell B must be returned in 48h horizon query"
-        assert len(items_48_a) == 0, "Cell A (24h) must NOT be returned in 48h horizon query"
+        assert len(items_48_b) == 1, "Cell B (48h) must be returned in 48h horizon query"
+        assert len(items_48_a) == 1, "Cell A (24h) must be returned in 48h horizon query (within-horizon semantics)"
         assert items_48_b[0]["mhi_fcst"] == 0.91
         assert items_48_b[0]["horizon_hours"] == 48
+        assert items_48_a[0]["mhi_fcst"] == 0.82
+        assert items_48_a[0]["horizon_hours"] == 24
 
-        # 3. Query horizon=72 -> Neither Cell A nor Cell B has 72h forecast -> neither should be returned
-        res_72 = client.get("/alerts/forecast?horizon=72&limit=100")
+        # 3. Query horizon=72 -> MUST return both Cell A (24h) and Cell B (48h) since both are within 72h
+        res_72 = client.get(f"/alerts/forecast?horizon=72&admin={kodagu_id}&limit=100")
         assert res_72.status_code == 200
         data_72 = res_72.json()
-        items_72 = [x for x in data_72["items"] if x["h3"] in (hex_a, hex_b)]
-        assert len(items_72) == 0, "Non-existent horizon must return empty result without fabricating values"
+        items_72_a = [x for x in data_72["items"] if x["h3"] == hex_a]
+        items_72_b = [x for x in data_72["items"] if x["h3"] == hex_b]
+        assert len(items_72_a) == 1, "Cell A (24h) must be returned in 72h horizon query"
+        assert len(items_72_b) == 1, "Cell B (48h) must be returned in 72h horizon query"
 
         # 4. Multi-cycle determinism: insert an updated, newer forecast cycle for Cell A with the same horizon (24h)
         cycle_newer = cycle_time + timedelta(hours=6)  # 2026-08-30 06:00:00 UTC
@@ -279,13 +289,18 @@ class TestTemporalDynamicReadCorrectness:
 
         # Query horizon=24 again: must deterministically return the newer cycle/snapshot (0.89), exactly once
         cycle_newer_iso = cycle_newer.strftime("%Y-%m-%dT%H:%M:%SZ")
-        res_24_updated = client.get("/alerts/forecast?horizon=24&limit=100")
+        res_24_updated = client.get(f"/alerts/forecast?horizon=24&admin={kodagu_id}&limit=100")
         assert res_24_updated.status_code == 200
         data_24_updated = res_24_updated.json()
         items_24_a_updated = [x for x in data_24_updated["items"] if x["h3"] == hex_a]
         assert len(items_24_a_updated) == 1, "Cell A must still have exactly 1 record after multi-cycle insert"
         assert items_24_a_updated[0]["mhi_fcst"] == 0.89, "Must select latest snapshot deterministically"
         assert items_24_a_updated[0]["forecast_cycle_at"] == cycle_newer_iso, "Must reflect latest cycle provenance"
+
+        # Teardown scoped strictly to test cells
+        db_session.execute(text("DELETE FROM hazard_dynamic WHERE h3 IN (:a, :b);"), {"a": cell_a, "b": cell_b})
+        db_session.execute(text("DELETE FROM mhi_snapshot WHERE h3 IN (:a, :b);"), {"a": cell_a, "b": cell_b})
+        db_session.commit()
 
     # =========================================================================
     # H6: Triage tier filtering excludes unscored habitations
