@@ -1,14 +1,9 @@
-import sys
 from pathlib import Path
 import numpy as np
 import geopandas as gpd
 import psycopg
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-if str(REPO_ROOT / "pipeline") not in sys.path:
-    sys.path.insert(0, str(REPO_ROOT / "pipeline"))
-
 import pytest
+
 from core.config import settings
 from pipeline.hazard.flood.aoi import BARPETA_BBOX_WGS84
 from pipeline.hazard.flood.h3_zonal import (

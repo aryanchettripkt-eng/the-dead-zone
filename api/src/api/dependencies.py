@@ -1,7 +1,7 @@
 """FastAPI dependencies for database sessions, pagination, and request context."""
 
 import uuid
-from typing import Generator
+from typing import Generator, Optional
 from fastapi import Depends, Request
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
