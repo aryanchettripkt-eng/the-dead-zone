@@ -7,11 +7,15 @@ import { StateLayer, type StateLayerHandle } from '@/components/ui/state-layer';
 import { ContainerTransformLink } from '@/components/layout/transition';
 import type { NavTabItem } from './NavSegmentTabs';
 
+export type NavSegmentTabSize = 'sm' | 'md' | 'lg';
+
 export interface NavSegmentTabProps {
   /** Tab definition. A tab with an `href` navigates; one without stays in page. */
   tab: NavTabItem;
   /** Whether this tab is the selected one. */
   isActive?: boolean;
+  /** Segment scale. 'lg' matches the tall hero dock. */
+  size?: NavSegmentTabSize;
   /** Fired on selection, for both navigating and in-page tabs. */
   onSelect?: (tabId: string) => void;
   /** Suppress the ripple and hover tween. */
@@ -36,6 +40,7 @@ export interface NavSegmentTabProps {
 export const NavSegmentTab: React.FC<NavSegmentTabProps> = ({
   tab,
   isActive = false,
+  size = 'md',
   onSelect,
   disableAnimation = false,
   className = '',
@@ -72,11 +77,21 @@ export const NavSegmentTab: React.FC<NavSegmentTabProps> = ({
 
   const handleSelect = useCallback(() => onSelect?.(tab.id), [onSelect, tab.id]);
 
+  const sizeClasses =
+    size === 'lg'
+      ? 'px-4 py-2 text-sm gap-2.5'
+      : size === 'sm'
+      ? 'px-3 py-1 text-[11px] gap-1.5'
+      : 'px-3.5 py-1.5 text-xs gap-2';
+
+  const iconSizeClass =
+    size === 'lg' ? 'text-[19px]' : size === 'sm' ? 'text-[15px]' : 'text-[17px]';
+
   const body = (
     <>
       <StateLayer ref={stateLayerRef} disabled={disableAnimation} />
       <span
-        className={`nav-tab-icon material-symbols-outlined text-[17px] ${classNames.icon ?? ''}`}
+        className={`nav-tab-icon material-symbols-outlined ${iconSizeClass} ${classNames.icon ?? ''}`}
       >
         {tab.icon}
       </span>
@@ -96,8 +111,9 @@ export const NavSegmentTab: React.FC<NavSegmentTabProps> = ({
     'aria-current': isActive ? ('page' as const) : undefined,
     onPointerDown: handlePointerDown,
     className: [
-      'nav-tab m3-state-layer group relative flex items-center gap-2 px-3.5 py-1.5',
-      'rounded-full text-xs font-medium cursor-pointer select-none',
+      'nav-tab m3-state-layer group relative flex items-center',
+      sizeClasses,
+      'rounded-full font-medium cursor-pointer select-none',
       'transition-colors duration-200 ease-m3-standard',
       isActive
         ? 'nav-tab-active text-m3-on-primary font-bold'
