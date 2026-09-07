@@ -11,6 +11,7 @@ export const APP_ROUTES = {
   gov: '/gov',
   stories: '/stories',
   workspace: '/workspace',
+  about: '/about',
 } as const;
 
 export type AppRouteKey = keyof typeof APP_ROUTES;
@@ -27,6 +28,7 @@ export const NAV_TABS: NavTabItem[] = [
   { id: 'hazards', label: 'Hazards', icon: 'warning', href: APP_ROUTES.workspace },
   { id: 'data', label: 'Data', icon: 'database', href: APP_ROUTES.gov },
   { id: 'research', label: 'Research', icon: 'menu_book', href: APP_ROUTES.stories },
+  { id: 'about', label: 'About', icon: 'info', href: APP_ROUTES.about },
 ];
 
 /** Maps a pathname back to the tab that should read as selected. */

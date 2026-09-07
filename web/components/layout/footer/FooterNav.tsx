@@ -17,6 +17,7 @@ export interface FooterNavProps {
 }
 
 const DEFAULT_FOOTER_LINKS: FooterNavLink[] = [
+  { label: 'About SETU-DRR', href: '/about' },
   { label: 'Command Portal', href: '/login' },
   { label: 'Public Stories', href: '/stories' },
   { label: 'Gov Console', href: '/gov' },

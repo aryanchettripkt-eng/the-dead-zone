@@ -43,6 +43,7 @@ export const DEFAULT_NAV_TABS: NavTabItem[] = [
   { id: 'hazards', label: 'Hazards', icon: 'warning' },
   { id: 'data', label: 'Data', icon: 'database' },
   { id: 'research', label: 'Research', icon: 'menu_book' },
+  { id: 'about', label: 'About', icon: 'info', href: '/about' },
 ];
 
 /**
