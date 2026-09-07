@@ -31,7 +31,7 @@ export const HeroTypography: React.FC<HeroTypographyProps> = ({
   return (
     <div className={`flex flex-col items-start select-none ${className}`}>
       {/* Monumental Condensed Grotesque Headline */}
-      <h1 className="hero-headline flex flex-col font-sans font-black text-6xl sm:text-8xl lg:text-[7.5rem] tracking-tight leading-[0.88] text-m3-on-surface mb-5 drop-shadow-xs">
+      <h1 className="hero-headline flex flex-col font-sans font-black text-6xl sm:text-8xl lg:text-[8rem] tracking-tight leading-[0.88] text-m3-on-surface mb-5 drop-shadow-xs">
         <span className="hero-word-line inline-block">{line1}</span>
         <span className="hero-word-line inline-block">{line2}</span>
         <span className="hero-word-line inline-block">{line3}</span>

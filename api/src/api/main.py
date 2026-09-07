@@ -51,7 +51,16 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# 1. CORS Middleware
+# 1. Request ID & Logging Middleware
+app.add_middleware(RequestIdAndLoggingMiddleware)
+
+# 2. CORS Middleware
+#
+# Registered last so it is the OUTERMOST layer. RequestIdAndLoggingMiddleware catches AppError
+# and builds its own JSONResponse; when CORS sat outside-in of that, those error responses left
+# without Access-Control-* headers and a browser saw every 401/403/404 as an opaque network
+# failure rather than a readable error envelope. CORS must wrap the error handler, not sit
+# inside it.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=api_settings.ALLOWED_ORIGINS,
@@ -59,9 +68,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# 2. Request ID & Logging Middleware
-app.add_middleware(RequestIdAndLoggingMiddleware)
 
 
 def _sanitize_validation_errors(obj: Any) -> Any:

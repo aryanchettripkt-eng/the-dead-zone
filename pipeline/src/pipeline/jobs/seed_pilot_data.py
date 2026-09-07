@@ -859,6 +859,9 @@ def seed_database(db_url: Optional[str] = None) -> None:
 
             demo_accounts = [
                 ("civilian@setu.gov.in", settings.DEMO_CIVILIAN_PASSWORD, "Demo Citizen", Role.CIVILIAN.value, None),
+                # National operations account: no assigned district -> authorized across every
+                # pilot district. This is the single "Government" login the portal exposes.
+                ("gov@setu.gov.in", settings.DEMO_OFFICER_PASSWORD, "SETU-DRR National Operations", Role.GOVERNMENT_OFFICIAL.value, None),
                 ("officer@setu.gov.in", settings.DEMO_OFFICER_PASSWORD, "District Magistrate Wayanad", Role.GOVERNMENT_OFFICIAL.value, wayanad_admin_id),
                 ("officer_kodagu@setu.gov.in", settings.DEMO_OFFICER_PASSWORD, "District Magistrate Kodagu", Role.GOVERNMENT_OFFICIAL.value, kodagu_admin_id),
                 ("rescue@setu.gov.in", settings.DEMO_RESCUE_PASSWORD, "NDRF Commander 4th BN", Role.GOVERNMENT_OFFICIAL.value, wayanad_admin_id),

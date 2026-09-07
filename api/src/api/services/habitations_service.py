@@ -76,8 +76,12 @@ class HabitationsService:
         for r in raw_items:
             pop = int(r.get("population") if r.get("population") is not None else 0)
             
-            # If priority_score is persisted in habitation_risk
-            if r.get("priority_score") is not None and r.get("tier") is not None:
+            # Trust persisted scoring whenever habitation_risk carries a score. A NULL tier is a
+            # legitimate persisted outcome, not missing data: classify_triage_tier() returns None
+            # when a habitation satisfies none of the four PRD tiers. Requiring a tier here sent
+            # those rows down the fallback path, which silently recomputed an already-audited
+            # score and relabelled its provenance.
+            if r.get("priority_score") is not None:
                 ps = float(r["priority_score"])
                 caseload = float(r.get("caseload_score") if r.get("caseload_score") is not None else (ps * pop))
                 tier_class = Tier(r["tier"]) if isinstance(r["tier"], str) else r["tier"]
@@ -124,8 +128,9 @@ class HabitationsService:
                 ps = eval_result["priority_score"]
                 caseload = eval_result["caseload_score"]
                 tier_class = eval_result["tier"]
-                dominant_hazard = "landslide"
-                model_ver = "baseline-v1"
+                # Only fall back to the pilot default when the row genuinely names no hazard.
+                dominant_hazard = r.get("dominant_hazard") or "landslide"
+                model_ver = r.get("model_version") or "baseline-v1"
                 scoring_ver = self.scoring_config.scoring_version
                 dataset_ver = "v1.0"
 

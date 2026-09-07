@@ -288,3 +288,34 @@ code path and prove nothing new.
 | District-wide run, second district | Same code path |
 | PDF briefing pack | Already on the PRD cut-line |
 | Anything resembling an actual relocation order | Human decision. This produces data, not orders. |
+
+---
+
+## Implementation status — Steps 12-13 (added)
+
+Both steps are implemented and have been run for Dholpur and Morena.
+
+| Piece | Where |
+|---|---|
+| WorldCover class fractions (tree cover, built-up) | `pipeline/src/pipeline/relocation/landcover.py` |
+| Step 12 mask + polygonisation | `pipeline/src/pipeline/relocation/eligibility_mask.py` |
+| Step 13 CC_land | `CapacityEngine.calculate_land_capacity()` (pre-existing) |
+| Runner | `pipeline/src/pipeline/jobs/derive_candidate_sites.py --district <key>` |
+| Schema | `infra/migrations/015_derived_candidate_sites.sql` |
+| Tests | `tests/unit/test_eligibility_mask.py` |
+
+Gates applied: `susceptibility < 0.25`, `slope < 15°`, not permanent water, tree cover below
+threshold, built-up below threshold, inside the district polygon, contiguous area ≥ 2 ha.
+Cropland is recorded per parcel, never used as a gate.
+
+**Not allocatable by design.** Parcels carry `cc_land` but `cc_water`/`cc_school`/`cc_health`
+stay NULL — no CGWB, UDISE+ or IPHS source is ingested — so `cc_final` is NULL and the allocation
+repository's `cc_final > 0` filter excludes them. Tenure is likewise unverified for every parcel.
+They surface through `GET /habitations/{id}/sites?include_screening=true` with their rejection
+reasons, which is the honest end state for Steps 12-13 alone: Steps 14-17 supply what allocation
+needs.
+
+`CandidateSitePolicy` gained `allow_unverified_tenure` (default `False`, preserving the H7
+order-grade invariant) and each environmental exclusion now only rejects on missing data while
+that exclusion is enabled — a disabled rule ignores its attribute instead of rejecting every
+parcel. Policy version is now `site-eligibility-v1.1`.

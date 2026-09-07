@@ -20,7 +20,6 @@ import { useHazardLayerList } from '@/lib/hooks/useHazardLayerList';
 import type { HazardType } from '@/lib/api/types';
 import type { FloodHazardMapDisplayState } from '@/components/features/map/FloodHazardMap';
 import {
-  BARPETA_LGD_CODE,
   DEFAULT_CONFIDENCE_HATCH_THRESHOLD,
   SOURCE_RESOLUTION,
 } from '@/lib/map/constants';
@@ -53,7 +52,7 @@ const DEFAULT_DISPLAY: FloodHazardMapDisplayState = {
 
 export const GovWorkspace: React.FC<GovWorkspaceProps> = ({
   initialHazardType = 'riverine_flood',
-  admin = BARPETA_LGD_CODE,
+  admin,
   initialViewMode = '3d',
   officerId = 'NDRF-OFFICER-894',
   className = '',
@@ -67,7 +66,11 @@ export const GovWorkspace: React.FC<GovWorkspaceProps> = ({
 
   const { layers: availableLayers, isLoading: layersLoading } = useHazardLayerList();
 
-  const effectiveAdmin = user?.jurisdiction?.lgd_code ?? user?.jurisdiction?.admin_id ?? admin;
+  // District officials are scoped to their assigned jurisdiction. A national
+  // operations account (no jurisdiction) leaves `admin` undefined, so the hazard
+  // layer returns every district and the map frames the whole loaded grid.
+  const effectiveAdmin =
+    user?.jurisdiction?.lgd_code ?? user?.jurisdiction?.admin_id ?? admin;
 
   const { data, cells, isLoading, error, refetch } = useHazardLayer({
     hazardType,

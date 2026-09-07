@@ -21,6 +21,7 @@ from core.domain.allocation import (
     HabitationSiteDistance,
     MinCostFlowAllocationSolver,
 )
+from api.services.site_eligibility import evaluate_row_eligibility
 from core.domain.capacity import CapacityEngine, CandidateSitePolicy
 from core.enums import Tier
 from core.errors import InvalidParametersError
@@ -77,96 +78,17 @@ class AllocationService:
 
         policy = replace(self.policy, search_radius_km=max_search_radius_km)
 
-        def _parse_bool(val: Any) -> Optional[bool]:
-            if val is None:
-                return None
-            if isinstance(val, bool):
-                return val
-            if isinstance(val, str):
-                low = val.lower().strip()
-                if low in ("true", "1", "yes"):
-                    return True
-                if low in ("false", "0", "no"):
-                    return False
-                return None
-            if isinstance(val, (int, float)):
-                if val == 1:
-                    return True
-                if val == 0:
-                    return False
-                return None
-            return None
-
         for s in site_rows:
             s_id = s.get("id")
             if s_id is None:
                 continue
 
-            meta = s.get("metadata") or s.get("metadata_info") or {}
-            if isinstance(meta, str):
-                try:
-                    meta = json.loads(meta)
-                except Exception:
-                    meta = {}
-            if not isinstance(meta, dict):
-                meta = {}
-
-            mhi_val = s.get("mhi_max") if "mhi_max" in s else s.get("mhi_static")
-            slope_val = s.get("slope_mean") if "slope_mean" in s else s.get("slope")
-            area_val = s.get("area_ha") if "area_ha" in s else s.get("area")
-            tenure_val = s.get("tenure")
-
-            # Extract environmental exclusions (never assume missing is False / safe)
-            raw_forest = s.get("is_forest")
-            if raw_forest is None:
-                raw_forest = s.get("forest")
-            if raw_forest is None:
-                raw_forest = meta.get("is_forest") if "is_forest" in meta else meta.get("forest")
-            is_forest = _parse_bool(raw_forest)
-
-            raw_protected = s.get("is_protected_area")
-            if raw_protected is None:
-                raw_protected = s.get("protected_area") if "protected_area" in s else s.get("protected")
-            if raw_protected is None:
-                raw_protected = (
-                    meta.get("is_protected_area")
-                    if "is_protected_area" in meta
-                    else (meta.get("protected_area") if "protected_area" in meta else meta.get("protected"))
-                )
-            is_protected = _parse_bool(raw_protected)
-
-            raw_crz = s.get("is_crz")
-            if raw_crz is None:
-                raw_crz = s.get("crz")
-            if raw_crz is None:
-                raw_crz = meta.get("is_crz") if "is_crz" in meta else meta.get("crz")
-            is_crz = _parse_bool(raw_crz)
-
-            raw_water = s.get("is_water_body")
-            if raw_water is None:
-                raw_water = s.get("water_body") if "water_body" in s else s.get("water")
-            if raw_water is None:
-                raw_water = (
-                    meta.get("is_water_body")
-                    if "is_water_body" in meta
-                    else (meta.get("water_body") if "water_body" in meta else meta.get("water"))
-                )
-            is_water = _parse_bool(raw_water)
-
-            dist_km = site_min_dist.get(s_id)
-
-            eval_res = self.capacity_engine.evaluate_site_eligibility(
-                mhi_max=mhi_val,
-                slope_mean=slope_val,
-                area_ha=area_val,
-                tenure=tenure_val,
-                is_forest=is_forest,
-                is_protected_area=is_protected,
-                is_crz=is_crz,
-                is_water_body=is_water,
-                distance_km=dist_km,
-                require_distance=True,
+            eval_res = evaluate_row_eligibility(
+                engine=self.capacity_engine,
+                row=s,
                 policy=policy,
+                distance_km=site_min_dist.get(s_id),
+                require_distance=True,
             )
 
             if eval_res.is_eligible:

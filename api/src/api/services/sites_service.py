@@ -7,10 +7,12 @@ from __future__ import annotations
 
 from dataclasses import replace
 import json
+import math
 from typing import Any, Optional
 from sqlalchemy.orm import Session
 
 from api.repositories.sites_repo import SitesRepository
+from api.services.site_eligibility import evaluate_row_eligibility
 from core.domain.capacity import (
     CapacityEngine,
     CapacityNormsConfig,
@@ -29,6 +31,17 @@ from core.schemas.sites import (
     SiteCapacityOverrideRequest,
     SiteCapacityOverrideResponse,
 )
+
+
+def _truncate(value: float, digits: int) -> float:
+    """Truncates toward zero for values compared against a policy threshold.
+
+    Rounding pushes a passing value onto its own gate: a site screened at MHI 0.24999 against the
+    `< 0.25` rule reads as "0.250" and looks like a violation of the rule it satisfied. The same
+    applies to a 14.96-degree slope against the 15-degree gate.
+    """
+    factor = 10 ** digits
+    return math.trunc(value * factor) / factor
 
 
 class SitesService:
@@ -89,11 +102,9 @@ class SitesService:
                 tenure_enum = TenureType.TENURE_UNVERIFIED
 
             # Canonical policy evaluation
-            eligibility = self.engine.evaluate_site_eligibility(
-                mhi_static=r.get("mhi_max"),
-                slope_mean=float(r.get("slope_mean") or 0.0),
-                area_ha=float(r.get("area_ha") or 0.0),
-                tenure=tenure_str,
+            eligibility = evaluate_row_eligibility(
+                engine=self.engine,
+                row=r,
                 policy=active_policy,
             )
 
@@ -173,8 +184,8 @@ class SitesService:
                 distance_km=round(float(r.get("distance_km") if r.get("distance_km") is not None else 0.0), 2),
                 area_ha=round(float(r.get("area_ha") if r.get("area_ha") is not None else 0.0), 2),
                 tenure=tenure_enum,
-                slope_mean=round(float(r.get("slope_mean") if r.get("slope_mean") is not None else 0.0), 1),
-                mhi_max=round(float(r["mhi_max"]), 3) if r.get("mhi_max") is not None else None,
+                slope_mean=_truncate(float(r.get("slope_mean") if r.get("slope_mean") is not None else 0.0), 1),
+                mhi_max=_truncate(float(r["mhi_max"]), 3) if r.get("mhi_max") is not None else None,
                 suitability=suitability_val,
                 assessment_status=str(r.get("assessment_status") or "screening_only"),
                 eligibility_status=eligibility.eligibility_status.value,
@@ -281,11 +292,9 @@ class SitesService:
         except ValueError:
             tenure_enum = TenureType.TENURE_UNVERIFIED
 
-        eligibility = self.engine.evaluate_site_eligibility(
-            mhi_static=r.get("mhi_max"),
-            slope_mean=float(r.get("slope_mean") or 0.0),
-            area_ha=float(r.get("area_ha") or 0.0),
-            tenure=tenure_str,
+        eligibility = evaluate_row_eligibility(
+            engine=self.engine,
+            row=r,
             policy=self.policy,
         )
 
@@ -295,8 +304,8 @@ class SitesService:
             distance_km=0.0,
             area_ha=round(float(r.get("area_ha") if r.get("area_ha") is not None else 0.0), 2),
             tenure=tenure_enum,
-            slope_mean=round(float(r.get("slope_mean") if r.get("slope_mean") is not None else 0.0), 1),
-            mhi_max=round(float(r["mhi_max"]), 3) if r.get("mhi_max") is not None else None,
+            slope_mean=_truncate(float(r.get("slope_mean") if r.get("slope_mean") is not None else 0.0), 1),
+            mhi_max=_truncate(float(r["mhi_max"]), 3) if r.get("mhi_max") is not None else None,
             suitability=suitability_val,
             assessment_status=str(r.get("assessment_status") or "screening_only"),
             eligibility_status=eligibility.eligibility_status.value,

@@ -88,9 +88,8 @@ export const FloatingQuickControls: React.FC<FloatingQuickControlsProps> = ({
         isActive={isAutoRotating}
         className={isAutoRotating ? 'text-m3-on-surface' : 'text-m3-on-surface-variant opacity-80'}
         classNames={{
-          icon: `transition-transform duration-500 ease-m3-standard ${
-            isAutoRotating ? 'rotate-180' : ''
-          }`,
+          icon: `transition-transform duration-500 ease-m3-standard ${isAutoRotating ? 'rotate-180' : ''
+            }`,
         }}
         disableAnimation={!animate}
       />

@@ -16,8 +16,11 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 if str(REPO_ROOT / "core" / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "core" / "src"))
+if str(REPO_ROOT / "api" / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "api" / "src"))
 
 from core.config import settings
+from api.services.site_eligibility import evaluate_row_eligibility
 from core.domain.capacity import CapacityEngine, CandidateSitePolicy
 from core.enums import TenureType
 
@@ -30,18 +33,38 @@ def backfill_candidate_sites(engine=None) -> int:
     updated_sites = 0
     with eng.begin() as conn:
         # 1. Fetch non-imported candidate sites
+        # Seed runs predating the exclusion-flag fields left `is_forest` / `is_protected_area` /
+        # `is_crz` / `is_water_body` out of metadata. H7 treats an absent flag as unverified and
+        # rejects the site, so those stale rows are invisible to the allocator. The originating
+        # RawCandidateSiteSpec asserts all four as False for the synthetic pilot fixtures, so the
+        # values are restored from the fixture contract — and only for rows that fixture produced.
+        restored = conn.execute(text("""
+            UPDATE candidate_site
+            SET metadata = jsonb_build_object(
+                    'is_forest', false,
+                    'is_protected_area', false,
+                    'is_crz', false,
+                    'is_water_body', false
+                ) || metadata
+            WHERE import_run_id IS NULL
+              AND metadata->>'provenance' = 'synthetic_pilot_fixture'
+              AND NOT (metadata ? 'is_forest')
+            RETURNING id;
+        """)).fetchall()
+        if restored:
+            print(f"[INFO] Restored exclusion flags on {len(restored)} synthetic fixture sites.")
+
         rows = conn.execute(text("""
-            SELECT id, area_ha, tenure, slope_mean, mhi_max, cc_land, cc_water, cc_school, cc_health, cc_final
+            SELECT id, area_ha, tenure, slope_mean, mhi_max, cc_land, cc_water, cc_school, cc_health, cc_final,
+                   metadata
             FROM candidate_site
             WHERE import_run_id IS NULL
         """)).mappings().fetchall()
 
         for r in rows:
-            eligibility = cap_engine.evaluate_site_eligibility(
-                mhi_static=r["mhi_max"],
-                slope_mean=r["slope_mean"],
-                area_ha=r["area_ha"],
-                tenure=r["tenure"],
+            eligibility = evaluate_row_eligibility(
+                engine=cap_engine,
+                row=dict(r),
                 policy=policy,
             )
 

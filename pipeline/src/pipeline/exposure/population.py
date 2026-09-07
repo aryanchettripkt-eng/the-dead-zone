@@ -17,6 +17,9 @@ from core.config import REPO_ROOT
 CENSUS_2011_DISTRICT_POPULATION: dict[str, int] = {
     "barpeta": 1693622,
     "wayanad": 817420,
+    "dholpur": 1206516,
+    "dhaulpur": 1206516,
+    "morena": 1965970,
 }
 
 INTERIM_EXPOSURE_DIR = REPO_ROOT / "data" / "interim" / "exposure"

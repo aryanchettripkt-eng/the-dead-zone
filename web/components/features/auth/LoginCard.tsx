@@ -32,18 +32,10 @@ interface DemoAccountPreset {
 
 const DEMO_PRESETS: DemoAccountPreset[] = [
   {
-    id: 'wayanad',
-    label: 'DM Wayanad',
-    sublabel: 'Gov Official • Kerala',
-    email: 'officer@setu.gov.in',
-    pass: 'DemoOfficer123!',
-    roleBadge: 'OFFICIAL',
-  },
-  {
-    id: 'kodagu',
-    label: 'DM Kodagu',
-    sublabel: 'Gov Official • Karnataka',
-    email: 'officer_kodagu@setu.gov.in',
+    id: 'government',
+    label: 'Government',
+    sublabel: 'National Operations • All districts',
+    email: 'gov@setu.gov.in',
     pass: 'DemoOfficer123!',
     roleBadge: 'OFFICIAL',
   },
@@ -69,7 +61,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const submitBtnRef = useRef<HTMLButtonElement>(null);
 
-  const [email, setEmail] = useState<string>('officer@setu.gov.in');
+  const [email, setEmail] = useState<string>('gov@setu.gov.in');
   const [password, setPassword] = useState<string>('DemoOfficer123!');
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -177,7 +169,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
         <span className="block text-[10px] font-mono uppercase tracking-wider text-text-muted mb-2">
           Demo Evaluation Presets (Click to Auto-Fill)
         </span>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {DEMO_PRESETS.map((p) => {
             const isSelected = email === p.email;
             return (

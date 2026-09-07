@@ -306,6 +306,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/habitations/{id}/external-recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get external pipeline relocation recommendations for a habitation
+         * @description Retrieves offline GIS candidate proposals for this habitation from partner pipelines. These are external evidence records and do not represent authoritative SETU allocation decisions.
+         */
+        get: operations["get_habitation_external_recommendations_habitations__id__external_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/plan/external-recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List external pipeline relocation recommendations for a district
+         * @description Retrieves all external pipeline candidate relocation recommendations for the specified district.
+         */
+        get: operations["get_district_external_recommendations_plan_external_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/plan/benchmark": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Benchmark external pipeline recommendations against authoritative SETU relocation plan
+         * @description Performs side-by-side comparative evaluation between partner pipeline proposals and SETU's min-cost flow optimizer. If SETU allocation has not been executed, returns 'external_only' status with external proposals.
+         */
+        get: operations["get_allocation_benchmark_plan_benchmark_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/scenario": {
         parameters: {
             query?: never;
@@ -529,6 +589,84 @@ export interface components {
             split_details?: string | null;
         };
         /**
+         * AllocationBenchmarkComparisonItem
+         * @description Side-by-side comparison of a habitation's external recommendation vs SETU canonical decision.
+         */
+        AllocationBenchmarkComparisonItem: {
+            /** Habitation Id */
+            habitation_id: number;
+            /** Habitation Name */
+            habitation_name: string;
+            /** Demand Households */
+            demand_households: number;
+            /** External Recommendation */
+            external_recommendation?: {
+                [key: string]: unknown;
+            } | null;
+            /** Setu Canonical Allocation */
+            setu_canonical_allocation?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Site Match
+             * @default false
+             */
+            site_match: boolean;
+            /**
+             * Household Delta
+             * @default 0
+             */
+            household_delta: number;
+            /** Distance Delta Km */
+            distance_delta_km?: number | null;
+            /** Methodology Divergence Notes */
+            methodology_divergence_notes?: string[];
+        };
+        /**
+         * AllocationBenchmarkResponse
+         * @description Comparative evaluation between offline external GIS recommendations and SETU decision engine.
+         */
+        AllocationBenchmarkResponse: {
+            /** District */
+            district: string;
+            /**
+             * Status
+             * @default comparative
+             */
+            status: string;
+            /**
+             * Setu Allocation Available
+             * @default false
+             */
+            setu_allocation_available: boolean;
+            /**
+             * Total External Recommended Households
+             * @default 0
+             */
+            total_external_recommended_households: number;
+            /**
+             * Total Setu Allocated Households
+             * @default 0
+             */
+            total_setu_allocated_households: number;
+            /**
+             * External Recommendations Count
+             * @default 0
+             */
+            external_recommendations_count: number;
+            /**
+             * Setu Allocations Count
+             * @default 0
+             */
+            setu_allocations_count: number;
+            /** Comparisons */
+            comparisons?: components["schemas"]["AllocationBenchmarkComparisonItem"][];
+            /** Methodology Summary */
+            methodology_summary?: {
+                [key: string]: string;
+            };
+        };
+        /**
          * AllocationPlanRequest
          * @description Request payload for min-cost flow allocation solver (POST /plan/allocate).
          */
@@ -654,9 +792,9 @@ export interface components {
             slope_mean: number;
             /**
              * Mhi Max
-             * @description Maximum static multi-hazard index inside site.
+             * @description Maximum static multi-hazard index inside site (None if unmeasured).
              */
-            mhi_max: number;
+            mhi_max?: number | null;
             /**
              * Suitability
              * @description Composite suitability score (0-100, None if unassigned/provisional), separate from capacity.
@@ -671,6 +809,34 @@ export interface components {
              * @description [longitude, latitude] coordinates.
              */
             centroid: number[];
+            /**
+             * Assessment Status
+             * @description Assessment status: 'fully_assessed', 'partial', or 'screening_only'.
+             * @default screening_only
+             */
+            assessment_status: string;
+            /**
+             * Eligibility Status
+             * @description Eligibility status: 'eligible', 'ineligible', or 'unknown'.
+             * @default unknown
+             */
+            eligibility_status: string;
+            /**
+             * Allocatable
+             * @description True only if site is fully eligible under canonical CandidateSitePolicy.
+             * @default false
+             */
+            allocatable: boolean;
+            /**
+             * Rejection Reasons
+             * @description Reasons why site is not currently allocatable.
+             */
+            rejection_reasons?: string[];
+            /**
+             * Source Site Id
+             * @description External source record identifier if imported.
+             */
+            source_site_id?: string | null;
             /**
              * Screening Grade
              * @description Persistent decision-support disclaimer notice.
@@ -712,9 +878,9 @@ export interface components {
             slope_mean: number;
             /**
              * Mhi Max
-             * @description Maximum static multi-hazard index inside site.
+             * @description Maximum static multi-hazard index inside site (None if unmeasured).
              */
-            mhi_max: number;
+            mhi_max?: number | null;
             /**
              * Suitability
              * @description Composite suitability score (0-100, None if unassigned/provisional), separate from capacity.
@@ -729,6 +895,34 @@ export interface components {
              * @description [longitude, latitude] coordinates.
              */
             centroid: number[];
+            /**
+             * Assessment Status
+             * @description Assessment status: 'fully_assessed', 'partial', or 'screening_only'.
+             * @default screening_only
+             */
+            assessment_status: string;
+            /**
+             * Eligibility Status
+             * @description Eligibility status: 'eligible', 'ineligible', or 'unknown'.
+             * @default unknown
+             */
+            eligibility_status: string;
+            /**
+             * Allocatable
+             * @description True only if site is fully eligible under canonical CandidateSitePolicy.
+             * @default false
+             */
+            allocatable: boolean;
+            /**
+             * Rejection Reasons
+             * @description Reasons why site is not currently allocatable.
+             */
+            rejection_reasons?: string[];
+            /**
+             * Source Site Id
+             * @description External source record identifier if imported.
+             */
+            source_site_id?: string | null;
             /**
              * Screening Grade
              * @description Persistent decision-support disclaimer notice.
@@ -746,6 +940,12 @@ export interface components {
              * @description Households supportable by developable land area.
              */
             cc_land: number;
+            /**
+             * Land Screening Capacity
+             * @description Households supportable by developable land area (screening-only capacity).
+             * @default 0
+             */
+            land_screening_capacity: number;
             /**
              * Cc Water
              * @description Households supportable by sustainable potable water yield (None if unmeasured).
@@ -768,16 +968,22 @@ export interface components {
             livelihood_multiplier: number;
             /**
              * Cc Final
-             * @description Binding minimum carrying capacity in households.
+             * @description Binding minimum carrying capacity in households (None if lifelines unassessed).
              */
-            cc_final: number;
-            /** @description The primary limiting capacity bottleneck. */
-            binding_constraint: components["schemas"]["BindingConstraint"];
+            cc_final?: number | null;
+            /** @description The primary limiting capacity bottleneck (None if lifelines unassessed). */
+            binding_constraint?: components["schemas"]["BindingConstraint"] | null;
             /**
              * Tied Constraints
              * @description All resource constraints matching the minimum bottleneck value.
              */
             tied_constraints?: components["schemas"]["BindingConstraint"][];
+            /**
+             * Assessment Status
+             * @description Assessment completeness: 'fully_assessed', 'partial', or 'screening_only'.
+             * @default screening_only
+             */
+            assessment_status: string;
             /**
              * Data Quality
              * @description Data quality state: 'complete', 'partial', or 'unavailable'.
@@ -879,6 +1085,95 @@ export interface components {
              * @description H3 PostGIS extension status.
              */
             h3_postgis: boolean;
+        };
+        /**
+         * ExternalRecommendationItem
+         * @description External offline recommendation record from upstream partner pipeline.
+         */
+        ExternalRecommendationItem: {
+            /** Id */
+            id: number;
+            /**
+             * Import Run Id
+             * Format: uuid
+             */
+            import_run_id: string;
+            /** Habitation Id */
+            habitation_id: number;
+            /** Habitation Name */
+            habitation_name?: string | null;
+            /** Site Id */
+            site_id: number;
+            /** External Habitation Key */
+            external_habitation_key: string;
+            /** External Site Key */
+            external_site_key: string;
+            /**
+             * Origin Type
+             * @default external
+             */
+            origin_type: string;
+            /**
+             * Decision Status
+             * @default recommendation
+             */
+            decision_status: string;
+            /** Households */
+            households: number;
+            /** Tier */
+            tier: string;
+            /** Priority Score */
+            priority_score: number;
+            /** Distance Km */
+            distance_km: number;
+            /** Site Suitability */
+            site_suitability?: number | null;
+            /** Site Cc Final */
+            site_cc_final?: number | null;
+            /** Site Binding */
+            site_binding?: string | null;
+            /**
+             * Has Group Split
+             * @default false
+             */
+            has_group_split: boolean;
+            /** Rationale */
+            rationale?: {
+                [key: string]: unknown;
+            };
+            /** Screening Grade */
+            screening_grade: string;
+            /** Screening Caveats */
+            screening_caveats?: string | null;
+            /**
+             * Source Pipeline
+             * @default external_gis_v1
+             */
+            source_pipeline: string;
+            /**
+             * Pipeline Version
+             * @default v1.0
+             */
+            pipeline_version: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * ExternalRecommendationListResponse
+         * @description List response for external recommendations.
+         */
+        ExternalRecommendationListResponse: {
+            /** District */
+            district: string;
+            /** Total Count */
+            total_count: number;
+            /** Total Households Recommended */
+            total_households_recommended: number;
+            /** Items */
+            items?: components["schemas"]["ExternalRecommendationItem"][];
         };
         /**
          * FeatureContributionDTO
@@ -2688,6 +2983,8 @@ export interface operations {
                 radius_km?: number | null;
                 /** @description Filter by minimum composite suitability score (0-100). */
                 min_suitability?: number | null;
+                /** @description Whether to include unverified screening-grade candidate sites (default False). */
+                include_screening?: boolean;
                 /** @description Number of records per page (max 200). */
                 limit?: number;
                 /** @description Pagination offset. */
@@ -3038,6 +3335,183 @@ export interface operations {
             };
             /** @description Forbidden - Insufficient permissions or role. */
             403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Validation Error - Request parameter or payload validation failed. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error - An unexpected system or database error occurred. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable - No valid serving version is active. Pipeline data is not ready. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_habitation_external_recommendations_habitations__id__external_recommendations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Habitation ID (integer primary key). */
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalRecommendationItem"][];
+                };
+            };
+            /** @description Not Found - Requested resource, cell, or entity does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Validation Error - Request parameter or payload validation failed. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error - An unexpected system or database error occurred. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable - No valid serving version is active. Pipeline data is not ready. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_district_external_recommendations_plan_external_recommendations_get: {
+        parameters: {
+            query?: {
+                /** @description Administrative district name (e.g., 'Barpeta'). */
+                district?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExternalRecommendationListResponse"];
+                };
+            };
+            /** @description Not Found - Requested resource, cell, or entity does not exist. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Validation Error - Request parameter or payload validation failed. */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Internal Server Error - An unexpected system or database error occurred. */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable - No valid serving version is active. Pipeline data is not ready. */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    get_allocation_benchmark_plan_benchmark_get: {
+        parameters: {
+            query?: {
+                /** @description Administrative district name to benchmark. */
+                district?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AllocationBenchmarkResponse"];
+                };
+            };
+            /** @description Not Found - Requested resource, cell, or entity does not exist. */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

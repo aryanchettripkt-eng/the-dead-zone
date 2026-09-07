@@ -58,6 +58,7 @@ def process_scene_inundation(
     permanent_water_mask: np.ndarray,
     bbox_wgs84: list[float] | None = None,
     threshold_db: float = DEFAULT_VV_WATER_THRESHOLD_DB,
+    decimation: int = 1,
 ) -> Tuple[np.ndarray, np.ndarray, dict[str, Any]]:
     """Process a single Sentinel-1 scene: fetch VV, detect water, remove permanent water, reproject to master grid.
 
@@ -74,6 +75,7 @@ def process_scene_inundation(
     raw_vv, scene_transform, scene_crs, nodata_val = stream_and_clip_raster(
         meta["vv_href"],
         bbox_wgs84=bbox_wgs84,
+        decimation=decimation,
     )
 
     vv_db, valid_mask = linear_to_db(raw_vv, nodata_val=nodata_val)
@@ -111,6 +113,7 @@ def accumulate_inundation_stack(
     bbox_wgs84: list[float] | None = None,
     threshold_db: float = DEFAULT_VV_WATER_THRESHOLD_DB,
     verbose: bool = True,
+    decimation: int = 1,
 ) -> Tuple[np.ndarray, np.ndarray, list[dict[str, Any]]]:
     """Process multiple Sentinel-1 scenes and accumulate valid observation and flood detection counts.
 
@@ -138,6 +141,7 @@ def accumulate_inundation_stack(
             permanent_water_mask=permanent_water_mask,
             bbox_wgs84=bbox_wgs84,
             threshold_db=threshold_db,
+            decimation=decimation,
         )
 
         valid_count_scene = np.sum(valid_obs)

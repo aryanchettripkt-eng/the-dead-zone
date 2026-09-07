@@ -44,6 +44,7 @@ def stream_and_clip_raster(
     asset_url: str,
     bbox_wgs84: list[float] | None = None,
     projected_bounds: tuple[float, float, float, float] | None = None,
+    decimation: int = 1,
 ) -> Tuple[np.ndarray, rasterio.Affine, rasterio.crs.CRS, float]:
     """Stream a sub-window of a Cloud-Optimized GeoTIFF without downloading the full image.
 
@@ -52,12 +53,19 @@ def stream_and_clip_raster(
         bbox_wgs84: Bounding box [min_lon, min_lat, max_lon, max_lat] in EPSG:4326.
                     Dynamically projected to the raster's native CRS.
         projected_bounds: Optional explicit (minx, miny, maxx, maxy) in the raster's native CRS.
+        decimation: Integer downsampling factor. ``1`` reads at native resolution;
+                    ``k > 1`` reads the window at ~1/k resolution via COG overviews,
+                    transferring ~k^2 less data. The returned transform is scaled
+                    to match. Useful when the output grid is far coarser than the
+                    source (e.g. H3 res-8 aggregation over a slow link).
 
     Returns:
         Tuple of (data_2d, transform, crs, nodata).
     """
     if bbox_wgs84 is None and projected_bounds is None:
         bbox_wgs84 = get_barpeta_bbox_wgs84()
+
+    k = max(1, int(decimation))
 
     with rasterio.open(asset_url) as src:
         if projected_bounds is None and bbox_wgs84 is not None:
@@ -70,9 +78,25 @@ def stream_and_clip_raster(
 
         # Determine the window intersecting the requested bounds
         window = from_bounds(minx, miny, maxx, maxy, transform=src.transform)
-        # Read the 1st band clipped to this window
-        data = src.read(1, window=window, boundless=True, fill_value=src.nodata or 0.0)
         win_transform = window_transform(window, src.transform)
+
+        if k == 1:
+            data = src.read(1, window=window, boundless=True, fill_value=src.nodata or 0.0)
+        else:
+            out_h = max(1, int(np.ceil(window.height / k)))
+            out_w = max(1, int(np.ceil(window.width / k)))
+            data = src.read(
+                1,
+                window=window,
+                boundless=True,
+                fill_value=src.nodata or 0.0,
+                out_shape=(out_h, out_w),
+                resampling=Resampling.average,
+            )
+            win_transform = win_transform * rasterio.Affine.scale(
+                window.width / out_w, window.height / out_h
+            )
+
         crs = src.crs
         nodata = src.nodata or 0.0
 

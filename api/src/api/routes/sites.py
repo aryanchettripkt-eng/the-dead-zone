@@ -14,6 +14,7 @@ from api.dependencies import (
     require_serving_version,
     require_permission,
     get_site_district_admin_id,
+    is_national_scope_user,
 )
 from api.repositories.sites_repo import SitesRepository
 from api.routes.common import error_responses
@@ -52,7 +53,8 @@ def recompute_site_capacity(
     _current_user: AppUser = Depends(require_permission(Permission.CAPACITY_RECOMPUTE)),
     _sv: uuid.UUID = Depends(require_serving_version),
 ) -> SiteCapacityOverrideResponse:
-    if _current_user.admin_id is None:
+    national = is_national_scope_user(_current_user)
+    if _current_user.admin_id is None and not national:
         raise ForbiddenError("User has no administrative jurisdiction assigned.")
 
     # 1. Verify site existence first to preserve 404 contract
@@ -61,10 +63,13 @@ def recompute_site_capacity(
     if not site_record:
         raise SiteNotFoundError(id)
 
-    # 2. Resolve candidate site's authoritative district boundary
-    site_district_id = get_site_district_admin_id(db, id)
-    if not has_jurisdiction(_current_user.admin_id, site_district_id):
-        raise ForbiddenError("Candidate site is outside user's assigned administrative jurisdiction.")
+    # 2. Resolve candidate site's authoritative district boundary. A national-scope
+    #    operator may recompute capacity for any district's site; a district official
+    #    is confined to sites inside their own boundary.
+    if not national:
+        site_district_id = get_site_district_admin_id(db, id)
+        if not has_jurisdiction(_current_user.admin_id, site_district_id):
+            raise ForbiddenError("Candidate site is outside user's assigned administrative jurisdiction.")
 
     # 3. Execute domain service
     service = SitesService(db)

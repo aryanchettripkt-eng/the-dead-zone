@@ -86,6 +86,18 @@ def rescue_client():
 
 
 @pytest.fixture
+def national_client():
+    """Client authenticated as the national operations account (no assigned district)."""
+    c = TestClient(app)
+    res = c.post("/auth/login", json={
+        "email": "gov@setu.gov.in",
+        "password": settings.DEMO_OFFICER_PASSWORD,
+    })
+    assert res.status_code == 200, f"National operations login failed: {res.text}"
+    return c
+
+
+@pytest.fixture
 def district_context(wayanad_client, kodagu_client, anon_client):
     """Dynamically resolves district and site IDs from the active database."""
     # 1. Authoritative canonical admin_ids from /auth/me
@@ -391,3 +403,41 @@ class TestJurisdictionAccessControl:
         assert data["role"] == "CIVILIAN"
         assert "jurisdiction" in data
         assert data["jurisdiction"] is None
+
+
+class TestNationalScopeAccess:
+    """The single 'Government' login: a GOVERNMENT_OFFICIAL with no assigned district
+    is authorized across every district but must always name the target district."""
+
+    def test_auth_me_national_account_has_null_jurisdiction(self, national_client):
+        res = national_client.get("/auth/me")
+        assert res.status_code == 200
+        data = res.json()
+        assert data["email"] == "gov@setu.gov.in"
+        assert data["role"] == "GOVERNMENT_OFFICIAL"
+        assert data["jurisdiction"] is None
+
+    def test_national_scenario_any_district_permitted(self, national_client, district_context):
+        """National account can run a scenario for Wayanad and for Kodagu."""
+        for admin_id in (district_context["wayanad_admin_id"], district_context["kodagu_admin_id"]):
+            res = national_client.post("/scenario", json={"admin_id": admin_id, "limit": 10})
+            assert res.status_code == 200, res.text
+            assert res.json()["admin_id"] == admin_id
+
+    def test_national_scenario_requires_explicit_district(self, national_client):
+        """An unscoped operation (no admin_id) is rejected — never run silently nationwide."""
+        res = national_client.post("/scenario", json={"limit": 10})
+        assert res.status_code == 403
+        assert res.json()["error"]["code"] == "FORBIDDEN"
+
+    def test_national_allocation_any_district_permitted(self, national_client, district_context):
+        res = national_client.post("/plan/allocate", json={
+            "admin_id": district_context["kodagu_admin_id"],
+            "target_tiers": ["immediate"],
+        })
+        assert res.status_code == 200, res.text
+
+    def test_national_site_capacity_any_district_permitted(self, national_client, district_context):
+        for site_id in (district_context["wayanad_site_id"], district_context["kodagu_site_id"]):
+            res = national_client.post(f"/sites/{site_id}/capacity", json={"plot_area_m2": 60.0})
+            assert res.status_code == 200, res.text

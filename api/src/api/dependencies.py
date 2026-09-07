@@ -139,19 +139,46 @@ def require_permission(permission: str):
 # Jurisdiction & Spatial Administrative Scoping Dependencies (Part 3)
 # --------------------------------------------------------------------------- #
 
+def is_national_scope_user(user) -> bool:
+    """True when a privileged user has no assigned district and therefore operates nationally.
+
+    A ``GOVERNMENT_OFFICIAL`` / ``SYSTEM_ADMIN`` with ``admin_id IS NULL`` is the
+    unconstrained national operator the auth schema documents ("None for
+    unconstrained… users"). Any other role with a null jurisdiction is simply
+    unassigned and stays blocked.
+    """
+    from core.enums import Role
+
+    if getattr(user, "admin_id", None) is not None:
+        return False
+    role = getattr(user, "role", None)
+    role_value = getattr(role, "value", role)
+    return role_value in (Role.GOVERNMENT_OFFICIAL.value, Role.SYSTEM_ADMIN.value)
+
+
 def resolve_effective_admin_id(user, requested_admin_id: Optional[int]) -> int:
     """Resolves authorized canonical admin_boundary.id without mutating the request DTO.
-    
+
     Rules:
-    1. Privileged user must possess an assigned jurisdiction (user.admin_id is not None).
-    2. If requested_admin_id is omitted (None), defaults authoritatively to user.admin_id.
-    3. If requested_admin_id is supplied, validates via has_jurisdiction(user.admin_id, requested_admin_id).
-       Note: Both must be canonical admin_boundary.id values. Mismatch or LGD confusion raises 403.
+    1. A district-scoped official must stay within their assigned jurisdiction.
+       - Omitted requested_admin_id defaults authoritatively to user.admin_id.
+       - A supplied requested_admin_id is validated via has_jurisdiction(...).
+         Both must be canonical admin_boundary.id values; LGD confusion raises 403.
+    2. A national-scope user (privileged role, user.admin_id is None) is authorized
+       for every district but MUST name the target explicitly, so an operation is
+       never silently run unscoped.
+    3. Any other user with no jurisdiction is unassigned and rejected.
     """
     from core.domain.authorization import has_jurisdiction
     from core.errors import ForbiddenError
 
     if user.admin_id is None:
+        if is_national_scope_user(user):
+            if requested_admin_id is None:
+                raise ForbiddenError(
+                    "National-scope operator must target an explicit district (admin_id) for this operation."
+                )
+            return requested_admin_id
         raise ForbiddenError("User has no administrative jurisdiction assigned.")
 
     if requested_admin_id is None:

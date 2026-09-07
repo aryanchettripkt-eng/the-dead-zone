@@ -60,9 +60,18 @@ def test_resolve_effective_admin_id_helper():
 
     user_with_wayanad = MagicMock()
     user_with_wayanad.admin_id = 158
+    user_with_wayanad.role = "GOVERNMENT_OFFICIAL"
 
+    # An unassigned, non-privileged user (should never reach here past require_permission,
+    # but the guard must still hold).
     user_without_jurisdiction = MagicMock()
     user_without_jurisdiction.admin_id = None
+    user_without_jurisdiction.role = "CIVILIAN"
+
+    # A national operations account: privileged role, no assigned district.
+    national_official = MagicMock()
+    national_official.admin_id = None
+    national_official.role = "GOVERNMENT_OFFICIAL"
 
     # 1. Omitted request (None) defaults to user's assigned jurisdiction
     effective = resolve_effective_admin_id(user_with_wayanad, requested_admin_id=None)
@@ -82,7 +91,16 @@ def test_resolve_effective_admin_id_helper():
         resolve_effective_admin_id(user_with_wayanad, requested_admin_id=555)
     assert "Operation outside assigned administrative jurisdiction" in str(exc_lgd.value)
 
-    # 5. User without jurisdiction raises ForbiddenError
+    # 5. Unassigned non-privileged user raises ForbiddenError
     with pytest.raises(ForbiddenError) as exc_no_jur:
         resolve_effective_admin_id(user_without_jurisdiction, requested_admin_id=158)
     assert "User has no administrative jurisdiction assigned" in str(exc_no_jur.value)
+
+    # 6. National operations account: authorized for any explicitly named district
+    assert resolve_effective_admin_id(national_official, requested_admin_id=159) == 159
+    assert resolve_effective_admin_id(national_official, requested_admin_id=158) == 158
+
+    # 7. National account must still name a district; an unscoped call is rejected
+    with pytest.raises(ForbiddenError) as exc_national_unscoped:
+        resolve_effective_admin_id(national_official, requested_admin_id=None)
+    assert "explicit district" in str(exc_national_unscoped.value)

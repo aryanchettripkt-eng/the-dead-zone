@@ -21,7 +21,6 @@ import { useHazardLayer } from '@/lib/hooks/useHazardLayer';
 import { useHazardLayerList } from '@/lib/hooks/useHazardLayerList';
 import type { HazardType } from '@/lib/api/types';
 import {
-  BARPETA_LGD_CODE,
   DEFAULT_CONFIDENCE_HATCH_THRESHOLD,
   HAZARD_LABELS,
   SOURCE_RESOLUTION,
@@ -62,7 +61,7 @@ const DEFAULT_DISPLAY: FloodHazardMapDisplayState = {
  */
 export const HazardWorkspace = ({
   initialHazardType = 'riverine_flood',
-  admin = BARPETA_LGD_CODE,
+  admin,
   title = 'SETU-DRR',
   subtitle = 'Hazard red zone screening',
   className = '',

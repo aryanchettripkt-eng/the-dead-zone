@@ -80,7 +80,12 @@ class CandidateSitePolicy:
     exclude_protected_area: bool = True
     exclude_crz_i_ii: bool = True
     exclude_water_body: bool = True
-    policy_version: str = "site-eligibility-v1.0"
+    #: Screening mode. When True, land whose tenure is unverified or unknown stays eligible and
+    #: the gap is reported instead of rejecting the parcel. Order-grade mode leaves this False,
+    #: preserving the H7 invariant that a site may not be allotted without proven tenure.
+    #: Plan §Step 12 sanctions this as the ONLY relaxation of "missing data is not safe".
+    allow_unverified_tenure: bool = False
+    policy_version: str = "site-eligibility-v1.1"
 
 
 @dataclass(frozen=True)
@@ -366,7 +371,10 @@ class CapacityEngine:
 
         # Tenure validation (FR-7.3, H7: must be explicitly valid government_revenue or private)
         if tenure is None:
-            rejection_reasons.append("Land tenure data is missing or unknown")
+            # Absent and "unverified" are the same epistemic state, so screening mode treats
+            # them alike; order-grade mode rejects both.
+            if not p.allow_unverified_tenure:
+                rejection_reasons.append("Land tenure data is missing or unknown")
         else:
             tenure_val: Optional[TenureType] = None
             if isinstance(tenure, TenureType):
@@ -380,30 +388,39 @@ class CapacityEngine:
             if tenure_val is None:
                 rejection_reasons.append("Land tenure is unknown or invalid")
             elif tenure_val == TenureType.TENURE_UNVERIFIED:
-                rejection_reasons.append("Land tenure is unverified")
+                if not p.allow_unverified_tenure:
+                    rejection_reasons.append("Land tenure is unverified")
             elif tenure_val not in (TenureType.GOVERNMENT_REVENUE, TenureType.PRIVATE):
                 rejection_reasons.append("Land tenure is unknown or invalid")
 
         # Environmental & land-cover exclusions
-        if is_forest is None:
-            rejection_reasons.append("Forest exclusion status is missing or unverified")
-        elif p.exclude_forest and is_forest:
-            rejection_reasons.append("Site overlaps designated forest land")
+        # Each exclusion is checked only while it is enforced. A disabled rule makes its
+        # attribute irrelevant, so an unknown value must not reject: otherwise turning a rule
+        # off would reject everything instead of ignoring the field. Wherever a rule IS on,
+        # missing data still rejects — the audit invariant is unchanged.
+        if p.exclude_forest:
+            if is_forest is None:
+                rejection_reasons.append("Forest exclusion status is missing or unverified")
+            elif is_forest:
+                rejection_reasons.append("Site overlaps designated forest land")
 
-        if is_protected_area is None:
-            rejection_reasons.append("Protected area status is missing or unverified")
-        elif p.exclude_protected_area and is_protected_area:
-            rejection_reasons.append("Site overlaps protected ecological area / sanctuary")
+        if p.exclude_protected_area:
+            if is_protected_area is None:
+                rejection_reasons.append("Protected area status is missing or unverified")
+            elif is_protected_area:
+                rejection_reasons.append("Site overlaps protected ecological area / sanctuary")
 
-        if is_crz is None:
-            rejection_reasons.append("Coastal Regulation Zone (CRZ) status is missing or unverified")
-        elif p.exclude_crz_i_ii and is_crz:
-            rejection_reasons.append("Site overlaps Coastal Regulation Zone (CRZ-I/II)")
+        if p.exclude_crz_i_ii:
+            if is_crz is None:
+                rejection_reasons.append("Coastal Regulation Zone (CRZ) status is missing or unverified")
+            elif is_crz:
+                rejection_reasons.append("Site overlaps Coastal Regulation Zone (CRZ-I/II)")
 
-        if is_water_body is None:
-            rejection_reasons.append("Surface water body status is missing or unverified")
-        elif p.exclude_water_body and is_water_body:
-            rejection_reasons.append("Site overlaps surface water body")
+        if p.exclude_water_body:
+            if is_water_body is None:
+                rejection_reasons.append("Surface water body status is missing or unverified")
+            elif is_water_body:
+                rejection_reasons.append("Site overlaps surface water body")
 
         # Spatial search radius check
         if distance_km is None:

@@ -126,3 +126,22 @@ export type JurisdictionDTO = components['schemas']['JurisdictionDTO'];
 export type LogoutResponse = components['schemas']['LogoutResponse'];
 export type RegisterRequest = components['schemas']['RegisterRequest'];
 
+/* ---- Relocation planning (habitations, candidate sites, allocation) ---- */
+
+export type Tier = components['schemas']['Tier'];
+export type TenureType = components['schemas']['TenureType'];
+export type BindingConstraint = components['schemas']['BindingConstraint'];
+
+export type HabitationListItem = components['schemas']['HabitationListItem'];
+export type HabitationRiskDossier = components['schemas']['HabitationRiskDossier'];
+export type HabitationPage = components['schemas']['PaginatedResponse_HabitationListItem_'];
+
+export type CandidateSiteItem = components['schemas']['CandidateSiteItem'];
+export type CandidateSiteDetail = components['schemas']['CandidateSiteDetail'];
+export type CandidateSitePage = components['schemas']['PaginatedResponse_CandidateSiteItem_'];
+export type CapacityBreakdown = components['schemas']['CapacityBreakdownDTO'];
+export type AugmentedCapacity = components['schemas']['AugmentedCapacityDTO'];
+
+export type AllocationPlanRequest = components['schemas']['AllocationPlanRequest'];
+export type AllocationPlanResponse = components['schemas']['AllocationPlanResponse'];
+export type AllocationAssignment = components['schemas']['AllocationAssignmentDTO'];

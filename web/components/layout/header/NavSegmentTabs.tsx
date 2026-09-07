@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { Flip, gsap, M3_DURATION, M3_EASE, type M3AnimationConfig } from '@/lib/motion/m3';
 import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
-import { NavSegmentTab } from './NavSegmentTab';
+import { NavSegmentTab, type NavSegmentTabSize } from './NavSegmentTab';
 
 export interface NavTabItem {
   id: string;
@@ -20,6 +20,8 @@ export interface NavSegmentTabsProps {
   tabs?: NavTabItem[];
   /** Currently active tab ID */
   activeTabId?: string;
+  /** Segment scale forwarded to every tab. 'lg' matches the tall hero dock. */
+  size?: NavSegmentTabSize;
   /** Callback when tab is selected */
   onSelectTab?: (tabId: string) => void;
   /** Custom root className */
@@ -59,6 +61,7 @@ export const DEFAULT_NAV_TABS: NavTabItem[] = [
 export const NavSegmentTabs: React.FC<NavSegmentTabsProps> = ({
   tabs = DEFAULT_NAV_TABS,
   activeTabId = 'planetary',
+  size = 'md',
   onSelectTab,
   className = '',
   classNames = {},
@@ -101,13 +104,13 @@ export const NavSegmentTabs: React.FC<NavSegmentTabsProps> = ({
         absolute: true,
       });
     },
-    { scope: containerRef, dependencies: [activeTabId, tabs, animate, duration] }
+    { scope: containerRef, dependencies: [activeTabId, tabs, size, animate, duration] }
   );
 
   return (
     <nav
       ref={containerRef}
-      className={`relative inline-flex items-center gap-1.5 p-1 rounded-full ${className}`}
+      className={`relative inline-flex items-center ${size === 'lg' ? 'gap-2' : 'gap-1.5'} p-1 rounded-full ${className}`}
       aria-label="Main Navigation Tabs"
     >
       {/* Shared selection indicator; Flip moves this between tabs. */}
@@ -120,6 +123,7 @@ export const NavSegmentTabs: React.FC<NavSegmentTabsProps> = ({
         <NavSegmentTab
           key={tab.id}
           tab={tab}
+          size={size}
           isActive={tab.id === activeTabId}
           onSelect={onSelectTab}
           disableAnimation={!animate}

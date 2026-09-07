@@ -716,6 +716,15 @@ class TestSitesServiceCoordinateZeroPreservation:
                     "binding_constraint": "land",
                     "lon": 0.0,
                     "lat": 0.0,
+                    # H7 rejects a site whose environmental exclusions are unasserted, so the
+                    # fixture must state them for this coordinate-preservation test to reach
+                    # the serialisation it is actually asserting on.
+                    "metadata": {
+                        "is_forest": False,
+                        "is_protected_area": False,
+                        "is_crz": False,
+                        "is_water_body": False,
+                    },
                 }
             ],
             1,
