@@ -129,7 +129,7 @@ export default function HomePage() {
       <div className="fixed inset-0 forest-atmosphere z-0 pointer-events-none" />
 
       {/* Atmospheric Mist Background Artifact (Behind Earth, Spreads Across Other Areas, Disperses Slowly) */}
-      <AtmosphericMist scrollProgress={scrollProgress} intensity={1.0} />
+      <AtmosphericMist scrollProgress={scrollProgress} />
 
       {/* 3D WebGL Earth Globe Canvas (In Front of Mist, India Focus & Section Snap Animation)
           pointer-events-auto ensures full click-and-drag interaction! */}

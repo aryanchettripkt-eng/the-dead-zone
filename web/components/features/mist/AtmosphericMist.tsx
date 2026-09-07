@@ -11,7 +11,7 @@ import { AtmosphericMistProps } from './types';
 /**
  * AtmosphericMist
  *
- * Spreads rich, dark atmospheric mist broadly across the landing page in Light Mode
+ * Spreads light, airy, luminous atmospheric mist broadly across the landing page in Light Mode
  * (Daylight Sage / White theme), situated BEHIND the 3D Earth globe (z-0).
  *
  * - Does NOT cover the Earth itself: The Earth sits in front at z-[1] with crisp continents & oceans,
@@ -25,7 +25,7 @@ import { AtmosphericMistProps } from './types';
 export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
   scrollProgress = 0,
   imageUrl = '/atmospheric-mist-transparent.png',
-  baseOpacity = 1.0,
+  baseOpacity = 0.75,
   intensity,
   dispersionThreshold = 0.72,
   dispersionScale = 1.28,
@@ -122,7 +122,7 @@ export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
 
       // 2. West Typography Veil (behind heading and CTA)
       gsap.to('.mist-layer-west', {
-        opacity: targetOpacity * 0.95,
+        opacity: targetOpacity * 0.72,
         scale: targetScaleWest,
         y: targetY * 0.95,
         x: -dispersion * 35,
@@ -133,7 +133,7 @@ export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
 
       // 3. South-East Planetary Cloud Bed (behind and framing the Earth)
       gsap.to('.mist-layer-south', {
-        opacity: targetOpacity * 0.98,
+        opacity: targetOpacity * 0.75,
         scale: targetScaleSouth,
         y: targetY * 1.25,
         duration: 0.5,
@@ -219,7 +219,7 @@ export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
           className="mist-img-horizon object-cover object-center scale-105 pointer-events-none select-none"
           style={{
             mixBlendMode: blendMode,
-            filter: 'contrast(1.18) brightness(0.92)',
+            filter: 'contrast(1.02) brightness(1.04)',
           }}
         />
       </div>
@@ -228,7 +228,7 @@ export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
       <div
         className="mist-layer mist-layer-west mist-parallax-west absolute -top-10 -left-20 w-[95vw] h-[105vh] will-change-transform will-change-opacity pointer-events-none"
         style={{
-          opacity: effectiveOpacity * 0.95,
+          opacity: effectiveOpacity * 0.72,
           transformOrigin: '20% 35%',
           transform: 'scale(1.22)',
         }}
@@ -241,7 +241,7 @@ export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
           className="mist-img-west object-cover object-left-top pointer-events-none select-none"
           style={{
             mixBlendMode: blendMode,
-            filter: 'contrast(1.22) brightness(0.90)',
+            filter: 'contrast(1.02) brightness(1.04)',
           }}
         />
       </div>
@@ -250,7 +250,7 @@ export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
       <div
         className="mist-layer mist-layer-south mist-parallax-south absolute -bottom-20 -right-16 w-[105vw] h-[95vh] will-change-transform will-change-opacity pointer-events-none"
         style={{
-          opacity: effectiveOpacity * 0.98,
+          opacity: effectiveOpacity * 0.75,
           transformOrigin: '75% 65%',
           transform: 'scale(1.32)',
         }}
@@ -263,7 +263,7 @@ export const AtmosphericMist: React.FC<AtmosphericMistProps> = ({
           className="mist-img-south object-cover object-center pointer-events-none select-none"
           style={{
             mixBlendMode: blendMode,
-            filter: 'contrast(1.25) brightness(0.88)',
+            filter: 'contrast(1.02) brightness(1.04)',
           }}
         />
       </div>
