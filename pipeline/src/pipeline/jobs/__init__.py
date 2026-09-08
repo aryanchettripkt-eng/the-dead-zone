@@ -13,6 +13,15 @@ from pipeline.jobs.run_open_meteo_wayanad import (
     run_open_meteo_wayanad_pipeline,
     WayanadForecastPipelineResult,
 )
+from pipeline.jobs.scheduler import (
+    ForecastLifecycleResult,
+    ForecastLockManager,
+    RetentionResult,
+    prune_obsolete_forecast_runs,
+    run_wayanad_forecast_lifecycle,
+    start_forecast_scheduler,
+    WAYANAD_FORECAST_LOCK_ID,
+)
 
 __all__ = [
     "compute_and_persist_dynamic_snapshots",
@@ -22,4 +31,11 @@ __all__ = [
     "IngestionResult",
     "run_open_meteo_wayanad_pipeline",
     "WayanadForecastPipelineResult",
+    "ForecastLifecycleResult",
+    "ForecastLockManager",
+    "RetentionResult",
+    "prune_obsolete_forecast_runs",
+    "run_wayanad_forecast_lifecycle",
+    "start_forecast_scheduler",
+    "WAYANAD_FORECAST_LOCK_ID",
 ]

@@ -145,3 +145,10 @@ export type AugmentedCapacity = components['schemas']['AugmentedCapacityDTO'];
 export type AllocationPlanRequest = components['schemas']['AllocationPlanRequest'];
 export type AllocationPlanResponse = components['schemas']['AllocationPlanResponse'];
 export type AllocationAssignment = components['schemas']['AllocationAssignmentDTO'];
+
+/* ---- Alert zones (active triggers, forecast threshold crossings) ---- */
+
+export type ActiveAlertItem = components['schemas']['ActiveAlertItem'];
+export type ActiveAlertsResponse = components['schemas']['ActiveAlertsResponse'];
+export type ForecastAlertItem = components['schemas']['ForecastAlertItem'];
+export type ForecastAlertsResponse = components['schemas']['ForecastAlertsResponse'];

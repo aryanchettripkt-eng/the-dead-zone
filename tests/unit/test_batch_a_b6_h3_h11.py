@@ -8,6 +8,7 @@ Scope:
 """
 
 from datetime import datetime, timezone
+import re
 import pytest
 from pydantic import ValidationError
 
@@ -181,9 +182,13 @@ class TestBatchAH3ForecastHorizonSemantics:
         sql_text = str(call_args[0][0])
         params = call_args[0][1]
 
+        # Table aliases are an implementation detail; strip them so this asserts the
+        # semantic invariant rather than one particular spelling of the query.
+        unaliased = re.sub(r"\bhd\.", "", sql_text)
+
         # Invariant: Must use true timestamp comparison, NOT ROUND(...) in WHERE
-        assert "valid_at > forecast_cycle_at" in sql_text
-        assert "valid_at <= forecast_cycle_at + (:horizon_hours * INTERVAL '1 hour')" in sql_text
+        assert "valid_at > forecast_cycle_at" in unaliased
+        assert "valid_at <= forecast_cycle_at + (:horizon_hours * INTERVAL '1 hour')" in unaliased
         assert params["horizon_hours"] == 48
         assert params["min_mhi"] == 0.75
 

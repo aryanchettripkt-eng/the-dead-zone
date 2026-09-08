@@ -46,6 +46,28 @@ class Settings(BaseSettings):
         description="Maximum dynamic live trigger age in hours to qualify as active alert.",
     )
 
+    # Forecast Scheduler & Retention (Phase B8)
+    FORECAST_SCHEDULER_ENABLED: bool = Field(
+        default=False,
+        description="Whether background forecast scheduling is active.",
+    )
+    FORECAST_SCHEDULE_CRON: str = Field(
+        default="0 */6 * * *",
+        description="Standard 5-field cron expression for forecast cycle ingestion.",
+    )
+    FORECAST_RETENTION_RUNS: int = Field(
+        default=3,
+        description="Number of recent successful forecast cycles to retain per district.",
+    )
+    FORECAST_MAX_RETRIES: int = Field(
+        default=2,
+        description="Maximum retry attempts on transient network failures during forecast acquisition.",
+    )
+    FORECAST_RETRY_DELAY_SECONDS: float = Field(
+        default=10.0,
+        description="Delay in seconds between retry attempts on provider acquisition failure.",
+    )
+
     # ML Model Checkpoint Paths
     MODEL_CHECKPOINT_PATH: str | None = Field(
         default=None,

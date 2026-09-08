@@ -174,18 +174,28 @@ class AlertsRepository:
                 FROM hazard_dynamic hd
                 JOIN grid_cell g ON hd.h3 = g.h3
                 LEFT JOIN admin_boundary a ON g.admin_id = a.id
+                LEFT JOIN pipeline_run pr ON hd.pipeline_run_id = pr.id
                 WHERE hd.forecast_cycle_at IS NOT NULL
-                  AND (g.admin_id = :admin_id OR a.lgd_code = :admin_id);
+                  AND (g.admin_id = :admin_id OR a.lgd_code = :admin_id)
+                  AND (hd.pipeline_run_id IS NULL OR pr.status IN ('READY', 'COMPLETED'));
             """)
             row = self.db.execute(query, {"admin_id": int(admin_id)}).mappings().first()
         else:
             query = text("""
-                SELECT MAX(forecast_cycle_at) as max_cycle
-                FROM hazard_dynamic
-                WHERE forecast_cycle_at IS NOT NULL;
+                SELECT MAX(hd.forecast_cycle_at) as max_cycle
+                FROM hazard_dynamic hd
+                LEFT JOIN pipeline_run pr ON hd.pipeline_run_id = pr.id
+                WHERE hd.forecast_cycle_at IS NOT NULL
+                  AND (hd.pipeline_run_id IS NULL OR pr.status IN ('READY', 'COMPLETED'));
             """)
             row = self.db.execute(query).mappings().first()
-        return row["max_cycle"] if row and row.get("max_cycle") else None
+        max_val = row["max_cycle"] if row and row.get("max_cycle") else None
+        if isinstance(max_val, str):
+            try:
+                max_val = datetime.fromisoformat(max_val)
+            except ValueError:
+                pass
+        return max_val
 
     def query_forecast_alerts(
         self,
@@ -223,17 +233,19 @@ class AlertsRepository:
 
         sql = f"""
             WITH deduplicated_hazard_forecasts AS (
-                SELECT DISTINCT ON (h3, valid_at)
-                    h3,
-                    valid_at,
-                    forecast_cycle_at,
-                    source,
-                    ROUND(EXTRACT(EPOCH FROM (valid_at - forecast_cycle_at)) / 3600.0)::int AS horizon_hours
-                FROM hazard_dynamic
+                SELECT DISTINCT ON (hd.h3, hd.valid_at)
+                    hd.h3,
+                    hd.valid_at,
+                    hd.forecast_cycle_at,
+                    hd.source,
+                    ROUND(EXTRACT(EPOCH FROM (hd.valid_at - hd.forecast_cycle_at)) / 3600.0)::int AS horizon_hours
+                FROM hazard_dynamic hd
+                LEFT JOIN pipeline_run pr ON hd.pipeline_run_id = pr.id
                 WHERE forecast_cycle_at = :target_cycle
-                  AND valid_at > forecast_cycle_at
-                  AND valid_at <= forecast_cycle_at + (:horizon_hours * INTERVAL '1 hour')
-                ORDER BY h3, valid_at, forecast_cycle_at DESC, ingested_at DESC, id DESC
+                  AND hd.valid_at > hd.forecast_cycle_at
+                  AND hd.valid_at <= hd.forecast_cycle_at + (:horizon_hours * INTERVAL '1 hour')
+                  AND (hd.pipeline_run_id IS NULL OR pr.status IN ('READY', 'COMPLETED'))
+                ORDER BY hd.h3, hd.valid_at, hd.forecast_cycle_at DESC, hd.ingested_at DESC, hd.id DESC
             ),
             latest_snapshots AS (
                 SELECT DISTINCT ON (m.h3)

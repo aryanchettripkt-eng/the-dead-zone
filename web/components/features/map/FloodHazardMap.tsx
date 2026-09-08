@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import type {
+  ForecastAlertItem,
   HazardCell,
   HazardLayerCoverage,
   HazardLayerLegend,
@@ -16,6 +17,7 @@ import { MapErrorFallback } from './MapErrorFallback';
 import { MapSkeleton } from './MapSkeleton';
 import { HexTooltip } from './HexTooltip';
 import { useHazardHexLayers } from './layers/useHazardHexLayers';
+import { useForecastHexLayers } from './layers/useForecastHexLayers';
 import { MapControlBar } from './controls/MapControlBar';
 import { LayerOpacitySlider } from './controls/LayerOpacitySlider';
 import { ConfidenceHatchControl } from './controls/ConfidenceHatchControl';
@@ -49,6 +51,16 @@ export interface FloodHazardMapProps {
   /** Display state is lifted so panels outside the map can read and drive it. */
   display: FloodHazardMapDisplayState;
   onDisplayChange?: (next: Partial<FloodHazardMapDisplayState>) => void;
+  /**
+   * Forecast Alert Zone cells drawn above the static stack. Empty or omitted leaves the
+   * map exactly as it was before the forecast overlay existed.
+   */
+  forecastItems?: ForecastAlertItem[];
+  showForecastOverlay?: boolean;
+  /** Outlines cells sitting at their static baseline rather than hiding them. */
+  showForecastBaselineCells?: boolean;
+  onForecastCellHover?: (item: ForecastAlertItem | null) => void;
+  onForecastCellClick?: (item: ForecastAlertItem | null) => void;
   initialViewState?: MapViewState;
   styleUrl?: string;
   className?: string;
@@ -78,6 +90,11 @@ export const FloodHazardMap = ({
   onHoverCell,
   display,
   onDisplayChange,
+  forecastItems = [],
+  showForecastOverlay = false,
+  showForecastBaselineCells = true,
+  onForecastCellHover,
+  onForecastCellClick,
   initialViewState = DEFAULT_VIEW_STATE,
   styleUrl,
   className = '',
@@ -116,6 +133,19 @@ export const FloodHazardMap = ({
     onCellHover: handleCellHover,
   });
 
+  const forecastLayers = useForecastHexLayers({
+    items: forecastItems,
+    visible: showForecastOverlay,
+    opacity: display.opacity,
+    showBaselineCells: showForecastBaselineCells,
+    onCellClick: onForecastCellClick,
+    onCellHover: onForecastCellHover,
+  });
+
+  // Forecast sits above the susceptibility stack but below hover/selection outlines, which
+  // the hazard hook appends last within its own list.
+  const allLayers = useMemo(() => [...layers, ...forecastLayers], [layers, forecastLayers]);
+
   // Only the pointer position is stored; the cell itself is derived from `hoveredH3`
   // below, so a tooltip cannot outlive the cell it describes when the layer or resolution
   // changes underneath it.
@@ -152,7 +182,7 @@ export const FloodHazardMap = ({
       className={['relative h-full w-full', classNames.root ?? '', className].filter(Boolean).join(' ')}
     >
       <MapContainer
-        layers={layers}
+        layers={allLayers}
         initialViewState={initialViewState}
         styleUrl={styleUrl}
         onBackgroundClick={() => onSelectCell?.(null)}

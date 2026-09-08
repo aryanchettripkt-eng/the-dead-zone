@@ -47,6 +47,19 @@ export const HOVER_OUTLINE_COLOR: RGBAColor = [226, 232, 240, 200];
 /** Hatch overlay marking cells whose normalised confidence falls below the threshold. */
 export const LOW_CONFIDENCE_HATCH_COLOR: RGBAColor = [12, 16, 24, 205];
 
+/**
+ * Forecast Alert Zone overlay.
+ *
+ * Two distinct treatments, because `mhi_fcst` falls back to the static hazard floor when a
+ * cell carries no forecast trigger. Painting both the same would let a cycle in which the
+ * weather model moved nothing read as a live forecast alert.
+ */
+export const FORECAST_DRIVEN_FILL_COLOR: RGBAColor = [244, 114, 22, 165];
+export const FORECAST_DRIVEN_OUTLINE_COLOR: RGBAColor = [251, 146, 60, 255];
+
+/** Cells listed at their static baseline: outline only, deliberately unfilled. */
+export const FORECAST_BASELINE_OUTLINE_COLOR: RGBAColor = [125, 211, 252, 190];
+
 export const COVERAGE_LABELS: Record<CoverageFlag, string> = {
   full: 'Measured',
   low_coverage: 'Partial coverage',
