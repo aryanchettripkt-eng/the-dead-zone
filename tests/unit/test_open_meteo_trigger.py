@@ -426,7 +426,8 @@ def test_full_wayanad_trigger_generation_with_real_artifact():
     repo_root = Path(__file__).resolve().parents[2]
     artifact_path = repo_root / REFERENCE_ARTIFACT_REL_PATH
 
-    result = execute_wayanad_b5_trigger_generation(raw_artifact_path=artifact_path)
+    anchor = datetime(2026, 9, 8, 12, 0, tzinfo=timezone.utc)
+    result = execute_wayanad_b5_trigger_generation(raw_artifact_path=artifact_path, cycle_anchor=anchor)
 
     assert result.status == "SUCCESS"
     assert result.hazard_type == "flash_flood"
@@ -443,7 +444,6 @@ def test_full_wayanad_trigger_generation_with_real_artifact():
     assert len(result.records) == 259344
 
     # Horizon window checks
-    anchor = datetime(2026, 9, 8, 12, 0, tzinfo=timezone.utc)
     assert result.forecast_cycle_anchor == anchor
     assert result.first_trigger_valid_at == anchor + timedelta(hours=1)
     assert result.last_trigger_valid_at == anchor + timedelta(hours=72)

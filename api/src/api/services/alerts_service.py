@@ -150,7 +150,7 @@ class AlertsService:
         if records and records[0].get("forecast_cycle_at"):
             resolved_cycle = records[0]["forecast_cycle_at"]
         else:
-            resolved_cycle = self.repo.get_latest_forecast_cycle()
+            resolved_cycle = self.repo.get_latest_forecast_cycle(admin_id=admin_id)
 
         items: list[ForecastAlertItem] = []
 

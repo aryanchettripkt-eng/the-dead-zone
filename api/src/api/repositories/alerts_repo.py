@@ -166,14 +166,25 @@ class AlertsRepository:
         total_pop = int(round(float(pop_raw if pop_raw is not None else 0.0)))
         return [dict(r) for r in rows], total_cells, total_pop
 
-    def get_latest_forecast_cycle(self) -> Optional[datetime]:
+    def get_latest_forecast_cycle(self, admin_id: Optional[int] = None) -> Optional[datetime]:
         """Returns the latest forecast cycle timestamp persisted in hazard_dynamic, if any."""
-        query = text("""
-            SELECT MAX(forecast_cycle_at) as max_cycle
-            FROM hazard_dynamic
-            WHERE forecast_cycle_at IS NOT NULL;
-        """)
-        row = self.db.execute(query).mappings().first()
+        if admin_id is not None:
+            query = text("""
+                SELECT MAX(hd.forecast_cycle_at) as max_cycle
+                FROM hazard_dynamic hd
+                JOIN grid_cell g ON hd.h3 = g.h3
+                LEFT JOIN admin_boundary a ON g.admin_id = a.id
+                WHERE hd.forecast_cycle_at IS NOT NULL
+                  AND (g.admin_id = :admin_id OR a.lgd_code = :admin_id);
+            """)
+            row = self.db.execute(query, {"admin_id": int(admin_id)}).mappings().first()
+        else:
+            query = text("""
+                SELECT MAX(forecast_cycle_at) as max_cycle
+                FROM hazard_dynamic
+                WHERE forecast_cycle_at IS NOT NULL;
+            """)
+            row = self.db.execute(query).mappings().first()
         return row["max_cycle"] if row and row.get("max_cycle") else None
 
     def query_forecast_alerts(
@@ -183,13 +194,22 @@ class AlertsRepository:
         horizon_hours: int = 72,
         limit: int = 100,
         offset: int = 0,
+        forecast_cycle_at: Optional[datetime] = None,
     ) -> tuple[list[dict[str, Any]], int, int]:
         """Queries H3 cells predicted to cross MHI >= 0.75 within forecast horizon (max 72h).
         
         Returns:
             (records, total_forecast_cells, total_exposed_population)
         """
+        target_cycle = forecast_cycle_at
+        if target_cycle is None:
+            target_cycle = self.get_latest_forecast_cycle(admin_id=admin_id)
+
+        if target_cycle is None:
+            return [], 0, 0
+
         params: dict[str, Any] = {
+            "target_cycle": target_cycle,
             "min_mhi": float(min_mhi),
             "horizon_hours": int(horizon_hours),
             "limit": limit,
@@ -210,7 +230,7 @@ class AlertsRepository:
                     source,
                     ROUND(EXTRACT(EPOCH FROM (valid_at - forecast_cycle_at)) / 3600.0)::int AS horizon_hours
                 FROM hazard_dynamic
-                WHERE forecast_cycle_at IS NOT NULL
+                WHERE forecast_cycle_at = :target_cycle
                   AND valid_at > forecast_cycle_at
                   AND valid_at <= forecast_cycle_at + (:horizon_hours * INTERVAL '1 hour')
                 ORDER BY h3, valid_at, forecast_cycle_at DESC, ingested_at DESC, id DESC

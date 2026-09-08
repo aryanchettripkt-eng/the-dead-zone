@@ -54,6 +54,8 @@ def compute_and_persist_dynamic_snapshots(
     aoi_lgd: Optional[int] = None,
     pipeline_run_id: Optional[uuid.UUID] = None,
     beta: float = BETA,
+    forecast_cycle_at: Optional[datetime] = None,
+    hazard_type: Optional[str] = None,
 ) -> DynamicProcessingResult:
     """Computes dynamic hazard scores and persists snapshots into mhi_snapshot.
     
@@ -68,6 +70,8 @@ def compute_and_persist_dynamic_snapshots(
         aoi_lgd: Optional filter for administrative boundary LGD code.
         pipeline_run_id: Optional UUID of the parent pipeline_run.
         beta: Dynamic trigger amplification exponent (default core.constants.BETA = 1.0).
+        forecast_cycle_at: Optional UTC cycle anchor to isolate forecast evaluation to a specific cycle.
+        hazard_type: Optional hazard type to restrict trigger selection (e.g. 'flash_flood').
         
     Returns:
         DynamicProcessingResult summarizing persisted snapshot records and timestamps.
@@ -92,12 +96,29 @@ def compute_and_persist_dynamic_snapshots(
         if valid_at is not None:
             target_timestamps = [valid_at]
         else:
-            time_query = text("""
+            time_conditions = []
+            time_params: dict[str, Any] = {}
+
+            if forecast_cycle_at is not None:
+                time_conditions.append("forecast_cycle_at = :forecast_cycle_at")
+                time_params["forecast_cycle_at"] = forecast_cycle_at
+
+            if pipeline_run_id is not None and forecast_cycle_at is not None:
+                time_conditions.append("pipeline_run_id = :pipeline_run_id")
+                time_params["pipeline_run_id"] = pipeline_run_id
+
+            if hazard_type is not None and forecast_cycle_at is not None:
+                time_conditions.append("hazard_type = :hazard_type")
+                time_params["hazard_type"] = hazard_type.lower().strip()
+
+            where_time_sql = f"WHERE {' AND '.join(time_conditions)}" if time_conditions else ""
+            time_query = text(f"""
                 SELECT DISTINCT valid_at 
                 FROM hazard_dynamic 
+                {where_time_sql}
                 ORDER BY valid_at ASC;
             """)
-            rows = session.execute(time_query).mappings().fetchall()
+            rows = session.execute(time_query, time_params).mappings().fetchall()
             target_timestamps = [r["valid_at"] for r in rows]
 
         if not target_timestamps:
@@ -128,6 +149,18 @@ def compute_and_persist_dynamic_snapshots(
             if aoi_lgd:
                 where_clauses.append("(gc.admin_id = :aoi_lgd OR ab.lgd_code = :aoi_lgd)")
                 trigger_params["aoi_lgd"] = int(aoi_lgd)
+
+            if forecast_cycle_at is not None:
+                where_clauses.append("hd.forecast_cycle_at = :forecast_cycle_at")
+                trigger_params["forecast_cycle_at"] = forecast_cycle_at
+
+            if pipeline_run_id is not None and forecast_cycle_at is not None:
+                where_clauses.append("hd.pipeline_run_id = :pipeline_run_id")
+                trigger_params["pipeline_run_id"] = pipeline_run_id
+
+            if hazard_type is not None:
+                where_clauses.append("hd.hazard_type = :hazard_type")
+                trigger_params["hazard_type"] = hazard_type.lower().strip()
 
             join_clause = ""
             if aoi_lgd:
@@ -350,6 +383,8 @@ def ingest_and_compute_triggers(
     db: Session | Engine | Connection,
     records: Sequence[CanonicalTriggerRecord],
     pipeline_run_id: Optional[uuid.UUID] = None,
+    forecast_cycle_at: Optional[datetime] = None,
+    hazard_type: Optional[str] = None,
 ) -> DynamicProcessingResult:
     """Persists a sequence of canonical trigger records into hazard_dynamic and computes snapshots.
     
@@ -408,10 +443,21 @@ def ingest_and_compute_triggers(
 
         session.commit()
 
+        # Resolve forecast cycle if not explicitly passed
+        resolved_cycle = forecast_cycle_at
+        if resolved_cycle is None and records and records[0].forecast_cycle_at is not None:
+            resolved_cycle = records[0].forecast_cycle_at
+
+        resolved_hazard = hazard_type
+        if resolved_hazard is None and records and records[0].hazard_type:
+            resolved_hazard = records[0].hazard_type
+
         # Compute dynamic snapshots for the ingested timestamps
         return compute_and_persist_dynamic_snapshots(
             db=session,
             pipeline_run_id=pipeline_run_id,
+            forecast_cycle_at=resolved_cycle,
+            hazard_type=resolved_hazard,
         )
 
     except Exception as e:
