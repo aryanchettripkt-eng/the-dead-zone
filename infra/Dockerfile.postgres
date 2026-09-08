@@ -1,0 +1,13 @@
+# Local Postgres matching Neon's extension set (PostGIS + h3).
+#
+# Base is imresamu/postgis rather than postgis/postgis because the latter
+# publishes amd64 only, which means QEMU emulation on Apple Silicon for eight
+# days of pipeline runs. imresamu is the multi-arch rebuild from a postgis
+# docker maintainer, same PostGIS 3.4.3. To use the canonical image instead,
+# swap the FROM line — everything below is unchanged.
+FROM imresamu/postgis:16-3.4
+
+# h3 / h3_postgis are not in the PostGIS image; PGDG apt is already configured.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends postgresql-16-h3 \
+ && rm -rf /var/lib/apt/lists/*

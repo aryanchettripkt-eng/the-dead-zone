@@ -1,0 +1,38 @@
+# Local development stack. Matches Neon's PostGIS + h3 extension set, so
+# `infra/migrations/` applies unchanged to both.
+#
+# Neon is the shared/hosted database. This compose file is also what the demo
+# runs against — NFR-4 requires zero live external calls, and a hosted DB is a
+# live external call.
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-setu}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-setu}
+      POSTGRES_DB: ${POSTGRES_DB:-setu}
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-setu}"]
+      interval: 5s
+      retries: 10
+
+  tiles:
+    image: ghcr.io/maplibre/martin:latest
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["3001:3000"]
+    command: ["--config", "/config/martin.yaml"]
+    volumes:
+      - ./martin.yaml:/config/martin.yaml:ro
+    environment:
+      # Against Neon, use the direct (non-pooled) connection string — Martin
+      # relies on prepared statements, which the pooler does not support.
+      DATABASE_URL: ${DATABASE_URL}
+
+volumes:
+  pgdata:

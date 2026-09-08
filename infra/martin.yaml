@@ -1,0 +1,5 @@
+# MVT straight from PostGIS (§9.7). Table sources are auto-discovered;
+# pin them here once mhi_res6 / mhi_res7 materialised views exist.
+listen_addresses: "0.0.0.0:3000"
+postgres:
+  auto_publish: true

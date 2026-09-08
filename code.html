@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SETU-DRR · Red Zone / India Resilience Map Command Center</title>
+  
+  <!-- GOOGLE FONTS: Fraunces, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- THREE.JS & ORBIT CONTROLS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* ============================================================
+       SOLARPUNK & EDITORIAL CARTOGRAPHY DESIGN TOKENS
+       ============================================================ */
+    :root {
+      --bg-dark: #162522;
+      --bg-dark-surface: #1b2e2a;
+      --bg-dark-card: rgba(22, 37, 34, 0.94);
+      --bg-ivory: #F7F5F0;
+      --bg-ivory-card: rgba(247, 245, 240, 0.95);
+      
+      --moss-green: #6F8F72;
+      --moss-green-light: #A3C4A6;
+      --terracotta: #C96B3B;
+      --ochre: #D49A45;
+      --crimson: #B9433F;
+      --crimson-dark: #A33B2E;
+      
+      --text-main: #F7F5F0;
+      --text-muted: #A3C4A6;
+      --text-dim: rgba(247, 245, 240, 0.55);
+      
+      --border-subtle: rgba(111, 143, 114, 0.22);
+      --border-active: rgba(212, 154, 69, 0.45);
+      
+      --font-serif: 'Fraunces', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      user-select: none;
+    }
+
+    /* ============================================================
+       LEFT NAVIGATION RAIL
+       ============================================================ */
+    .nav-rail {
+      width: 72px;
+      background: #111e1b;
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      z-index: 40;
+      flex-shrink: 0;
+    }
+
+    .nav-crest {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: #0d1715;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 18px;
+      color: var(--ochre);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .nav-crest:hover {
+      transform: scale(1.05);
+    }
+
+    .nav-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .nav-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .nav-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .nav-btn:hover {
+      background: rgba(111, 143, 114, 0.15);
+      color: var(--text-main);
+    }
+
+    .nav-btn.active {
+      background: rgba(111, 143, 114, 0.25);
+      border-color: rgba(111, 143, 114, 0.5);
+      color: var(--text-main);
+      box-shadow: 0 2px 12px rgba(111, 143, 114, 0.2);
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: var(--crimson);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-user {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #0d1715;
+      border: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--ochre);
+      cursor: pointer;
+    }
+
+    /* ============================================================
+       MAIN CONTENT CONTAINER
+       ============================================================ */
+    .main-workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* TOP RESTRAINED HEADER */
+    .gov-header {
+      height: 60px;
+      padding: 0 24px;
+      background: rgba(22, 37, 34, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 30;
+      flex-shrink: 0;
+    }
+
+    .header-titles h1 {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+    }
+
+    .header-titles p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .header-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #0e1715;
+      border: 1px solid var(--border-subtle);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* TOP-LEVEL METRICS BAR */
+    .telemetry-metrics-bar {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 10px 24px;
+      background: rgba(22, 37, 34, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+      backdrop-filter: blur(8px);
+      z-index: 25;
+      flex-shrink: 0;
+    }
+
+    .metric-chip {
+      background: rgba(18, 30, 28, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .metric-chip:hover {
+      background: rgba(26, 44, 41, 0.95);
+      border-color: var(--moss-green);
+    }
+
+    .metric-chip-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .metric-chip-val {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 2px;
+      line-height: 1.1;
+    }
+
+    /* MAP STAGE CONTAINER */
+    .map-viewport-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #162522;
+    }
+
+    #threeCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+    #threeCanvas:active {
+      cursor: grabbing;
+    }
+
+    /* FLOATING FILTER / CONTROL BAR */
+    .map-controls-bar {
+      position: absolute;
+      top: 14px;
+      left: 18px;
+      right: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--bg-dark-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 14px;
+      backdrop-filter: blur(12px);
+      z-index: 20;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(18, 30, 28, 0.85);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .filter-select-wrap select {
+      background: transparent;
+      color: var(--text-main);
+      border: none;
+      font-size: 11px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }
+    .filter-select-wrap select option {
+      background: var(--bg-dark);
+      color: var(--text-main);
+    }
+
+    .btn-risk-chip {
+      background: rgba(18, 30, 28, 0.8);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-risk-chip.active {
+      background: var(--ochre);
+      color: #162522;
+      font-weight: 700;
+      border-color: var(--ochre);
+    }
+    .btn-risk-chip.active.crimson {
+      background: var(--crimson);
+      color: #ffffff;
+      border-color: var(--crimson);
+    }
+
+    /* SCENARIO TIMELINE SCRUBBER */
+    .scenario-scrubber {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(18, 30, 28, 0.85);
+      border: 1px solid var(--border-subtle);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .scenario-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .scenario-btn.active {
+      background: var(--text-main);
+      color: #162522;
+    }
+
+    /* FLOATING RISK LEGEND (BOTTOM LEFT) */
+    .risk-legend-card {
+      position: absolute;
+      bottom: 24px;
+      left: 20px;
+      background: var(--bg-dark-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 12px 16px;
+      backdrop-filter: blur(12px);
+      z-index: 20;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .legend-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .legend-box {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+    .box-crimson { background: var(--crimson); }
+    .box-active { background: var(--terracotta); }
+    .box-forecast { background: var(--ochre); }
+    .box-low { background: var(--moss-green); opacity: 0.6; }
+
+    /* ============================================================
+       RIGHT-SIDE DECISION SUPPORT DOSSIER PANEL
+       ============================================================ */
+    .dossier-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 360px;
+      height: 100%;
+      background: rgba(18, 30, 28, 0.97);
+      border-left: 1px solid var(--border-subtle);
+      backdrop-filter: blur(16px);
+      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.5);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-y: auto;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .dossier-panel.collapsed {
+      transform: translateX(100%);
+    }
+
+    .dossier-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .dossier-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .dossier-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .dossier-region {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .score-badge-card {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: rgba(13, 23, 21, 0.9);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .score-num {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--crimson);
+      line-height: 1;
+    }
+
+    .priority-pill {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(185, 67, 63, 0.2);
+      border: 1px solid var(--crimson);
+      color: #ff5555;
+    }
+
+    .dossier-body {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      margin-bottom: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 2px;
+      margin-bottom: 8px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .flagged-card {
+      background: rgba(13, 23, 21, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 11.5px;
+      line-height: 1.5;
+      color: rgba(247, 245, 240, 0.85);
+    }
+
+    .action-card {
+      background: rgba(185, 67, 63, 0.12);
+      border: 1px solid rgba(185, 67, 63, 0.35);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .dossier-footer {
+      padding: 18px 20px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #111e1b;
+    }
+
+    .btn-relocate-primary {
+      width: 100%;
+      padding: 12px;
+      background: var(--crimson);
+      border: none;
+      color: #ffffff;
+      font-family: var(--font-sans);
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-relocate-primary:hover {
+      background: var(--crimson-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 9px;
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+
+    /* ============================================================
+       RELOCATION PLANNING FULL-SCREEN VIEW
+       ============================================================ */
+    .relocation-view {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-dark);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      display: none;
+    }
+    .relocation-view.open {
+      display: flex;
+    }
+
+    .relocation-header {
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(18, 30, 28, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .candidate-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 28px;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .candidate-card {
+      background: rgba(22, 37, 34, 0.95);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .candidate-card:hover, .candidate-card.selected {
+      border-color: var(--terracotta);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+    .candidate-card.selected {
+      background: rgba(27, 46, 42, 1);
+    }
+
+    .candidate-suitability {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--moss-green-light);
+    }
+
+    .constraint-pill {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(185, 67, 63, 0.2);
+      color: #ff6666;
+      border: 1px solid rgba(185, 67, 63, 0.4);
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    /* MAP HOVER TOOLTIP */
+    .map-tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(13, 23, 21, 0.95);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: var(--text-main);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      transform: translate(-50%, -100%);
+      margin-top: -12px;
+      display: none;
+      z-index: 35;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LEFT NAVIGATION RAIL -->
+  <aside class="nav-rail">
+    <div class="nav-crest" title="SETU-DRR">S</div>
+
+    <nav class="nav-menu">
+      <button class="nav-btn" title="Overview">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+      </button>
+      <button class="nav-btn active" title="Risk Map" id="btnNavRiskMap">
+        <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+      </button>
+      <button class="nav-btn" title="Habitations" id="btnNavHabitations">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      </button>
+      <button class="nav-btn" title="Relocation Planner" id="btnNavRelocation">
+        <svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 8h-3v3h-2v-3h-3v-2h3V9h2v3h3v2z"/></svg>
+      </button>
+      <button class="nav-btn" title="Alerts">
+        <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+        <span class="nav-badge">18</span>
+      </button>
+    </nav>
+
+    <div class="nav-user" title="Officer NDRF-894">GOV</div>
+  </aside>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="main-workspace">
+
+    <!-- RESTRAINED TOP HEADER -->
+    <header class="gov-header">
+      <div class="header-titles">
+        <h1>RED ZONE / RESILIENCE MAP</h1>
+        <p>India · Disaster risk intelligence &amp; relocation decision support</p>
+      </div>
+
+      <div class="header-telemetry">
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span>SYSTEM OPERATIONAL · DATA UPDATED 3M AGO</span>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 11px; color: var(--ochre);">
+          OFFICER: NDRF-894
+        </div>
+      </div>
+    </header>
+
+    <!-- TOP-LEVEL TELEMETRY METRICS -->
+    <section class="telemetry-metrics-bar">
+      <div class="metric-chip">
+        <div class="metric-chip-label">
+          <span>ACTIVE ALERTS</span>
+          <span style="color: var(--crimson);">● CRITICAL</span>
+        </div>
+        <div class="metric-chip-val" style="color: var(--crimson);">18</div>
+      </div>
+      <div class="metric-chip">
+        <div class="metric-chip-label">PRIORITY HABITATIONS</div>
+        <div class="metric-chip-val" style="color: var(--terracotta);">07</div>
+      </div>
+      <div class="metric-chip">
+        <div class="metric-chip-label">POPULATION EXPOSED</div>
+        <div class="metric-chip-val" style="color: var(--ochre);">24.8K</div>
+      </div>
+      <div class="metric-chip">
+        <div class="metric-chip-label">RELOCATION REVIEWS</div>
+        <div class="metric-chip-val" style="color: var(--moss-green-light);">12</div>
+      </div>
+    </section>
+
+    <!-- MAP STAGE -->
+    <div class="map-viewport-container">
+
+      <!-- FLOATING MAP CONTROLS -->
+      <div class="map-controls-bar">
+        <div class="filter-group">
+          <!-- HAZARD SELECTOR -->
+          <div class="filter-select-wrap">
+            <span style="color: var(--text-dim); font-weight: 700;">HAZARD:</span>
+            <select id="hazardSelect">
+              <option value="All">All Hazards</option>
+              <option value="Landslide">Landslide</option>
+              <option value="Flash Flood">Flash Flood</option>
+              <option value="Coastal Erosion">Coastal Erosion</option>
+              <option value="Subsidence">Subsidence</option>
+            </select>
+          </div>
+
+          <!-- REGION SELECTOR -->
+          <div class="filter-select-wrap">
+            <span style="color: var(--text-dim); font-weight: 700;">REGION:</span>
+            <select id="regionSelect">
+              <option value="All India">All India</option>
+              <option value="Uttarakhand">Uttarakhand</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Sikkim">Sikkim</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Bihar">Bihar</option>
+            </select>
+          </div>
+
+          <!-- RISK CHIPS -->
+          <div style="display: flex; gap: 4px;">
+            <button class="btn-risk-chip active" data-risk="All">All</button>
+            <button class="btn-risk-chip crimson" data-risk="Permanent Red Zone">Permanent</button>
+            <button class="btn-risk-chip" data-risk="Active Alert">Active</button>
+            <button class="btn-risk-chip" data-risk="Forecast Alert">Forecast</button>
+          </div>
+        </div>
+
+        <!-- 72-HOUR SCENARIO -->
+        <div class="scenario-scrubber">
+          <span style="color: var(--text-dim); font-weight: 700; margin-right: 4px;">72H SCENARIO:</span>
+          <button class="scenario-btn active" data-time="Now">Now</button>
+          <button class="scenario-btn" data-time="+24h">+24h</button>
+          <button class="scenario-btn" data-time="+48h">+48h</button>
+          <button class="scenario-btn" data-time="+72h">+72h</button>
+        </div>
+      </div>
+
+      <!-- WEBGL CANVAS -->
+      <canvas id="threeCanvas"></canvas>
+
+      <!-- FLOATING RISK LEGEND -->
+      <div class="risk-legend-card">
+        <div class="legend-title">RISK STATUS</div>
+        <div class="legend-item">
+          <div class="legend-box box-crimson"></div>
+          <span>Permanent Red Zone</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box box-active"></div>
+          <span>Active Alert</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box box-forecast"></div>
+          <span>Forecast Alert</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-box box-low"></div>
+          <span>Monitored / Low Risk</span>
+        </div>
+      </div>
+
+      <!-- MAP HOVER TOOLTIP -->
+      <div class="map-tooltip" id="mapTooltip"></div>
+
+      <!-- RIGHT SLIDE-OVER DOSSIER PANEL -->
+      <aside class="dossier-panel" id="dossierPanel">
+        <div class="dossier-header">
+          <div class="dossier-tag">DECISION DOSSIER</div>
+          <div class="dossier-title" id="dosName">JOSHIMATH</div>
+          <div class="dossier-region" id="dosRegion">Chamoli, Uttarakhand</div>
+
+          <div class="score-badge-card">
+            <div>
+              <div style="font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase;">Risk Score</div>
+              <div class="score-num" id="dosScore">0.87</div>
+            </div>
+            <div class="priority-pill" id="dosPriority">IMMEDIATE PRIORITY</div>
+          </div>
+        </div>
+
+        <div class="dossier-body">
+          <div>
+            <div class="section-title">RISK BREAKDOWN</div>
+            
+            <div class="breakdown-row">
+              <span>Slope Instability</span>
+              <strong style="color: var(--crimson);" id="valSlope">0.91</strong>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 91%; background: var(--crimson);"></div>
+            </div>
+
+            <div class="breakdown-row">
+              <span>Rainfall Anomaly</span>
+              <strong style="color: var(--terracotta);" id="valRain">0.82</strong>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 82%; background: var(--terracotta);"></div>
+            </div>
+
+            <div class="breakdown-row">
+              <span>Landslide History</span>
+              <strong style="color: var(--ochre);" id="valHist">0.89</strong>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 89%; background: var(--ochre);"></div>
+            </div>
+
+            <div class="breakdown-row">
+              <span>Population Exposure</span>
+              <strong style="color: var(--moss-green-light);" id="valExp">0.74</strong>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" style="width: 74%; background: var(--moss-green-light);"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title">WHY THIS AREA IS FLAGGED</div>
+            <div class="flagged-card" id="dosWhy">
+              High slope instability combined with recent heavy rainfall and elevated population exposure has pushed this settlement into the immediate-priority category.
+            </div>
+          </div>
+
+          <div>
+            <div class="section-title">RECOMMENDED ACTION</div>
+            <div class="action-card" id="dosAction">
+              Assess for short-term relocation.
+            </div>
+          </div>
+        </div>
+
+        <div class="dossier-footer">
+          <button class="btn-relocate-primary" id="btnOpenRelocation">
+            <span>OPEN RELOCATION PLAN</span>
+            <span>→</span>
+          </button>
+          <button class="btn-secondary" id="btnViewFullDossier">View Full Habitation Dossier</button>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- FULL RELOCATION PLANNING VIEW (DRAWER / VIEW) -->
+    <div class="relocation-view" id="relocationView">
+      <div class="relocation-header">
+        <div>
+          <span style="font-family: var(--font-mono); font-size: 10px; color: var(--terracotta); font-weight: 700; text-transform: uppercase;">
+            RELOCATION PLANNING PROTOCOL
+          </span>
+          <h2 style="font-family: var(--font-serif); font-size: 22px; font-weight: 800; margin-top: 2px;">
+            Origin Settlement: Bhairavpur / Devagram, Uttarakhand
+          </h2>
+        </div>
+        <button class="btn-secondary" style="width: auto; padding: 8px 16px;" id="btnCloseRelocation">
+          ← Back to Map
+        </button>
+      </div>
+
+      <div class="candidate-grid">
+        <!-- SITE A -->
+        <div class="candidate-card">
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--ochre);">SITE A</div>
+            <h3 style="font-family: var(--font-serif); font-size: 20px; font-weight: 800; margin-top: 2px;">BHATOLI PLATEAU</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Rudraprayag North Ridge (8.4 km)</p>
+            
+            <div style="margin-top: 16px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>Capacity:</span>
+                <strong>340 / 410 HH</strong>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 10px; color: var(--text-dim);">Suitability</div>
+              <div class="candidate-suitability">76%</div>
+            </div>
+            <div>
+              <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 3px;">Constraint</div>
+              <span class="constraint-pill">ROAD ACCESS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SITE B (RECOMMENDED) -->
+        <div class="candidate-card selected">
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--terracotta);">SITE B · SELECTED</div>
+            <h3 style="font-family: var(--font-serif); font-size: 20px; font-weight: 800; margin-top: 2px;">GAUCHAR TERRACE</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Alaknanda Valley Fluvial Terrace (12.2 km)</p>
+            
+            <div style="margin-top: 16px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>Capacity:</span>
+                <strong>218 / 410 HH</strong>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 10px; color: var(--text-dim);">Suitability</div>
+              <div class="candidate-suitability" style="color: var(--terracotta);">84%</div>
+            </div>
+            <div>
+              <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 3px;">Constraint</div>
+              <span class="constraint-pill">WATER</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- SITE C -->
+        <div class="candidate-card">
+          <div>
+            <div style="font-family: var(--font-mono); font-size: 10px; font-weight: 700; color: var(--moss-green-light);">SITE C</div>
+            <h3 style="font-family: var(--font-serif); font-size: 20px; font-weight: 800; margin-top: 2px;">PIPALKOTI RIDGE</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Upper Garhwal South Bench (15.6 km)</p>
+            
+            <div style="margin-top: 16px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 6px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                <span>Capacity:</span>
+                <strong>410 / 410 HH</strong>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+              <div style="font-size: 10px; color: var(--text-dim);">Suitability</div>
+              <div class="candidate-suitability">89%</div>
+            </div>
+            <div>
+              <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 3px;">Constraint</div>
+              <span class="constraint-pill">SEISMIC BUFFER</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // HABITATIONS DATA
+    const HABITATIONS = [
+      {
+        id: 'joshimath',
+        name: 'JOSHIMATH',
+        state: 'Uttarakhand',
+        district: 'Chamoli, Uttarakhand',
+        x: 3, y: 14,
+        score: 0.87,
+        priority: 'IMMEDIATE PRIORITY',
+        slope: 0.91,
+        rainfall: 0.82,
+        history: 0.89,
+        exposure: 0.74,
+        why: 'High slope instability combined with recurring blind thrust shear and recent heavy rainfall and elevated population exposure has pushed this settlement into the immediate-priority category.',
+        action: 'Assess for short-term relocation.'
+      },
+      {
+        id: 'bhairavpur',
+        name: 'BHAIRAVPUR / DEVAGRAM',
+        state: 'Uttarakhand',
+        district: 'Rudraprayag, Uttarakhand',
+        x: 5, y: 11,
+        score: 0.81,
+        priority: 'SHORT-TERM ACTION',
+        slope: 0.88,
+        rainfall: 0.84,
+        history: 0.79,
+        exposure: 0.71,
+        why: 'Severe toe-erosion by perennial glacial stream combined with high weathered colluvium overburden. Critical risk threshold breach forecast in monsoon.',
+        action: 'Open and approve Relocation Planning protocol for candidate plateau sites.'
+      },
+      {
+        id: 'wayanad',
+        name: 'WAYANAD (MEPPADI)',
+        state: 'Kerala',
+        district: 'Wayanad, Kerala',
+        x: -8, y: -26,
+        score: 0.89,
+        priority: 'IMMEDIATE PRIORITY',
+        slope: 0.94,
+        rainfall: 0.96,
+        history: 0.92,
+        exposure: 0.85,
+        why: 'Catastrophic debris flow corridor with recurrent saturated soil liquefaction. High probability recurrence zone designated Permanent Red Zone (PRZ).',
+        action: 'Permanent buffer establishment and accelerated resettlement to low-gradient foothill sites.'
+      },
+      {
+        id: 'teesta',
+        name: 'TEESTA VALLEY',
+        state: 'Sikkim',
+        district: 'Mangan, Sikkim',
+        x: 26, y: 8,
+        score: 0.84,
+        priority: 'IMMEDIATE PRIORITY',
+        slope: 0.86,
+        rainfall: 0.89,
+        history: 0.83,
+        exposure: 0.78,
+        why: 'Glacial lake outburst flood (GLOF) surge channel along high-velocity braided gorge. Fluvial embankment undercutting active.',
+        action: 'Demarcate 200m riverine exclusion buffer and execute upstream early-warning relay.'
+      }
+    ];
+
+    // RAW INDIA SHAPE
+    const INDIA_COORDS = [
+      [30, 95], [33, 93], [36, 90], [38, 85], [37, 80], [39, 76],
+      [43, 76], [48, 77], [52, 79], [56, 80], [60, 78], [63, 76],
+      [65, 78], [72, 79], [78, 80], [84, 82], [88, 78], [86, 74],
+      [82, 72], [76, 70], [70, 68], [64, 67], [60, 64], [58, 60],
+      [60, 56], [62, 52], [61, 47], [58, 43], [54, 38], [50, 32],
+      [48, 25], [45, 18], [43, 10], [42, 5],  [40, 0],  [38, 6],
+      [35, 12], [32, 20], [28, 28], [24, 35], [20, 42], [15, 48],
+      [12, 52], [10, 56], [8, 60],  [12, 62], [15, 60], [18, 62],
+      [15, 66], [12, 70], [16, 73], [20, 75], [24, 80], [25, 85],
+      [27, 90], [30, 95]
+    ];
+
+    // 3D SCENE INITIALIZATION
+    let scene, camera, renderer, controls;
+    const canvas = document.getElementById('threeCanvas');
+    const container = canvas.parentElement;
+
+    function init3DMap() {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x162522);
+      scene.fog = new THREE.FogExp2(0x162522, 0.007);
+
+      camera = new THREE.PerspectiveCamera(42, w / h, 1, 1000);
+      camera.position.set(0, -55, 78);
+      camera.up.set(0, 0, 1);
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.06;
+      controls.maxPolarAngle = Math.PI / 2.1;
+      controls.target.set(0, 5, 0);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xf7f5f0, 0.9);
+      scene.add(ambientLight);
+
+      const dirLight = new THREE.DirectionalLight(0xfff8ee, 1.4);
+      dirLight.position.set(40, -50, 65);
+      scene.add(dirLight);
+
+      // Ground Grid
+      const grid = new THREE.GridHelper(180, 36, 0x2a3e39, 0x1d2e2b);
+      grid.rotation.x = Math.PI / 2;
+      grid.position.z = -2;
+      scene.add(grid);
+
+      // India Landmass Shape
+      const shape = new THREE.Shape();
+      INDIA_COORDS.forEach(([x, y], idx) => {
+        const nx = (x - 45) * 0.95;
+        const ny = (y - 48) * 0.95;
+        if (idx === 0) shape.moveTo(nx, ny);
+        else shape.lineTo(nx, ny);
+      });
+
+      const landGeom = new THREE.ExtrudeGeometry(shape, {
+        depth: 2.5,
+        bevelEnabled: true,
+        bevelThickness: 0.6,
+        bevelSize: 0.4
+      });
+      const landMat = new THREE.MeshStandardMaterial({
+        color: 0x1f3430,
+        roughness: 0.75,
+        metalness: 0.15
+      });
+      const landMesh = new THREE.Mesh(landGeom, landMat);
+      scene.add(landMesh);
+
+      // Topographic Edge Lines
+      const edges = new THREE.EdgesGeometry(landGeom, 24);
+      const edgeMat = new THREE.LineBasicMaterial({ color: 0xd49a45, transparent: true, opacity: 0.4 });
+      scene.add(new THREE.LineSegments(edges, edgeMat));
+
+      // Hex Risk Cells
+      const hexShape = new THREE.Shape();
+      for (let i = 0; i < 6; i++) {
+        const a = (i * 60 * Math.PI) / 180;
+        const hx = 1.6 * Math.cos(a);
+        const hy = 1.6 * Math.sin(a);
+        if (i === 0) hexShape.moveTo(hx, hy);
+        else hexShape.lineTo(hx, hy);
+      }
+      const hexGeom = new THREE.ExtrudeGeometry(hexShape, { depth: 1.2, bevelEnabled: false });
+
+      // Add Hex Grid Samples
+      const hexCoords = [
+        { x: 2, y: 15, col: 0xb9433f },
+        { x: 4, y: 14, col: 0xc96b3b },
+        { x: 5, y: 11, col: 0xc96b3b },
+        { x: -8, y: -26, col: 0xb9433f },
+        { x: -6, y: -28, col: 0xb9433f },
+        { x: -9, y: -24, col: 0xc96b3b },
+        { x: 26, y: 8, col: 0xc96b3b },
+        { x: 19, y: 3, col: 0xd49a45 },
+        { x: -24, y: 0, col: 0xd49a45 }
+      ];
+
+      hexCoords.forEach(c => {
+        const mat = new THREE.MeshStandardMaterial({ color: c.col, roughness: 0.4, transparent: true, opacity: 0.85 });
+        const mesh = new THREE.Mesh(hexGeom, mat);
+        mesh.position.set(c.x, c.y, 2.5);
+        scene.add(mesh);
+      });
+
+      // Habitation Pins
+      HABITATIONS.forEach(h => {
+        const marker = new THREE.Group();
+        marker.position.set(h.x, h.y, 3.2);
+
+        const stem = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.2, 0.2, 2.8, 8),
+          new THREE.MeshStandardMaterial({ color: 0xf7f5f0 })
+        );
+        stem.rotation.x = Math.PI / 2;
+        stem.position.z = 1.4;
+        marker.add(stem);
+
+        const head = new THREE.Mesh(
+          new THREE.SphereGeometry(0.75, 16, 16),
+          new THREE.MeshStandardMaterial({ color: 0xb9433f, emissive: 0xb9433f, emissiveIntensity: 0.4 })
+        );
+        head.position.z = 2.8;
+        marker.add(head);
+
+        marker.userData = { hab: h };
+        scene.add(marker);
+      });
+
+      // Animate Loop
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      window.addEventListener('resize', () => {
+        const nw = container.clientWidth;
+        const nh = container.clientHeight;
+        camera.aspect = nw / nh;
+        camera.updateProjectionMatrix();
+        renderer.setSize(nw, nh);
+      });
+    }
+
+    // UPDATE DOSSIER PANEL
+    function updateDossier(h) {
+      document.getElementById('dosName').textContent = h.name;
+      document.getElementById('dosRegion').textContent = h.district;
+      document.getElementById('dosScore').textContent = h.score.toFixed(2);
+      document.getElementById('dosPriority').textContent = h.priority;
+      document.getElementById('valSlope').textContent = h.slope.toFixed(2);
+      document.getElementById('valRain').textContent = h.rainfall.toFixed(2);
+      document.getElementById('valHist').textContent = h.history.toFixed(2);
+      document.getElementById('valExp').textContent = h.exposure.toFixed(2);
+      document.getElementById('dosWhy').textContent = h.why;
+      document.getElementById('dosAction').textContent = h.action;
+    }
+
+    // WIRE INTERACTIONS
+    document.addEventListener('DOMContentLoaded', () => {
+      init3DMap();
+      updateDossier(HABITATIONS[0]);
+
+      // Relocation flow
+      const relView = document.getElementById('relocationView');
+      document.getElementById('btnOpenRelocation').addEventListener('click', () => {
+        relView.classList.add('open');
+      });
+      document.getElementById('btnCloseRelocation').addEventListener('click', () => {
+        relView.classList.remove('open');
+      });
+      document.getElementById('btnNavRelocation').addEventListener('click', () => {
+        relView.classList.add('open');
+      });
+      document.getElementById('btnNavRiskMap').addEventListener('click', () => {
+        relView.classList.remove('open');
+      });
+
+      // Scenario scrubber
+      document.querySelectorAll('.scenario-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+
+      // Risk chips
+      document.querySelectorAll('.btn-risk-chip').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.btn-risk-chip').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

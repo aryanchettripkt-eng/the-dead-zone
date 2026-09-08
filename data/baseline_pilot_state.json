@@ -1,0 +1,218 @@
+{
+  "admin_boundaries": [
+    {
+      "id": 178,
+      "name": "Wayanad",
+      "level": "district",
+      "lgd_code": 555
+    },
+    {
+      "id": 179,
+      "name": "Kodagu",
+      "level": "district",
+      "lgd_code": 540
+    },
+    {
+      "id": 180,
+      "name": "Dholpur",
+      "level": "district",
+      "lgd_code": 98
+    },
+    {
+      "id": 181,
+      "name": "Morena",
+      "level": "district",
+      "lgd_code": 417
+    }
+  ],
+  "habitations": [
+    {
+      "id": 724,
+      "name": "Chooralmala",
+      "type": "village",
+      "admin_id": 178,
+      "population": 3840,
+      "households": 860
+    },
+    {
+      "id": 725,
+      "name": "Mundakkai",
+      "type": "village",
+      "admin_id": 178,
+      "population": 2150,
+      "households": 490
+    },
+    {
+      "id": 726,
+      "name": "Meppadi",
+      "type": "village",
+      "admin_id": 178,
+      "population": 14200,
+      "households": 3200
+    },
+    {
+      "id": 727,
+      "name": "Vythiri",
+      "type": "village",
+      "admin_id": 178,
+      "population": 9800,
+      "households": 2150
+    },
+    {
+      "id": 728,
+      "name": "Kalpetta",
+      "type": "village",
+      "admin_id": 178,
+      "population": 31500,
+      "households": 7100
+    },
+    {
+      "id": 729,
+      "name": "Mananthavady",
+      "type": "village",
+      "admin_id": 178,
+      "population": 28400,
+      "households": 6300
+    },
+    {
+      "id": 730,
+      "name": "Madikeri",
+      "type": "village",
+      "admin_id": 179,
+      "population": 33400,
+      "households": 7800
+    },
+    {
+      "id": 731,
+      "name": "Bhagamandala",
+      "type": "village",
+      "admin_id": 179,
+      "population": 4100,
+      "households": 920
+    },
+    {
+      "id": 732,
+      "name": "Somwarpet",
+      "type": "village",
+      "admin_id": 179,
+      "population": 11200,
+      "households": 2500
+    }
+  ],
+  "candidate_sites": [
+    {
+      "id": 486,
+      "area_ha": 6.5,
+      "tenure": "government_revenue",
+      "slope_mean": 4.2,
+      "mhi_max": 0.08,
+      "cc_land": 515,
+      "cc_water": 220,
+      "cc_school": 541,
+      "cc_health": 888,
+      "cc_final": 220,
+      "binding_constraint": "water",
+      "suitability": 88
+    },
+    {
+      "id": 487,
+      "area_ha": 12.0,
+      "tenure": "government_revenue",
+      "slope_mean": 3.5,
+      "mhi_max": 0.04,
+      "cc_land": 952,
+      "cc_water": 1090,
+      "cc_school": 375,
+      "cc_health": 1222,
+      "cc_final": 375,
+      "binding_constraint": "school",
+      "suitability": 92
+    },
+    {
+      "id": 488,
+      "area_ha": 4.5,
+      "tenure": "private",
+      "slope_mean": 7.1,
+      "mhi_max": 0.12,
+      "cc_land": 357,
+      "cc_water": 545,
+      "cc_school": 416,
+      "cc_health": 666,
+      "cc_final": 339,
+      "binding_constraint": "land",
+      "suitability": 76
+    },
+    {
+      "id": 489,
+      "area_ha": 18.0,
+      "tenure": "government_revenue",
+      "slope_mean": 2.8,
+      "mhi_max": 0.05,
+      "cc_land": 1428,
+      "cc_water": 1616,
+      "cc_school": 1250,
+      "cc_health": 650,
+      "cc_final": 650,
+      "binding_constraint": "health",
+      "suitability": 90
+    },
+    {
+      "id": 490,
+      "area_ha": 22.0,
+      "tenure": "government_revenue",
+      "slope_mean": 2.1,
+      "mhi_max": 0.02,
+      "cc_land": 1746,
+      "cc_water": 450,
+      "cc_school": 1666,
+      "cc_health": 1777,
+      "cc_final": 450,
+      "binding_constraint": "water",
+      "suitability": 94
+    },
+    {
+      "id": 491,
+      "area_ha": 7.5,
+      "tenure": "tenure_unverified",
+      "slope_mean": 5.2,
+      "mhi_max": 0.09,
+      "cc_land": 595,
+      "cc_water": 646,
+      "cc_school": 266,
+      "cc_health": 777,
+      "cc_final": 239,
+      "binding_constraint": "school",
+      "suitability": 72
+    },
+    {
+      "id": 492,
+      "area_ha": 9.0,
+      "tenure": "government_revenue",
+      "slope_mean": 5.5,
+      "mhi_max": 0.06,
+      "cc_land": 714,
+      "cc_water": 727,
+      "cc_school": 333,
+      "cc_health": 777,
+      "cc_final": 333,
+      "binding_constraint": "school",
+      "suitability": 85
+    },
+    {
+      "id": 493,
+      "area_ha": 15.0,
+      "tenure": "government_revenue",
+      "slope_mean": 2.2,
+      "mhi_max": 0.03,
+      "cc_land": 1190,
+      "cc_water": 1414,
+      "cc_school": 666,
+      "cc_health": 1333,
+      "cc_final": 666,
+      "binding_constraint": "school",
+      "suitability": 91
+    }
+  ],
+  "allocation_runs_count": 0,
+  "relocation_plans_count": 0
+}

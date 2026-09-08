@@ -1,0 +1,25 @@
+[project]
+name = "api"
+version = "0.1.0"
+description = "FastAPI serving layer (L5). Reads only from PostgreSQL — never an external API (FR-1.3)."
+requires-python = ">=3.11"
+dependencies = [
+  "core",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.7",
+  "sqlalchemy>=2.0",
+  "geoalchemy2>=0.15",
+  "psycopg[binary]>=3.2",
+  "python-dotenv>=1.0",
+]
+
+[tool.uv.sources]
+core = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/api"]
