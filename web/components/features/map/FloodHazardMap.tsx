@@ -105,6 +105,11 @@ export const FloodHazardMap = ({
   const breaks = useMemo(() => legend?.breaks ?? [], [legend]);
   const confidenceCeiling = legend?.confidence_ceiling ?? 1;
 
+  const forecastMap = useMemo(() => {
+    if (!forecastItems || forecastItems.length === 0) return new Map<string, ForecastAlertItem>();
+    return new Map(forecastItems.map((item) => [item.h3, item]));
+  }, [forecastItems]);
+
   const handleCellClick = useCallback(
     (cell: HazardCell | null) => onSelectCell?.(cell?.h3 ?? null),
     [onSelectCell],
@@ -232,6 +237,7 @@ export const FloodHazardMap = ({
             x={pointer.x}
             y={pointer.y}
             confidenceCeiling={confidenceCeiling}
+            forecastItem={forecastMap.get(hoveredCell.h3) ?? null}
           />
         ) : null}
       </MapContainer>

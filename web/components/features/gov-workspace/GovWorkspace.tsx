@@ -17,6 +17,7 @@ import { LayerStatsPanel } from '@/components/features/workspace/LayerStatsPanel
 import { India3DCanvas } from '@/components/features/map-3d';
 import { useHazardLayer } from '@/lib/hooks/useHazardLayer';
 import { useHazardLayerList } from '@/lib/hooks/useHazardLayerList';
+import { useForecastAlerts } from '@/lib/hooks/useForecastAlerts';
 import type { HazardType } from '@/lib/api/types';
 import type { FloodHazardMapDisplayState } from '@/components/features/map/FloodHazardMap';
 import {
@@ -78,6 +79,15 @@ export const GovWorkspace: React.FC<GovWorkspaceProps> = ({
     resolution: display.resolution,
     aggregation: 'max',
   });
+
+  const forecast = useForecastAlerts({
+    admin: effectiveAdmin ?? 178,
+  });
+
+  const handleInspectWayanad = useCallback(() => {
+    setHazardType('landslide');
+    setSelectedH3('8860064a15fffff');
+  }, []);
 
   const handleDisplayChange = useCallback((next: Partial<FloodHazardMapDisplayState>) => {
     setDisplay((current) => ({ ...current, ...next }));
@@ -196,6 +206,8 @@ export const GovWorkspace: React.FC<GovWorkspaceProps> = ({
           isLoading={isLoading}
           cellCount={cells.length}
           officerId={officerId}
+          onInspectWayanad={handleInspectWayanad}
+          wayanadAlertCount={forecast.items.length}
         />
       }
       left={
@@ -232,6 +244,7 @@ export const GovWorkspace: React.FC<GovWorkspaceProps> = ({
               onHoverCell={setHoveredH3}
               isLoading={isLoading}
               errorMessage={error?.message ?? null}
+              forecastItems={forecast.items}
               className="w-full h-full"
             />
           ) : (
@@ -251,6 +264,10 @@ export const GovWorkspace: React.FC<GovWorkspaceProps> = ({
               onHoverCell={setHoveredH3}
               display={display}
               onDisplayChange={handleDisplayChange}
+              forecastItems={forecast.items}
+              showForecastOverlay={true}
+              onForecastCellHover={(item) => setHoveredH3(item?.h3 ?? null)}
+              onForecastCellClick={(item) => setSelectedH3(item?.h3 ?? null)}
             />
           )}
         </CenterPanel>
@@ -261,6 +278,8 @@ export const GovWorkspace: React.FC<GovWorkspaceProps> = ({
             h3={selectedH3}
             hazardType={hazardType}
             przThreshold={przThreshold}
+            forecastItems={forecast.items}
+            onInspectWayanad={handleInspectWayanad}
           />
         </RightPanel>
       }

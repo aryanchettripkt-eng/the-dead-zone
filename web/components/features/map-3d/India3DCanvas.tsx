@@ -6,7 +6,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { cellToLatLng } from 'h3-js';
 import gsap from 'gsap';
 import { useTheme } from '@/components/providers';
-import type { HazardCell } from '@/lib/api/types';
+import type { HazardCell, ForecastAlertItem } from '@/lib/api/types';
 import {
   latLngTo3D,
   REGIONAL_CAMERA_PRESETS,
@@ -42,6 +42,7 @@ export interface India3DCanvasProps {
   onHoverCell?: (h3: string | null) => void;
   isLoading?: boolean;
   errorMessage?: string | null;
+  forecastItems?: ForecastAlertItem[];
   className?: string;
 }
 
@@ -54,6 +55,7 @@ export const India3DCanvas: React.FC<India3DCanvasProps> = ({
   onSelectCell,
   onHoverCell,
   isLoading = false,
+  forecastItems,
   className = '',
 }) => {
   const { resolvedTheme } = useTheme();
@@ -90,6 +92,12 @@ export const India3DCanvas: React.FC<India3DCanvasProps> = ({
   // Control bar state
   const [activePreset, setActivePreset] = useState<string>('national');
   const [isTopDown, setIsTopDown] = useState(false);
+
+  // Memoized forecast map for fast tooltip resolution
+  const forecastMap = useMemo(() => {
+    if (!forecastItems || forecastItems.length === 0) return new Map<string, ForecastAlertItem>();
+    return new Map(forecastItems.map((item) => [item.h3, item]));
+  }, [forecastItems]);
 
   // Selected cell world coordinate for the beacon
   const selectedBeaconPos = useMemo(() => {
@@ -480,6 +488,7 @@ export const India3DCanvas: React.FC<India3DCanvasProps> = ({
         position={tooltipData.pos}
         przThreshold={przThreshold}
         isDark={isDark}
+        forecastItem={tooltipData.cell ? forecastMap.get(tooltipData.cell.h3) : null}
       />
     </div>
   );
