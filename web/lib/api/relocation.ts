@@ -7,6 +7,8 @@ import type {
   CandidateSitePage,
   HabitationPage,
   HabitationRiskDossier,
+  SiteCapacityOverrideRequest,
+  SiteCapacityOverrideResponse,
   Tier,
 } from './types';
 
@@ -82,3 +84,16 @@ export function solveAllocationPlan(
 ): Promise<AllocationPlanResponse> {
   return apiPost<AllocationPlanResponse>('/plan/allocate', request, signal);
 }
+
+/**
+ * Recomputes candidate site carrying capacity with overridden policy norms or resource inputs.
+ * Simulates carrying capacity under modified policy parameters (plot area, LPCD, spare school/health seats).
+ */
+export function overrideSiteCapacity(
+  siteId: number,
+  overrides: SiteCapacityOverrideRequest,
+  signal?: AbortSignal,
+): Promise<SiteCapacityOverrideResponse> {
+  return apiPost<SiteCapacityOverrideResponse>(`/sites/${siteId}/capacity`, overrides, signal);
+}
+

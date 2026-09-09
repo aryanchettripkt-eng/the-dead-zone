@@ -1,6 +1,6 @@
 import type { AugmentedCapacity } from '@/lib/api/types';
 
-import { CONSTRAINT_LABELS } from './constants';
+import { CONSTRAINT_LABELS } from '../constants';
 
 export interface AugmentedCapacityCalloutProps {
   augmented?: AugmentedCapacity | null;

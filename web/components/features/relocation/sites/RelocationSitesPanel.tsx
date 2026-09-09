@@ -21,6 +21,7 @@ export interface RelocationSitesPanelProps {
   error?: ApiError | null;
   selectedSiteId?: number | null;
   onSelectSite?: (site: CandidateSiteItem) => void;
+  onSimulateCapacity?: (site: CandidateSiteItem) => void;
   onRetry?: () => void;
   includeScreening: boolean;
   onIncludeScreeningChange: (include: boolean) => void;
@@ -32,12 +33,8 @@ export interface RelocationSitesPanelProps {
 }
 
 /**
- * Centre panel: the destination options for the selected habitation.
- *
- * Shows allocatable sites by default and everything on request. The distinction matters for the
- * empty state: a district screened from rasters can have hundreds of parcels in range and none
- * of them allocatable, and reporting that as "no sites within the radius" would blame the search
- * distance for what is actually a data gap.
+ * Destination options for the selected habitation.
+ * Mounted inside the RelocationParcelDrawer slide-over.
  */
 export const RelocationSitesPanel = ({
   habitation,
@@ -49,6 +46,7 @@ export const RelocationSitesPanel = ({
   error = null,
   selectedSiteId = null,
   onSelectSite,
+  onSimulateCapacity,
   onRetry,
   includeScreening,
   onIncludeScreeningChange,
@@ -57,13 +55,12 @@ export const RelocationSitesPanel = ({
 }: RelocationSitesPanelProps) => {
   const visible = includeScreening ? sites : allocatableSites;
   const hasScreenedOnly = sites.length > 0 && allocatableSites.length === 0 && !includeScreening;
-  // `sites` is one page; `totalInRange` is how many the search actually found.
   const inRange = totalInRange ?? sites.length;
   const truncated = inRange > sites.length;
 
   return (
     <div
-      className={['flex min-h-0 flex-col gap-3 p-4', classNames.root ?? '', className]
+      className={['flex h-full min-h-0 flex-col gap-3 p-4', classNames.root ?? '', className]
         .filter(Boolean)
         .join(' ')}
     >
@@ -73,6 +70,7 @@ export const RelocationSitesPanel = ({
         error={error}
         selectedId={selectedSiteId}
         onSelect={onSelectSite}
+        onSimulateCapacity={onSimulateCapacity}
         onRetry={onRetry}
         className={classNames.list}
         description={

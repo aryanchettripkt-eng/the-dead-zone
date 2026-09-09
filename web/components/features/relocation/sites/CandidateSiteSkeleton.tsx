@@ -1,5 +1,4 @@
 export interface CandidateSiteSkeletonProps {
-  /** Placeholder cards to render while sites load. */
   cards?: number;
   className?: string;
   classNames?: {
@@ -8,7 +7,6 @@ export interface CandidateSiteSkeletonProps {
   };
 }
 
-/** Loading placeholder matching CandidateSiteCard's footprint. */
 export const CandidateSiteSkeleton = ({
   cards = 3,
   className = '',
@@ -22,7 +20,7 @@ export const CandidateSiteSkeleton = ({
       <div
         key={index}
         className={[
-          'h-[260px] animate-pulse rounded-2xl border border-line/40 bg-surface-1/40',
+          'h-44 animate-pulse rounded-2xl border border-line/40 bg-surface-1/40',
           classNames.card ?? '',
         ].join(' ')}
       />

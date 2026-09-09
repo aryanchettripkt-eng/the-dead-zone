@@ -25,6 +25,8 @@ export interface AllocationPanelProps {
   /** Solver parameter controls, rendered above the result. */
   controlsSlot?: React.ReactNode;
   emptyStateSlot?: React.ReactNode;
+  /** Callback to collapse the right panel. */
+  onToggleCollapse?: () => void;
   className?: string;
   classNames?: {
     root?: string;
@@ -51,6 +53,7 @@ export const AllocationPanel = ({
   description,
   controlsSlot,
   emptyStateSlot,
+  onToggleCollapse,
   className = '',
   classNames = {},
   animation = {},
@@ -80,9 +83,30 @@ export const AllocationPanel = ({
   return (
     <div
       ref={rootRef}
-      className={['flex min-h-0 flex-col gap-4', classNames.root ?? '', className].filter(Boolean).join(' ')}
+      className={['flex h-full min-h-0 flex-col gap-4', classNames.root ?? '', className].filter(Boolean).join(' ')}
     >
-      <SectionHeader title={title} description={description} className={classNames.header} />
+      <div className="flex items-start justify-between gap-2">
+        <SectionHeader title={title} description={description} className={classNames.header} />
+        {onToggleCollapse && (
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            title="Collapse allocation panel"
+            aria-label="Collapse allocation panel"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-line/60 bg-surface-1/60 text-ink-muted hover:border-line-strong hover:bg-surface-2 hover:text-ink transition-all active:scale-95 cursor-pointer"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth="2.5"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        )}
+      </div>
 
       {controlsSlot ? <div className={classNames.controls}>{controlsSlot}</div> : null}
 
@@ -107,7 +131,7 @@ export const AllocationPanel = ({
           />
         ))
       ) : (
-        <div className={['flex min-h-0 flex-col gap-3', classNames.result ?? ''].join(' ')}>
+        <div className={['flex min-h-0 flex-1 flex-col gap-3', classNames.result ?? ''].join(' ')}>
           <AllocationSummary plan={plan} />
 
           <AllocationWarnings warnings={plan.group_split_warnings ?? []} />
@@ -118,7 +142,7 @@ export const AllocationPanel = ({
               description="The solver completed but placed nobody — no eligible site had spare capacity within the radius."
             />
           ) : (
-            <div className={['flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto', classNames.list ?? ''].join(' ')}>
+            <div className={['flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-0.5', classNames.list ?? ''].join(' ')}>
               {assignments.map((assignment, index) => (
                 <AllocationAssignmentRow
                   key={`${assignment.habitation_id}-${assignment.site_id}-${index}`}

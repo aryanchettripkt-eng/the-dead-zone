@@ -1,6 +1,6 @@
 import type { BindingConstraint } from '@/lib/api/types';
 
-import { CONSTRAINT_HINTS, CONSTRAINT_LABELS, UNMEASURED_LABEL } from './constants';
+import { CONSTRAINT_HINTS, CONSTRAINT_LABELS, UNMEASURED_LABEL } from '../constants';
 
 export interface CapacityBarProps {
   constraint: BindingConstraint;
@@ -56,7 +56,7 @@ export const CapacityBar = ({
         <span
           className={[
             'font-mono text-[11px] tabular-nums',
-            measured ? 'text-ink' : 'italic text-ink-faint',
+            measured ? 'text-ink font-medium' : 'italic text-ink-faint',
             classNames.value ?? '',
           ].join(' ')}
         >
@@ -67,7 +67,7 @@ export const CapacityBar = ({
       <div
         className={[
           'h-1.5 w-full overflow-hidden rounded-full',
-          measured ? 'bg-line' : 'bg-line/40',
+          measured ? 'bg-line dark:bg-white/10' : 'bg-line/40 dark:bg-white/5',
           classNames.track ?? '',
         ].join(' ')}
         style={
