@@ -175,6 +175,11 @@ class TestAuthApiEndpoints:
         cookie_val = res.cookies[settings.SESSION_COOKIE_NAME]
         assert len(cookie_val) >= 32
 
+        # Verify access_token is returned for non-cookie / cross-origin clients
+        assert data.get("access_token") is not None
+        assert data.get("token_type") == "bearer"
+        assert len(data["access_token"]) >= 32
+
     def test_login_api_invalid_credentials_returns_401(self, client_with_db):
         res = client_with_db.post("/auth/login", json={
             "email": "unknown@example.org",
@@ -192,7 +197,7 @@ class TestAuthApiEndpoints:
         assert res_unauth.status_code == 401
         assert res_unauth.json()["error"]["code"] == "UNAUTHENTICATED"
 
-        # 2. Login to get cookie
+        # 2. Login to get cookie and access_token
         service = AuthService(auth_db_session)
         service.register_civilian("citizen@example.org", "SecurePassword123!", "Citizen Me")
         login_res = client_with_db.post("/auth/login", json={
@@ -200,30 +205,39 @@ class TestAuthApiEndpoints:
             "password": "SecurePassword123!",
         })
         assert login_res.status_code == 200
+        token = login_res.json()["access_token"]
 
-        # 3. Authenticated request -> 200
+        # 3. Authenticated request via cookie -> 200
         res_auth = client_with_db.get("/auth/me")
         assert res_auth.status_code == 200
         assert res_auth.json()["email"] == "citizen@example.org"
 
+        # 4. Authenticated request via Bearer header (clearing cookies) -> 200
+        client_with_db.cookies.clear()
+        res_bearer = client_with_db.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
+        assert res_bearer.status_code == 200
+        assert res_bearer.json()["email"] == "citizen@example.org"
+
     def test_logout_api_revokes_session_and_clears_cookie(self, client_with_db, auth_db_session):
         service = AuthService(auth_db_session)
         service.register_civilian("citizen@example.org", "SecurePassword123!", "Citizen Logout")
-        client_with_db.post("/auth/login", json={
+        login_res = client_with_db.post("/auth/login", json={
             "email": "citizen@example.org",
             "password": "SecurePassword123!",
         })
+        token = login_res.json()["access_token"]
 
         # Check me works
         assert client_with_db.get("/auth/me").status_code == 200
 
-        # Logout
-        logout_res = client_with_db.post("/auth/logout")
+        # Logout using Bearer header with cookies cleared
+        client_with_db.cookies.clear()
+        logout_res = client_with_db.post("/auth/logout", headers={"Authorization": f"Bearer {token}"})
         assert logout_res.status_code == 200
         assert "Logged out successfully" in logout_res.json()["message"]
 
         # Subsequent me -> 401
-        assert client_with_db.get("/auth/me").status_code == 401
+        assert client_with_db.get("/auth/me", headers={"Authorization": f"Bearer {token}"}).status_code == 401
 
     def test_register_api_creates_civilian(self, client_with_db):
         res = client_with_db.post("/auth/register", json={

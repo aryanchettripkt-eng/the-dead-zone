@@ -73,6 +73,14 @@ class UserResponse(BaseModel):
         default=None,
         description="Administrative jurisdiction assigned to privileged user, or None for unconstrained/civilian users.",
     )
+    access_token: Optional[str] = Field(
+        default=None,
+        description="Bearer access token returned upon successful login for non-cookie / cross-origin clients.",
+    )
+    token_type: Optional[str] = Field(
+        default="bearer",
+        description="Token type (bearer).",
+    )
 
 
 class LogoutResponse(BaseModel):

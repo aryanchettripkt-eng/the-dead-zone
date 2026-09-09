@@ -5382,6 +5382,31 @@
               }
             ],
             "description": "Administrative jurisdiction assigned to privileged user, or None for unconstrained/civilian users."
+          },
+          "access_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access Token",
+            "description": "Bearer access token returned upon successful login for non-cookie / cross-origin clients."
+          },
+          "token_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Token Type",
+            "description": "Token type (bearer).",
+            "default": "bearer"
           }
         },
         "type": "object",

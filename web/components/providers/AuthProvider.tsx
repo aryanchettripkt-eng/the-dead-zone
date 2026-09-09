@@ -8,7 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { apiGet, apiPost, ApiError } from '@/lib/api/client';
+import { apiGet, apiPost, ApiError, setStoredToken } from '@/lib/api/client';
 import type { LoginRequest, LogoutResponse, UserResponse } from '@/lib/api/types';
 
 export interface AuthContextValue {
@@ -50,12 +50,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Normal unauthenticated session state — silent resolution
         setUser(null);
         setError(null);
+        setStoredToken(null);
       } else if (err instanceof ApiError && err.status === 0) {
         // Backend service unreachable
         setUser(null);
         setError('Backend service unreachable.');
       } else {
         setUser(null);
+        setStoredToken(null);
       }
       return null;
     } finally {
@@ -82,6 +84,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setError(null);
       try {
         const authenticatedUser = await apiPost<UserResponse>('/auth/login', credentials);
+        if (authenticatedUser.access_token) {
+          setStoredToken(authenticatedUser.access_token);
+        }
         setUser(authenticatedUser);
         return authenticatedUser;
       } catch (err) {
@@ -102,6 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } catch {
       // Regardless of server status, purge local session state
     } finally {
+      setStoredToken(null);
       setUser(null);
       setError(null);
       setIsLoading(false);

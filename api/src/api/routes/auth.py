@@ -71,7 +71,10 @@ def login(
         path="/",
     )
 
-    return UserResponse.model_validate(user)
+    user_resp = UserResponse.model_validate(user)
+    user_resp.access_token = raw_token
+    user_resp.token_type = "bearer"
+    return user_resp
 
 
 @router.get(
@@ -102,7 +105,12 @@ def logout(
     response: Response,
     db: Session = Depends(get_db),
 ) -> LogoutResponse:
-    token = request.cookies.get(settings.SESSION_COOKIE_NAME)
+    token = None
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+    if not token:
+        token = request.cookies.get(settings.SESSION_COOKIE_NAME)
     if token:
         service = AuthService(db)
         service.logout(token)

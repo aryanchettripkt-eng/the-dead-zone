@@ -2263,6 +2263,17 @@ export interface components {
             last_login_at?: string | null;
             /** @description Administrative jurisdiction assigned to privileged user, or None for unconstrained/civilian users. */
             jurisdiction?: components["schemas"]["JurisdictionDTO"] | null;
+            /**
+             * Access Token
+             * @description Bearer access token returned upon successful login for non-cookie / cross-origin clients.
+             */
+            access_token?: string | null;
+            /**
+             * Token Type
+             * @description Token type (bearer).
+             * @default bearer
+             */
+            token_type: string | null;
         };
         /** VulnerabilityBreakdownDTO */
         VulnerabilityBreakdownDTO: {

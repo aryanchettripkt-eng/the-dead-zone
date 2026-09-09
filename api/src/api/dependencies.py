@@ -75,12 +75,22 @@ def require_serving_version(db: Session = Depends(get_db)) -> uuid.UUID:
 # Authentication & Identity Dependencies (Part 1)
 # --------------------------------------------------------------------------- #
 
+def _extract_auth_token(request: Request) -> Optional[str]:
+    """Extracts session token from Authorization: Bearer header or HTTP-only session cookie."""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        bearer_token = auth_header.split(" ", 1)[1].strip()
+        if bearer_token:
+            return bearer_token
+    return request.cookies.get(settings.SESSION_COOKIE_NAME)
+
+
 def get_current_user_optional(request: Request, db: Session = Depends(get_db)):
-    """Resolves authenticated user from session cookie if present, returning None otherwise."""
+    """Resolves authenticated user from Authorization header or session cookie if present."""
     from api.services.auth_service import AuthService
     from core.errors import UnauthenticatedError
 
-    token = request.cookies.get(settings.SESSION_COOKIE_NAME)
+    token = _extract_auth_token(request)
     if not token:
         return None
 
@@ -94,13 +104,14 @@ def get_current_user_optional(request: Request, db: Session = Depends(get_db)):
 def require_authenticated(request: Request, db: Session = Depends(get_db)):
     """Enforces that a valid authenticated user session exists.
     
+    Checks Authorization: Bearer header first, then HTTP-only cookie.
     Raises:
         UnauthenticatedError: HTTP 401 when session is missing, invalid, expired, revoked, or user inactive.
     """
     from api.services.auth_service import AuthService
     from core.errors import UnauthenticatedError
 
-    token = request.cookies.get(settings.SESSION_COOKIE_NAME)
+    token = _extract_auth_token(request)
     if not token:
         raise UnauthenticatedError("Authentication required. Please log in.")
 

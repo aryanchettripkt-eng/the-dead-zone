@@ -64,17 +64,47 @@ async function unwrapError(response: Response): Promise<ApiError> {
   return new ApiError(message, response.status, code, requestId, details);
 }
 
+const TOKEN_STORAGE_KEY = 'setu_auth_token';
+
+/** Retrieves persisted access token from localStorage for cross-origin or non-cookie environments (e.g. Vercel). */
+export function getStoredToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(TOKEN_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/** Stores or clears persisted access token in localStorage. */
+export function setStoredToken(token: string | null): void {
+  if (typeof window === 'undefined') return;
+  try {
+    if (token) {
+      localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    } else {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+    }
+  } catch {
+    // Storage access may be restricted in private browsing mode
+  }
+}
+
 export async function apiGet<T>(
   path: string,
   params?: Record<string, string | number | undefined>,
   signal?: AbortSignal,
 ): Promise<T> {
+  const token = getStoredToken();
   let response: Response;
   try {
     response = await fetch(buildUrl(path, params), {
       signal,
       credentials: 'include',
-      headers: { Accept: 'application/json' },
+      headers: {
+        Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
   } catch (cause) {
     if (cause instanceof DOMException && cause.name === 'AbortError') throw cause;
@@ -97,6 +127,7 @@ export async function apiPost<T>(
   body?: unknown,
   signal?: AbortSignal,
 ): Promise<T> {
+  const token = getStoredToken();
   let response: Response;
   try {
     response = await fetch(buildUrl(path), {
@@ -106,6 +137,7 @@ export async function apiPost<T>(
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
