@@ -1,4 +1,12 @@
-export type ZoneId = 'North' | 'West' | 'Central' | 'East' | 'South';
+export type ZoneId =
+  | 'Wayanad'
+  | 'Kodagu'
+  | 'Barpeta'
+  | 'South'
+  | 'West'
+  | 'Central'
+  | 'East'
+  | 'North';
 
 export interface StorySlide {
   id: string;
@@ -19,6 +27,10 @@ export interface ZoneStoryData {
   id: ZoneId;
   label: string;
   regionName: string;
+  adminId?: number;
+  lgdCode?: number;
+  state?: string;
+  touristRiskRating?: string;
   coordinates: {
     display: {
       lat: string;
@@ -495,4 +507,182 @@ export const REGIONAL_STORIES: Record<ZoneId, ZoneStoryData> = {
       },
     ],
   },
+  Wayanad: {
+    id: 'Wayanad',
+    label: 'Wayanad',
+    regionName: 'Wayanad (Meppadi–Chooralmala), Kerala',
+    adminId: 178,
+    lgdCode: 555,
+    state: 'Kerala',
+    touristRiskRating: 'Level-4 Red Zone Alert (Active Landslide Hazard)',
+    coordinates: {
+      display: {
+        lat: 'N 11° 33\' 14.412"',
+        lng: 'E 76° 07\' 33.628"',
+      },
+      raw: { lat: 11.554, lng: 76.126 },
+    },
+    mapCoords: { x: 44, y: 78 },
+    previewImage: '/stories/south.jpg',
+    primaryHazard: 'Catastrophic Hillslope Debris Flows & Landslides',
+    shortSummary:
+      'The Western Ghats escarpment at Meppadi and Chooralmala faces severe debris flow hazards during monsoon cloudbursts, funneling saturated regolith down steep tea estate gorges.',
+    slides: [
+      {
+        id: 'wayanad-1',
+        title: 'The Chooralmala Cloudburst Inundation',
+        subtitle: 'Western Ghats Orographic Catastrophe',
+        hazardType: 'Debris Avalanche',
+        riskSeverity: 'Critical',
+        image: '/stories/south.jpg',
+        description:
+          'Over 372 mm of rain fell in 24 hours over the Vellarimala ridgeline. The saturated overburden failed at 1,200m elevation, funneling massive granite boulders and mud slurries through Chooralmala and Mundakkai townships.',
+        telemetry: [
+          { label: '24h Rainfall Record', value: '372 mm' },
+          { label: 'Slope Angle', value: '42°' },
+          { label: 'Debris Velocity', value: '48 km/h' },
+          { label: 'PRZ Area Designated', value: '14.2 km²' },
+        ],
+        mitigation:
+          'Designation of permanent 300m riparian exclusion buffers and hydro-meteorological rain gauge arrays.',
+      },
+      {
+        id: 'wayanad-2',
+        title: 'Geomorphology of Western Ghats Soils',
+        subtitle: 'Laterite Crust over Weathered Gneiss',
+        hazardType: 'Soil Liquefaction',
+        riskSeverity: 'Critical',
+        image: '/stories/south.jpg',
+        description:
+          'Subsurface pipe erosion creates hidden conduits inside steep tea hillocks. When hydrostatic pressure peaks, the entire hillside delaminates from the slick metamorphic bedrock below.',
+        telemetry: [
+          { label: 'Pore Pressure Index', value: '96%' },
+          { label: 'Basal Shear Depth', value: '4.8 m' },
+          { label: 'Exposed Habitations', value: '520 Homes' },
+          { label: 'Priority Score (PS)', value: '0.9486' },
+        ],
+        mitigation:
+          'Deep borehole drainage relief wells and acoustic sensor arrays to detect micro-tremors preceding mass movements.',
+      },
+    ],
+  },
+  Kodagu: {
+    id: 'Kodagu',
+    label: 'Kodagu',
+    regionName: 'Kodagu (Bhagamandala–Madikeri), Karnataka',
+    adminId: 179,
+    lgdCode: 540,
+    state: 'Karnataka',
+    touristRiskRating: 'Level-3 Amber Warning (Slope Instability)',
+    coordinates: {
+      display: {
+        lat: 'N 12° 25\' 26.400"',
+        lng: 'E 75° 44\' 16.800"',
+      },
+      raw: { lat: 12.424, lng: 75.738 },
+    },
+    mapCoords: { x: 42, y: 75 },
+    previewImage: '/stories/south.jpg',
+    primaryHazard: 'Hillslope Landslides & Debris Slips',
+    shortSummary:
+      'The fragile Brahmagiri and Pushpagiri ranges of Coorg experience intense monsoon saturation, triggering sudden debris slips across plantation corridors and isolating valley tourist routes.',
+    slides: [
+      {
+        id: 'kodagu-1',
+        title: 'The Saturated Slopes of Bhagamandala',
+        subtitle: 'Upper Cauvery Escarpment & Debris Hazards',
+        hazardType: 'Hillslope Shear & Rockfall',
+        riskSeverity: 'Critical',
+        image: '/stories/south.jpg',
+        description:
+          'Heavy seasonal monsoon deluges exceed 3,500mm annually over the Brahmagiri hills, causing severe pore-water pressures in lateritic soil mantles that trigger sudden slope shear along valley access roads.',
+        telemetry: [
+          { label: 'Elevation', value: '1,150 m' },
+          { label: 'Slope Gradient', value: '36°' },
+          { label: 'Monsoon Saturation', value: '94%' },
+          { label: 'Active Slips', value: '12 Locations' },
+        ],
+        mitigation:
+          'Pre-monsoon soil nailing, subsurface drainage weep holes, and automated slope displacement extensometers.',
+      },
+      {
+        id: 'kodagu-2',
+        title: 'Madikeri Highland Coffee Terraces',
+        subtitle: 'Geotechnical Soil Creep & Drainage Disruption',
+        hazardType: 'Rotational Slumping',
+        riskSeverity: 'High',
+        image: '/stories/south.jpg',
+        description:
+          'Unconsolidated road embankments and altered natural drainage channels in resort and plantation corridors accelerate rotational slumps during extreme rainfall spells.',
+        telemetry: [
+          { label: 'Soil Type', value: 'Red Loam / Laterite' },
+          { label: 'Basal Depth', value: '3.6 m' },
+          { label: 'Rainfall 24h Threshold', value: '160 mm' },
+          { label: 'Priority Score (PS)', value: '0.8842' },
+        ],
+        mitigation:
+          'Deep-rooted vetiver vegetative slope reinforcement and strict slope-cutting prohibition during June-August.',
+      },
+    ],
+  },
+  Barpeta: {
+    id: 'Barpeta',
+    label: 'Barpeta',
+    regionName: 'Barpeta (Lower Assam Catchment), Assam',
+    adminId: 186,
+    lgdCode: 303,
+    state: 'Assam',
+    touristRiskRating: 'Level-3 Amber Flood Warning (Fluvial Surge)',
+    coordinates: {
+      display: {
+        lat: 'N 26° 19\' 12.000"',
+        lng: 'E 91° 00\' 36.000"',
+      },
+      raw: { lat: 26.32, lng: 91.01 },
+    },
+    mapCoords: { x: 74, y: 38 },
+    previewImage: '/stories/east.jpg',
+    primaryHazard: 'Brahmaputra Flood Waves & Riverbank Erosion',
+    shortSummary:
+      'Lowland Brahmaputra basin where surging tributaries from Bhutan and braided river channels submerge highway corridors and isolate vulnerable char settlements during monsoon peaks.',
+    slides: [
+      {
+        id: 'barpeta-1',
+        title: 'Brahmaputra Monsoonal Flood Waves',
+        subtitle: 'Braided River Dynamics & Char Inundation',
+        hazardType: 'Riverine Flash Flooding',
+        riskSeverity: 'Critical',
+        image: '/stories/east.jpg',
+        description:
+          'Water levels in the Manas, Beki, and Brahmaputra rivers regularly surge 2.5m above danger levels during peak monsoon runoff from the Himalayan foothills, cutting off road transit.',
+        telemetry: [
+          { label: 'River Stage', value: '+2.8m above Danger' },
+          { label: 'Current Velocity', value: '3.2 m/s' },
+          { label: 'Char Submergence', value: '82%' },
+          { label: 'Evacuated Hamlets', value: '44 Villages' },
+        ],
+        mitigation:
+          'Raised plinth emergency shelters, geo-bag embankment armoring, and satellite radar flood extent mapping.',
+      },
+      {
+        id: 'barpeta-2',
+        title: 'Riverbank Toe Scour & Morphological Shift',
+        subtitle: 'Dynamic Alluvial Silt Disruption',
+        hazardType: 'Riverbank Erosion',
+        riskSeverity: 'High',
+        image: '/stories/east.jpg',
+        description:
+          'Soft alluvial sand-silt riverbanks suffer intense hydraulic toe scouring as flood waves recede, dislodging entire village tracts and threatening tourist transit towards Manas National Park.',
+        telemetry: [
+          { label: 'Erosion Rate', value: '45 m/season' },
+          { label: 'Silt Load', value: 'Extreme' },
+          { label: 'Highways Threatened', value: 'NH 31 & SH 2' },
+          { label: 'Priority Score (PS)', value: '0.8650' },
+        ],
+        mitigation:
+          'Porcupine spur deflectors and seasonal elevated floating pontoon transit jetties.',
+      },
+    ],
+  },
 };
+

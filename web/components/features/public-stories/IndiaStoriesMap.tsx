@@ -57,7 +57,7 @@ export const IndiaStoriesMap: React.FC<IndiaStoriesMapProps> = ({
 
   const hotspots = useMemo(
     () =>
-      (Object.keys(HOTSPOT_LONLAT) as ZoneId[]).map((zone) => {
+      (['Wayanad', 'Kodagu', 'Barpeta'] as ZoneId[]).map((zone) => {
         const { lon, lat, label } = HOTSPOT_LONLAT[zone];
         const { x, y } = projectLonLat(lon, lat);
         return { zone, label, cx: x, cy: y };
@@ -95,6 +95,7 @@ export const IndiaStoriesMap: React.FC<IndiaStoriesMapProps> = ({
     if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
     onSelectZone(zone);
     setHoveredZone(null);
+    onOpenSlideshow(zone);
   };
 
   // Cleanup timers on unmount

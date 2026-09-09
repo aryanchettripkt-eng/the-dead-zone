@@ -23,9 +23,9 @@ export interface StoriesHeroTextProps {
 }
 
 export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
-  category = 'VEOLA STORIES',
-  activeZoneLabel = 'North',
-  summary = 'Frontline climate hazard red zones, lived community experiences, and environmental intelligence across India\'s fragile terrains.',
+  category = 'T.E.R.R.A. TOURIST HAZARD ADVISORY',
+  activeZoneLabel = 'Wayanad',
+  summary = 'Real-time geotechnical landslide, flash flood, and terrain risk advisory for tourists, trekkers, and travelers across India\'s fragile corridors before planning journeys.',
   className = '',
   classNames = {},
 }) => {
@@ -57,22 +57,22 @@ export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
     >
       {/* Category Monospace Subtitle */}
       <div
-        className={`text-[11px] font-mono tracking-[0.25em] text-cream/60 uppercase mb-4 ${
+        className={`text-[11px] font-mono tracking-[0.25em] text-ink-muted/80 dark:text-cream/60 uppercase mb-4 ${
           classNames.category || ''
         }`}
       >
         {category}
       </div>
 
-      {/* Main Display Headline with Lime Accent */}
+      {/* Main Display Headline with Foliage Accent */}
       <h1
-        className={`font-sans text-4xl sm:text-5xl lg:text-6xl font-normal text-cream tracking-tight leading-[1.1] mb-6 ${
+        className={`font-sans text-4xl sm:text-5xl lg:text-6xl font-normal text-ink dark:text-cream tracking-tight leading-[1.1] mb-6 ${
           classNames.title || ''
         }`}
       >
-        Discover{' '}
+        Assess{' '}
         <span className="text-m3-accent-foliage font-medium transition-colors duration-300">
-          stories
+          travel risk
         </span>
         <br />
         across India
@@ -81,7 +81,7 @@ export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
       {/* Region Context Paragraph */}
       <p
         ref={textRef}
-        className={`text-sm sm:text-base text-cream/70 leading-relaxed font-sans font-light tracking-wide ${
+        className={`text-sm sm:text-base text-ink-muted dark:text-cream/70 leading-relaxed font-sans font-light tracking-wide ${
           classNames.description || ''
         }`}
       >

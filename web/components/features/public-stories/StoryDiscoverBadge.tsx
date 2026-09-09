@@ -39,7 +39,7 @@ export const StoryDiscoverBadge: React.FC<StoryDiscoverBadgeProps> = ({
       onClick={onClick}
       className={`group relative flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-95 focus:outline-none ${className}`}
       style={{ width: size, height: size }}
-      aria-label="Discover Stories"
+      aria-label="Assess Travel Risk"
     >
       {/* Outer Rotating Circular Text */}
       <svg
@@ -53,14 +53,14 @@ export const StoryDiscoverBadge: React.FC<StoryDiscoverBadgeProps> = ({
           fill="none"
         />
         <text
-          fontSize="9.2"
-          letterSpacing="0.28em"
+          fontSize="8.6"
+          letterSpacing="0.22em"
           fill="currentColor"
           fontWeight="600"
           className="font-mono uppercase opacity-95 text-[#2d6a4f] dark:text-[#fef08a]"
         >
           <textPath href="#discoverTextPath" startOffset="0%">
-            + DISCOVER STORIES +
+            + ASSESS TRAVEL RISK +
           </textPath>
         </text>
       </svg>
