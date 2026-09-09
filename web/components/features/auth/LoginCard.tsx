@@ -143,7 +143,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       <div className="flex items-center justify-between mb-6">
         <span className="pill-badge px-3 py-1 rounded-full text-[11px] font-mono font-medium text-citron border border-citron/30 bg-citron/10 flex items-center gap-2 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-citron animate-ping" />
-          <span>SETU-DRR :: AUTHENTICATION</span>
+          <span>T.E.R.R.A. :: AUTHENTICATION</span>
         </span>
         <Link
           href={overviewHref}
@@ -157,10 +157,10 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       {/* Title & Subtitle */}
       <div className="mb-6">
         <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight leading-tight">
-          Sign In to SETU-DRR
+          Sign In to T.E.R.R.A.
         </h2>
         <p className="text-xs sm:text-sm text-text-secondary mt-1.5 leading-relaxed font-sans">
-          Connect to disaster response intelligence. Official credentials unlock the high-resolution GIS hazard matrix.
+          Terrain-based Environmental Risk and Relocation Analytics. Connect to disaster response intelligence. Official credentials unlock the high-resolution GIS hazard matrix.
         </p>
       </div>
 

@@ -9,23 +9,25 @@ import { NavSegmentTab, type NavSegmentTabSize } from './NavSegmentTab';
 export interface NavTabItem {
   id: string;
   label: string;
-  icon: string;
+  icon?: string;
   /** When set, selecting the tab navigates through the container transform. */
   href?: string;
   badge?: string;
 }
 
 export interface NavSegmentTabsProps {
-  /** List of tabs to display */
+  /** Ordered list of tabs to render */
   tabs?: NavTabItem[];
-  /** Currently active tab ID */
+  /** Currently selected tab id */
   activeTabId?: string;
-  /** Segment scale forwarded to every tab. 'lg' matches the tall hero dock. */
-  size?: NavSegmentTabSize;
-  /** Callback when tab is selected */
+  /** Callback fired when a tab is selected */
   onSelectTab?: (tabId: string) => void;
+  /** Size variant */
+  size?: NavSegmentTabSize;
   /** Custom root className */
   className?: string;
+  /** Disables ripple and interactive animation */
+  disableAnimation?: boolean;
   /** Granular styling overrides */
   classNames?: {
     indicator?: string;
@@ -36,15 +38,13 @@ export interface NavSegmentTabsProps {
 }
 
 /**
- * Fallback set, kept for components that render the strip without a config.
+ * Fallback tabs used when none are passed.
  * The canonical list (with routes) lives in `@/lib/routes`.
  */
 export const DEFAULT_NAV_TABS: NavTabItem[] = [
-  { id: 'planetary', label: 'Planetary View', icon: 'public' },
-  { id: 'sar_mesh', label: 'Real-time SAR Mesh', icon: 'vital_signs' },
-  { id: 'hazards', label: 'Hazards', icon: 'warning' },
-  { id: 'data', label: 'Data', icon: 'database' },
-  { id: 'research', label: 'Research', icon: 'menu_book' },
+  { id: 'relocation', label: 'Relocation', icon: 'moving', href: '/relocation' },
+  { id: 'data', label: 'Data', icon: 'database', href: '/gov' },
+  { id: 'research', label: 'Research', icon: 'menu_book', href: '/stories' },
   { id: 'about', label: 'About', icon: 'info', href: '/about' },
 ];
 

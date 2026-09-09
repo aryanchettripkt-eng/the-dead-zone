@@ -3,28 +3,18 @@
 import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { ZoneId, BackendDistrictId, FEATURED_DISTRICTS } from './storyData';
-
-export interface DistrictItem {
-  id: BackendDistrictId;
-  label: string;
-  state: string;
-}
+import { ZoneId } from './storyData';
 
 export interface ZoneTickSelectorProps {
-  /** Currently selected zone/district */
+  /** Currently selected zone */
   selectedZone: ZoneId;
-  /** Callback when zone/district changes */
+  /** Callback when zone changes */
   onSelectZone: (zone: ZoneId) => void;
   /** Custom root className */
   className?: string;
 }
 
-const DISTRICTS: DistrictItem[] = [
-  { id: 'Wayanad', label: 'Wayanad', state: 'Kerala' },
-  { id: 'Kodagu', label: 'Kodagu', state: 'Karnataka' },
-  { id: 'Barpeta', label: 'Barpeta', state: 'Assam' },
-];
+const ZONES: ZoneId[] = ['North', 'West', 'Central', 'East', 'South'];
 
 export const ZoneTickSelector: React.FC<ZoneTickSelectorProps> = ({
   selectedZone,
@@ -34,20 +24,11 @@ export const ZoneTickSelector: React.FC<ZoneTickSelectorProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const activeTickRef = useRef<HTMLDivElement>(null);
 
-  // Normalize selected index against featured districts
-  let normalizedZone = selectedZone;
-  if (selectedZone === 'South' || selectedZone === 'North') normalizedZone = 'Wayanad';
-  else if (selectedZone === 'West' || selectedZone === 'Central') normalizedZone = 'Kodagu';
-  else if (selectedZone === 'East') normalizedZone = 'Barpeta';
-
-  const selectedIndex = Math.max(
-    0,
-    DISTRICTS.findIndex((d) => d.id === normalizedZone)
-  );
+  const selectedIndex = ZONES.indexOf(selectedZone);
 
   useGSAP(() => {
     if (!activeTickRef.current) return;
-    const targetY = selectedIndex * 54 + 6;
+    const targetY = selectedIndex * 42 + 4;
     gsap.to(activeTickRef.current, {
       y: targetY,
       duration: 0.35,
@@ -62,57 +43,44 @@ export const ZoneTickSelector: React.FC<ZoneTickSelectorProps> = ({
     >
       {/* Title */}
       <span className="text-[10px] sm:text-xs font-mono tracking-[0.2em] text-cream/50 uppercase mb-4">
-        CHOOSE DISTRICT
+        CHOOSE ZONE
       </span>
 
-      {/* District list with ruler */}
+      {/* Zones list with ruler */}
       <div className="relative flex items-center gap-3">
-        {/* District Names & State Chips */}
-        <div className="flex flex-col gap-3 text-right">
-          {DISTRICTS.map((item) => {
-            const isSelected = item.id === normalizedZone;
+        {/* Zone Names */}
+        <div className="flex flex-col gap-3.5 text-right">
+          {ZONES.map((zone) => {
+            const isSelected = zone === selectedZone;
             return (
               <button
-                key={item.id}
+                key={zone}
                 type="button"
-                onClick={() => onSelectZone(item.id)}
-                onMouseEnter={() => onSelectZone(item.id)}
-                className={`group flex flex-col items-end px-3 py-1.5 rounded-xl transition-all duration-200 cursor-pointer text-right ${
+                onClick={() => onSelectZone(zone)}
+                onMouseEnter={() => onSelectZone(zone)}
+                className={`text-sm sm:text-base font-sans tracking-wide transition-all duration-200 cursor-pointer h-7 flex items-center justify-end px-2 rounded-md ${
                   isSelected
-                    ? 'bg-forest-surface/80 border border-[#a3e635]/40 text-cream shadow-md translate-x-[-2px]'
-                    : 'text-cream/50 hover:text-cream/90 hover:bg-forest-surface/40 border border-transparent'
+                    ? 'text-cream font-medium scale-105'
+                    : 'text-cream/50 hover:text-cream/80 hover:translate-x-[-2px]'
                 }`}
               >
-                <span
-                  className={`text-sm sm:text-base font-sans font-medium tracking-wide transition-colors ${
-                    isSelected ? 'text-cream font-semibold' : 'group-hover:text-cream'
-                  }`}
-                >
-                  {item.label}
-                </span>
-                <span
-                  className={`text-[10px] font-mono tracking-wider uppercase transition-colors ${
-                    isSelected ? 'text-m3-accent-foliage font-semibold' : 'text-cream/40'
-                  }`}
-                >
-                  {item.state}
-                </span>
+                {zone}
               </button>
             );
           })}
         </div>
 
         {/* Vertical Tick-Mark Ruler */}
-        <div className="relative h-[180px] w-4 flex flex-col justify-between py-1">
+        <div className="relative h-[210px] w-4 flex flex-col justify-between py-1">
           {/* Subtle vertical spine line */}
           <div className="absolute top-1 bottom-1 right-[2px] w-[1px] bg-cream/15" />
 
           {/* Individual ruler ticks */}
-          {Array.from({ length: 22 }).map((_, i) => (
+          {Array.from({ length: 26 }).map((_, i) => (
             <div
               key={i}
               className={`h-[1px] ml-auto ${
-                i % 4 === 0 ? 'w-3 bg-cream/35' : 'w-1.5 bg-cream/15'
+                i % 5 === 0 ? 'w-3 bg-cream/35' : 'w-1.5 bg-cream/15'
               }`}
             />
           ))}

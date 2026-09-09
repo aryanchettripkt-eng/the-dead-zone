@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { ZoneId, FEATURED_DISTRICTS, REGIONAL_STORIES } from './storyData';
+import { ZoneId, REGIONAL_STORIES } from './storyData';
 import { StoryDiscoverBadge } from './StoryDiscoverBadge';
 import {
   HOTSPOT_LONLAT,
@@ -52,12 +52,12 @@ export const IndiaStoriesMap: React.FC<IndiaStoriesMapProps> = ({
   const [hoveredZone, setHoveredZone] = useState<ZoneId | null>(null);
 
   const displayedZone = hoveredZone ?? selectedZone;
-  const activeStory = REGIONAL_STORIES[displayedZone] || REGIONAL_STORIES.Wayanad;
-  const activeDistrict = DISTRICT_BOUNDARIES[displayedZone] || DISTRICT_BOUNDARIES.Wayanad;
+  const activeStory = REGIONAL_STORIES[displayedZone];
+  const activeDistrict = DISTRICT_BOUNDARIES[displayedZone];
 
   const hotspots = useMemo(
     () =>
-      FEATURED_DISTRICTS.map((zone) => {
+      (Object.keys(HOTSPOT_LONLAT) as ZoneId[]).map((zone) => {
         const { lon, lat, label } = HOTSPOT_LONLAT[zone];
         const { x, y } = projectLonLat(lon, lat);
         return { zone, label, cx: x, cy: y };

@@ -24,7 +24,7 @@ import { AtmosphericMist } from '@/components/features/mist';
 export default function HomePage() {
   const [isAutoRotating, setIsAutoRotating] = useState(true);
   const [isRadarActive, setIsRadarActive] = useState(true);
-  const [activeTab, setActiveTab] = useState('planetary');
+  const [activeTab, setActiveTab] = useState('');
   const [focusTrigger, setFocusTrigger] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -115,12 +115,8 @@ export default function HomePage() {
   const handleSelectTab = useCallback(
     (tabId: string) => {
       setActiveTab(tabId);
-      if (tabId === 'sar_mesh') {
-        setIsRadarActive(true);
-        showToast('SAR Mesh Telemetry: Real-time Sweep Active');
-      }
     },
-    [showToast]
+    []
   );
 
   return (

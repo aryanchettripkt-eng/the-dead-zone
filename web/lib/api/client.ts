@@ -1,4 +1,4 @@
-/** Minimal typed fetch wrapper that unwraps the SETU-DRR error envelope. */
+/** Minimal typed fetch wrapper that unwraps the T.E.R.R.A. error envelope. */
 
 import type { ApiErrorEnvelope } from './types';
 
@@ -79,7 +79,7 @@ export async function apiGet<T>(
   } catch (cause) {
     if (cause instanceof DOMException && cause.name === 'AbortError') throw cause;
     throw new ApiError(
-      `Cannot reach the SETU-DRR API at ${API_BASE_URL}. Is \`uv run uvicorn api.main:app\` running?`,
+      `Cannot reach the T.E.R.R.A. API at ${API_BASE_URL}. Is \`uv run uvicorn api.main:app\` running?`,
       0,
       'NETWORK_ERROR',
     );
@@ -112,7 +112,7 @@ export async function apiPost<T>(
   } catch (cause) {
     if (cause instanceof DOMException && cause.name === 'AbortError') throw cause;
     throw new ApiError(
-      `Cannot reach the SETU-DRR API at ${API_BASE_URL}. Is \`uv run uvicorn api.main:app\` running?`,
+      `Cannot reach the T.E.R.R.A. API at ${API_BASE_URL}. Is \`uv run uvicorn api.main:app\` running?`,
       0,
       'NETWORK_ERROR',
     );

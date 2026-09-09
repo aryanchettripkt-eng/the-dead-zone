@@ -10,10 +10,5 @@ export * from './districtBoundaries';
 export * from './IndiaDistrictOverlay';
 export * from './HazardSlideCard';
 export * from './HazardSlideshowModal';
-export * from './DistrictRiskHeader';
-export * from './DistrictSpotSelector';
-export * from './DistrictTelemetryGrid';
-export * from './DistrictDisasterHistory';
-export * from './TravelAdvisoryBanner';
-export * from './DistrictRiskModal';
 export * from './PublicStoriesPage';
+

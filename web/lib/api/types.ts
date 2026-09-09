@@ -1,5 +1,5 @@
 /**
- * Transport types for the SETU-DRR hazard layer API.
+ * Transport types for the T.E.R.R.A. hazard layer API.
  *
  * Mirrors `core/src/core/schemas/hazard.py` field-for-field, in snake_case, so no
  * mapping layer sits between the wire and the render path. Regenerate the canonical

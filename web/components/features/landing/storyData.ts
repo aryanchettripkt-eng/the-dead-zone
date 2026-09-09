@@ -23,7 +23,7 @@ export const LANDING_STORIES: StorySectionData[] = [
     title: 'Geospatial Hazard Triage',
     subtitle: 'High-density climate exposure modeling & automated habitation escalation',
     description:
-      'Continuous spatial indexing across Uttarakhand and Himalayan riverine corridors. SETU-DRR aggregates precipitation thresholds, slope rupture gradients, and seismic fault proximity into real-time hexagonal triage clusters, classifying vulnerable villages into Urgent Relocation and Caseload Watch tiers.',
+      'Continuous spatial indexing across Uttarakhand and Himalayan riverine corridors. T.E.R.R.A. aggregates precipitation thresholds, slope rupture gradients, and seismic fault proximity into real-time hexagonal triage clusters, classifying vulnerable villages into Urgent Relocation and Caseload Watch tiers.',
     pills: ['Sub-100m Resolution', 'Dynamic Flash Flood Watch', 'Zero Blindspot Coverage'],
     metrics: [
       { value: '14', label: 'Tier-1 Critical Red Zones' },
@@ -59,7 +59,7 @@ export const LANDING_STORIES: StorySectionData[] = [
     title: 'Sentinel InSAR Telemetry',
     subtitle: 'Millimeter-scale ground displacement radar feeds with automated alerts',
     description:
-      'Sub-surface moisture saturation and micro-fractures often precede catastrophic mass-wasting events. SETU-DRR synchronizes with dual-frequency satellite radar sweeps, detecting ground creep before visible landslides occur and triggering immediate SMS and radio dispatch to district magistrate control rooms.',
+      'Sub-surface moisture saturation and micro-fractures often precede catastrophic mass-wasting events. T.E.R.R.A. synchronizes with dual-frequency satellite radar sweeps, detecting ground creep before visible landslides occur and triggering immediate SMS and radio dispatch to district magistrate control rooms.',
     pills: ['Sentinel-1 SAR Feeds', 'Millimeter Deformation', 'NDRF Auto-Dispatch'],
     metrics: [
       { value: '2.4mm', label: 'Deformation Detection' },

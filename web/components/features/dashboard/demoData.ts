@@ -1,5 +1,5 @@
 /**
- * SETU-DRR: Disaster Risk Reduction & Relocation Planning Platform for India
+ * T.E.R.R.A.: Terrain-based Environmental Risk and Relocation Analytics Platform for India
  * Prototype Demo Data for Geospatial Hazard Intelligence & Relocation Decision Support
  */
 

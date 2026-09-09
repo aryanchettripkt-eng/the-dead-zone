@@ -82,7 +82,7 @@ export const AboutFeatureGrid: React.FC<AboutFeatureGridProps> = ({
   return (
     <section
       ref={containerRef}
-      aria-label="Core Pillars of SETU-DRR"
+      aria-label="Core Pillars of T.E.R.R.A."
       className={`relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 sm:pb-28 ${className}`}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 items-stretch">

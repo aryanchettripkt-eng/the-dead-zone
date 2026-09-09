@@ -1,5 +1,5 @@
 /**
- * Procedural Earth Textures for SETU-DRR 3D WebGL Globe
+ * Procedural Earth Textures for T.E.R.R.A. 3D WebGL Globe
  * Creates dark emerald & obsidian cartographic textures without circular artifacts
  */
 

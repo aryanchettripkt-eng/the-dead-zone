@@ -4,6 +4,9 @@
   "scripts": {
     "dev": "pnpm --filter web dev",
     "dev:web": "pnpm --filter web dev",
+    "web:dev": "pnpm --filter web dev",
+    "dev:api": "uv run uvicorn api.main:app --reload --port 8000",
+    "api:dev": "uv run uvicorn api.main:app --reload --port 8000",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "export:openapi": "uv run python scripts/export_openapi.py",

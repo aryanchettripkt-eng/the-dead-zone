@@ -22,8 +22,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SETU-DRR: Resilience Through Data | Global Vulnerability Command Center",
-  description: "Global Vulnerability Command Center & Hazard Relocation Decision Support Platform",
+  title: "T.E.R.R.A. | Terrain-based Environmental Risk and Relocation Analytics",
+  description: "T.E.R.R.A. (Terrain-based Environmental Risk and Relocation Analytics) — Global Vulnerability Command Center & Hazard Relocation Decision Support Platform",
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('setu-drr-theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches;var isDark=t==='dark'||(t==='system'&&s);var cl=document.documentElement.classList;cl.remove('light','dark');cl.add(isDark?'dark':'light');document.documentElement.setAttribute('data-theme',isDark?'dark':'light');document.documentElement.style.colorScheme=isDark?'dark':'light';}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('terra-theme')||localStorage.getItem('setu-drr-theme');var s=window.matchMedia('(prefers-color-scheme: dark)').matches;var isDark=t==='dark'||(t==='system'&&s);var cl=document.documentElement.classList;cl.remove('light','dark');cl.add(isDark?'dark':'light');document.documentElement.setAttribute('data-theme',isDark?'dark':'light');document.documentElement.style.colorScheme=isDark?'dark':'light';}catch(e){}})();`,
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
