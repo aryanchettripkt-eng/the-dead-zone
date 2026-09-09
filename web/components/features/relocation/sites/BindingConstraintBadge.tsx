@@ -1,7 +1,7 @@
 import { Badge, type BadgeSize } from '@/components/ui';
 import type { BindingConstraint } from '@/lib/api/types';
 
-import { CONSTRAINT_HINTS, CONSTRAINT_LABELS } from './constants';
+import { CONSTRAINT_HINTS, CONSTRAINT_LABELS } from '../constants';
 
 export interface BindingConstraintBadgeProps {
   constraint?: BindingConstraint | null;

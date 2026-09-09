@@ -34,10 +34,10 @@ export const UnmetDemandMeter = ({
       className={['flex flex-col gap-1.5', classNames.root ?? '', className].filter(Boolean).join(' ')}
     >
       <div className="flex items-baseline justify-between gap-2">
-        <span className={['text-[10px] uppercase tracking-wide text-ink-faint', classNames.label ?? ''].join(' ')}>
+        <span className={['text-[10px] uppercase tracking-wide text-ink-faint font-semibold', classNames.label ?? ''].join(' ')}>
           {label}
         </span>
-        <span className="font-mono text-[11px] tabular-nums text-ink">
+        <span className="font-mono text-[11px] tabular-nums font-bold text-ink">
           {(placedFraction * 100).toFixed(1)}%
         </span>
       </div>
@@ -49,7 +49,7 @@ export const UnmetDemandMeter = ({
         />
       </div>
 
-      <div className={['flex justify-between text-[10px]', classNames.legend ?? ''].join(' ')}>
+      <div className={['flex justify-between text-[10px] font-medium', classNames.legend ?? ''].join(' ')}>
         <span className="text-safe">{placedHouseholds.toLocaleString()} HH placed</span>
         <span className="text-critical">{unmetHouseholds.toLocaleString()} HH unmet</span>
       </div>

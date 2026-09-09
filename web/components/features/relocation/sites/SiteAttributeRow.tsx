@@ -30,7 +30,7 @@ export const SiteAttributeRow = ({
           {item.label}
         </span>
         <span
-          className={['font-mono text-[11px] tabular-nums text-ink', classNames.value ?? ''].join(' ')}
+          className={['font-mono text-[11px] tabular-nums text-ink font-medium', classNames.value ?? ''].join(' ')}
         >
           {item.value}
         </span>

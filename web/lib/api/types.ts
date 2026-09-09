@@ -146,6 +146,9 @@ export type AllocationPlanRequest = components['schemas']['AllocationPlanRequest
 export type AllocationPlanResponse = components['schemas']['AllocationPlanResponse'];
 export type AllocationAssignment = components['schemas']['AllocationAssignmentDTO'];
 
+export type SiteCapacityOverrideRequest = components['schemas']['SiteCapacityOverrideRequest'];
+export type SiteCapacityOverrideResponse = components['schemas']['SiteCapacityOverrideResponse'];
+
 /* ---- Alert zones (active triggers, forecast threshold crossings) ---- */
 
 export type ActiveAlertItem = components['schemas']['ActiveAlertItem'];

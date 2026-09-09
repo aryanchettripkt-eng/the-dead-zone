@@ -12,13 +12,15 @@ import { AugmentedCapacityCallout } from './AugmentedCapacityCallout';
 import { CapacityWaterfall } from './CapacityWaterfall';
 import { SiteAttributeRow } from './SiteAttributeRow';
 import { SiteRejectionNotice } from './SiteRejectionNotice';
-import { TENURE_LABELS, UNMEASURED_LABEL } from './constants';
+import { TENURE_LABELS, UNMEASURED_LABEL } from '../constants';
 
 export interface CandidateSiteCardProps {
   site: CandidateSiteItem;
   rank?: number;
   isSelected?: boolean;
   onSelect?: (site: CandidateSiteItem) => void;
+  /** Callback to launch policy norm capacity override simulator. */
+  onSimulateCapacity?: (site: CandidateSiteItem) => void;
   /** Collapses the capacity dimension bars, for dense comparison views. */
   compact?: boolean;
   className?: string;
@@ -50,6 +52,7 @@ export const CandidateSiteCard = ({
   rank,
   isSelected = false,
   onSelect,
+  onSimulateCapacity,
   compact = false,
   className = '',
   classNames = {},
@@ -93,9 +96,9 @@ export const CandidateSiteCard = ({
       }}
       className={[
         'flex flex-col gap-3 rounded-2xl border p-4 will-change-transform transition-colors duration-150',
-        isSelected ? 'border-accent bg-accent/[0.06]' : 'border-line/60 bg-surface-1/40',
+        isSelected ? 'border-accent bg-accent/[0.06] shadow-xs' : 'border-line/60 bg-surface-1/40',
         site.allocatable ? '' : 'opacity-90',
-        onSelect ? 'cursor-pointer hover:border-line-strong' : '',
+        onSelect ? 'cursor-pointer hover:border-line-strong hover:bg-surface-1/60' : '',
         classNames.root ?? '',
         className,
       ]
@@ -164,6 +167,32 @@ export const CandidateSiteCard = ({
             reasons={site.rejection_reasons ?? []}
             eligibilityStatus={site.eligibility_status}
           />
+        )}
+
+        {onSimulateCapacity && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSimulateCapacity(site);
+            }}
+            className="mt-1 flex w-full items-center justify-center gap-1.5 rounded-xl border border-accent/40 bg-accent/10 py-2 text-[11px] font-semibold text-accent hover:bg-accent/20 hover:border-accent transition-all active:scale-[0.98] cursor-pointer"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+              />
+            </svg>
+            <span>Simulate Capacity Overrides</span>
+          </button>
         )}
       </div>
     </div>

@@ -9,7 +9,7 @@ import type { BindingConstraint, CapacityBreakdown } from '@/lib/api/types';
 
 import { BindingConstraintBadge } from './BindingConstraintBadge';
 import { CapacityBar } from './CapacityBar';
-import { UNMEASURED_LABEL } from './constants';
+import { UNMEASURED_LABEL } from '../constants';
 
 const DIMENSIONS: BindingConstraint[] = ['land', 'water', 'school', 'health'];
 
@@ -93,7 +93,7 @@ export const CapacityWaterfall = ({
       className={['flex flex-col gap-3', classNames.root ?? '', className].filter(Boolean).join(' ')}
     >
       <div className={['flex items-center justify-between gap-2', classNames.header ?? ''].join(' ')}>
-        <span className="text-[10px] uppercase tracking-wide text-ink-faint">{title}</span>
+        <span className="text-[10px] uppercase tracking-wide text-ink-faint font-semibold">{title}</span>
         <BindingConstraintBadge
           constraint={capacity.binding_constraint}
           tiedConstraints={capacity.tied_constraints}

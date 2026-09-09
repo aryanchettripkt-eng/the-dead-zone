@@ -2,7 +2,7 @@
 
 import type { AllocationAssignment } from '@/lib/api/types';
 
-import { TierBadge } from './TierBadge';
+import { TierBadge } from '../TierBadge';
 
 export interface AllocationAssignmentRowProps {
   assignment: AllocationAssignment;
@@ -38,9 +38,11 @@ export const AllocationAssignmentRow = ({
       }
     }}
     className={[
-      'flex flex-col gap-1 rounded-xl border px-3 py-2 transition-colors duration-150',
-      isHighlighted ? 'border-accent bg-accent/[0.06]' : 'border-line/60 bg-surface-1/40',
-      onSelect ? 'cursor-pointer hover:border-line-strong' : '',
+      'flex flex-col gap-1 rounded-xl border px-3 py-2 transition-all duration-150',
+      isHighlighted
+        ? 'border-accent bg-accent/[0.08] shadow-xs'
+        : 'border-line/60 bg-surface-1/40 hover:border-line-strong hover:bg-surface-2/40',
+      onSelect ? 'cursor-pointer' : '',
       classNames.root ?? '',
       className,
     ]
@@ -55,8 +57,8 @@ export const AllocationAssignmentRow = ({
     </div>
 
     <div className="flex items-center gap-2 text-[10px] text-ink-faint">
-      <span aria-hidden>→</span>
-      <span className={['truncate', classNames.destination ?? ''].join(' ')}>
+      <span aria-hidden className="text-accent font-bold">→</span>
+      <span className={['truncate font-medium text-ink', classNames.destination ?? ''].join(' ')}>
         Site {assignment.site_id}
       </span>
       <span aria-hidden>·</span>
@@ -68,14 +70,14 @@ export const AllocationAssignmentRow = ({
         </>
       ) : null}
       <span
-        className={['ml-auto font-mono font-semibold tabular-nums text-ink', classNames.households ?? ''].join(' ')}
+        className={['ml-auto font-mono font-bold tabular-nums text-ink', classNames.households ?? ''].join(' ')}
       >
         {assignment.households.toLocaleString()} HH
       </span>
     </div>
 
     {assignment.has_group_split && assignment.split_details ? (
-      <p className={['text-[10px] leading-snug text-warning', classNames.split ?? ''].join(' ')}>
+      <p className={['text-[10px] leading-snug text-warning font-medium', classNames.split ?? ''].join(' ')}>
         {assignment.split_details}
       </p>
     ) : null}

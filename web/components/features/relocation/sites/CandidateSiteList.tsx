@@ -19,6 +19,7 @@ export interface CandidateSiteListProps {
   error?: ApiError | null;
   selectedId?: number | null;
   onSelect?: (site: CandidateSiteItem) => void;
+  onSimulateCapacity?: (site: CandidateSiteItem) => void;
   onRetry?: () => void;
   title?: React.ReactNode;
   description?: React.ReactNode;
@@ -50,6 +51,7 @@ export const CandidateSiteList = ({
   error = null,
   selectedId = null,
   onSelect,
+  onSimulateCapacity,
   onRetry,
   title = 'Candidate sites',
   description,
@@ -121,7 +123,7 @@ export const CandidateSiteList = ({
         ))
       ) : (
         <>
-          <div className={['flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto', classNames.list ?? ''].join(' ')}>
+          <div className={['flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-0.5', classNames.list ?? ''].join(' ')}>
             {sites.map((site, index) => (
               <CandidateSiteCard
                 key={site.id}
@@ -129,6 +131,7 @@ export const CandidateSiteList = ({
                 rank={index + 1}
                 isSelected={site.id === selectedId}
                 onSelect={onSelect}
+                onSimulateCapacity={onSimulateCapacity}
                 compact={compactCards}
                 animation={{ disabled: !animate }}
               />

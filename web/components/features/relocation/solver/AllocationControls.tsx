@@ -3,7 +3,7 @@
 import { Button, SegmentedControl, Slider, Toggle } from '@/components/ui';
 import type { Tier } from '@/lib/api/types';
 
-import { TIER_LABELS } from './constants';
+import { TIER_LABELS } from '../constants';
 
 export interface AllocationSettings {
   maxSearchRadiusKm: number;
@@ -101,9 +101,19 @@ export const AllocationControls = ({
         fullWidth
         disabled={disabled || isSolving}
         onClick={onSolve}
-        className={classNames.action}
+        className={['active:scale-[0.98] transition-transform duration-100 font-semibold shadow-xs', classNames.action ?? ''].join(' ')}
       >
-        {isSolving ? 'Solving…' : solveLabel}
+        {isSolving ? (
+          <span className="flex items-center justify-center gap-2">
+            <svg className="h-4 w-4 animate-spin text-current" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+            Solving allocation…
+          </span>
+        ) : (
+          solveLabel
+        )}
       </Button>
     </div>
   );

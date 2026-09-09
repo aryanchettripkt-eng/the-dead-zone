@@ -8,7 +8,7 @@ import { usePrefersReducedMotion } from '@/lib/hooks/usePrefersReducedMotion';
 import type { HabitationListItem } from '@/lib/api/types';
 import { formatCount, formatPercent, formatScore } from '@/lib/map/format';
 
-import { TierBadge } from './TierBadge';
+import { TierBadge } from '../TierBadge';
 
 export interface HabitationQueueRowProps {
   habitation: HabitationListItem;
@@ -71,10 +71,10 @@ export const HabitationQueueRow = ({
       aria-pressed={isSelected}
       className={[
         'flex w-full flex-col gap-1.5 rounded-xl border px-3 py-2.5 text-left will-change-transform',
-        'transition-colors duration-150',
+        'transition-colors duration-150 cursor-pointer',
         isSelected
-          ? 'border-accent bg-accent/10'
-          : 'border-line/60 bg-surface-1/40 hover:border-line-strong',
+          ? 'border-accent bg-accent/10 shadow-xs'
+          : 'border-line/60 bg-surface-1/40 hover:border-line-strong hover:bg-surface-2/40',
         classNames.root ?? '',
         className,
       ]
@@ -103,7 +103,7 @@ export const HabitationQueueRow = ({
           {formatPercent(habitation.prz_overlap_pct / 100)} PRZ
         </span>
         <span
-          className={['ml-auto font-mono tabular-nums text-ink', classNames.score ?? ''].join(' ')}
+          className={['ml-auto font-mono tabular-nums text-ink font-medium', classNames.score ?? ''].join(' ')}
           title="Priority score"
         >
           {formatScore(habitation.priority_score)}
