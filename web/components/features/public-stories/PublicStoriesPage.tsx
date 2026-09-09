@@ -6,7 +6,7 @@ import { StoriesHeroText } from './StoriesHeroText';
 import { StoriesHeaderCoordinates } from './StoriesHeaderCoordinates';
 import { ZoneTickSelector } from './ZoneTickSelector';
 import { IndiaStoriesMap } from './IndiaStoriesMap';
-import { HazardSlideshowModal } from './HazardSlideshowModal';
+import { DistrictRiskModal } from './DistrictRiskModal';
 
 export interface PublicStoriesPageProps {
   /** Target link for returning to landing page / overview (default '/') */
@@ -28,11 +28,11 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
   onSwitchToGovPortal,
   className = '',
 }) => {
-  // Default to Central zone to match Reference Image 2!
-  const [selectedZone, setSelectedZone] = useState<ZoneId>('Central');
-  const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
+  // Default to Wayanad (supported backend pilot district)
+  const [selectedZone, setSelectedZone] = useState<ZoneId>('Wayanad');
+  const [isRiskModalOpen, setIsRiskModalOpen] = useState(false);
 
-  const activeStory = REGIONAL_STORIES[selectedZone];
+  const activeStory = REGIONAL_STORIES[selectedZone] || REGIONAL_STORIES.Wayanad;
 
   return (
     <div
@@ -58,7 +58,7 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
         {/* Left Column: Headline & Region Context */}
         <div className="hidden lg:flex lg:col-span-3 h-full flex-col justify-center pl-2">
           <StoriesHeroText
-            category="T.E.R.R.A. STORIES"
+            category="T.E.R.R.A. TOURIST HAZARD ADVISORY"
             activeZoneLabel={activeStory.label}
             summary={activeStory.shortSummary}
           />
@@ -69,7 +69,7 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
           <IndiaStoriesMap
             selectedZone={selectedZone}
             onSelectZone={(zone) => setSelectedZone(zone)}
-            onOpenSlideshow={() => setIsSlideshowOpen(true)}
+            onOpenSlideshow={() => setIsRiskModalOpen(true)}
           />
         </div>
 
@@ -82,17 +82,17 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
         </div>
       </div>
 
-      {/* Mobile/Tablet Fallback Footer Zone Selector */}
-      <div className="sm:hidden relative z-20 flex items-center justify-center gap-2 pt-2 border-t border-white/10">
-        {(['North', 'West', 'Central', 'East', 'South'] as ZoneId[]).map((zone) => (
+      {/* Mobile/Tablet Fallback Footer District Selector */}
+      <div className="sm:hidden relative z-20 flex items-center justify-center gap-2 pt-2 border-t border-line dark:border-white/10">
+        {(['Wayanad', 'Kodagu', 'Barpeta'] as ZoneId[]).map((zone) => (
           <button
             key={zone}
             type="button"
             onClick={() => setSelectedZone(zone)}
-            className={`px-2.5 py-1 text-xs rounded-md font-mono ${
+            className={`px-3 py-1 text-xs rounded-md font-mono ${
               selectedZone === zone
-                ? 'bg-[#a3e635] text-[#0e261d] font-bold'
-                : 'text-cream/60'
+                ? 'bg-m3-accent-foliage text-[#0e261d] font-bold'
+                : 'text-ink-muted dark:text-cream/60'
             }`}
           >
             {zone}
@@ -100,11 +100,11 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
         ))}
       </div>
 
-      {/* 3. HAZARD ZONES SLIDESHOW MODAL */}
-      <HazardSlideshowModal
-        isOpen={isSlideshowOpen}
+      {/* 3. LIVE DISTRICT RISK ASSESSMENT MODAL */}
+      <DistrictRiskModal
+        isOpen={isRiskModalOpen}
         zone={selectedZone}
-        onClose={() => setIsSlideshowOpen(false)}
+        onClose={() => setIsRiskModalOpen(false)}
       />
     </div>
   );
