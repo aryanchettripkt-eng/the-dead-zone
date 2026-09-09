@@ -7,14 +7,17 @@ import gsap from 'gsap';
 export interface StoryDiscoverBadgeProps {
   /** Callback when user clicks the discover badge */
   onClick: () => void;
+  /** Custom circular label (default: '+ ASSESS TRAVEL RISK +') */
+  label?: string;
   /** Custom root className */
   className?: string;
-  /** Size in pixels (default 80) */
+  /** Size in pixels (default 84) */
   size?: number;
 }
 
 export const StoryDiscoverBadge: React.FC<StoryDiscoverBadgeProps> = ({
   onClick,
+  label = '+ ASSESS TRAVEL RISK +',
   className = '',
   size = 84,
 }) => {
@@ -39,7 +42,7 @@ export const StoryDiscoverBadge: React.FC<StoryDiscoverBadgeProps> = ({
       onClick={onClick}
       className={`group relative flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-95 focus:outline-none ${className}`}
       style={{ width: size, height: size }}
-      aria-label="Discover Stories"
+      aria-label="Assess Travel Risk"
     >
       {/* Outer Rotating Circular Text */}
       <svg
@@ -53,22 +56,22 @@ export const StoryDiscoverBadge: React.FC<StoryDiscoverBadgeProps> = ({
           fill="none"
         />
         <text
-          fontSize="9.2"
-          letterSpacing="0.28em"
+          fontSize="8.4"
+          letterSpacing="0.22em"
           fill="currentColor"
           fontWeight="600"
           className="font-mono uppercase opacity-95 text-[#2d6a4f] dark:text-[#fef08a]"
         >
           <textPath href="#discoverTextPath" startOffset="0%">
-            + DISCOVER STORIES +
+            {label}
           </textPath>
         </text>
       </svg>
 
-      {/* Central Tactile Ivory Pill with + */}
-      <div className="w-10 h-10 rounded-full bg-[#fde68a] text-[#162a21] shadow-lg flex items-center justify-center font-bold text-xl transition-all duration-300 group-hover:bg-white group-hover:shadow-[0_0_20px_rgba(253,230,138,0.7)]">
-        <span className="leading-none transition-transform duration-300 group-hover:rotate-90">
-          +
+      {/* Central Tactile Ivory Pill with Shield / Warning Icon */}
+      <div className="w-10 h-10 rounded-full bg-[#fde68a] text-[#162a21] shadow-lg flex items-center justify-center font-bold text-lg transition-all duration-300 group-hover:bg-white group-hover:shadow-[0_0_20px_rgba(253,230,138,0.7)]">
+        <span className="material-symbols-outlined text-xl leading-none transition-transform duration-300 group-hover:scale-110">
+          shield
         </span>
       </div>
     </button>

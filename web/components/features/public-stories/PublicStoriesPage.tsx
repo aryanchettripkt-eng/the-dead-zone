@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ZoneId, REGIONAL_STORIES } from './storyData';
+import { ZoneId, BackendDistrictId, FEATURED_DISTRICTS, REGIONAL_STORIES } from './storyData';
 import { StoriesHeroText } from './StoriesHeroText';
 import { StoriesHeaderCoordinates } from './StoriesHeaderCoordinates';
 import { ZoneTickSelector } from './ZoneTickSelector';
 import { IndiaStoriesMap } from './IndiaStoriesMap';
-import { HazardSlideshowModal } from './HazardSlideshowModal';
+import { DistrictRiskModal } from './DistrictRiskModal';
 
 export interface PublicStoriesPageProps {
   /** Target link for returning to landing page / overview (default '/') */
@@ -28,11 +28,18 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
   onSwitchToGovPortal,
   className = '',
 }) => {
-  // Default to Central zone to match Reference Image 2!
-  const [selectedZone, setSelectedZone] = useState<ZoneId>('Central');
+  // Default to Wayanad — our primary active red zone with authoritative backend data
+  const [selectedZone, setSelectedZone] = useState<ZoneId>('Wayanad');
   const [isSlideshowOpen, setIsSlideshowOpen] = useState(false);
 
-  const activeStory = REGIONAL_STORIES[selectedZone];
+  const activeStory = REGIONAL_STORIES[selectedZone] || REGIONAL_STORIES.Wayanad;
+
+  const handleSelectDistrict = (zone: ZoneId, openPopup = true) => {
+    setSelectedZone(zone);
+    if (openPopup) {
+      setIsSlideshowOpen(true);
+    }
+  };
 
   return (
     <div
@@ -55,11 +62,11 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
 
       {/* 2. MAIN INTERACTION CANVAS: Left Text + Center Map + Right Zone Selector */}
       <div className="relative z-10 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-4 min-h-0">
-        {/* Left Column: Headline & Region Context */}
+        {/* Left Column: Headline & Tourist Hazard Advisory */}
         <div className="hidden lg:flex lg:col-span-3 h-full flex-col justify-center pl-2">
           <StoriesHeroText
-            category="SETU-DRR STORIES"
-            activeZoneLabel={activeStory.label}
+            category="SETU-DRR TOURIST HAZARD ADVISORY"
+            activeZoneLabel={`${activeStory.districtName} (${activeStory.stateName})`}
             summary={activeStory.shortSummary}
           />
         </div>
@@ -68,40 +75,40 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
         <div className="col-span-1 lg:col-span-7 h-full w-full flex items-center justify-center relative">
           <IndiaStoriesMap
             selectedZone={selectedZone}
-            onSelectZone={(zone) => setSelectedZone(zone)}
+            onSelectZone={(zone) => handleSelectDistrict(zone, true)}
             onOpenSlideshow={() => setIsSlideshowOpen(true)}
           />
         </div>
 
-        {/* Right Column: Zone Tick Ruler Selector */}
+        {/* Right Column: Zone/District Tick Ruler Selector */}
         <div className="hidden sm:flex col-span-1 lg:col-span-2 h-full flex-col justify-center items-end pr-4">
           <ZoneTickSelector
             selectedZone={selectedZone}
-            onSelectZone={(zone) => setSelectedZone(zone)}
+            onSelectZone={(zone) => handleSelectDistrict(zone, true)}
           />
         </div>
       </div>
 
-      {/* Mobile/Tablet Fallback Footer Zone Selector */}
+      {/* Mobile/Tablet Fallback Footer District Selector */}
       <div className="sm:hidden relative z-20 flex items-center justify-center gap-2 pt-2 border-t border-white/10">
-        {(['North', 'West', 'Central', 'East', 'South'] as ZoneId[]).map((zone) => (
+        {FEATURED_DISTRICTS.map((district) => (
           <button
-            key={zone}
+            key={district}
             type="button"
-            onClick={() => setSelectedZone(zone)}
-            className={`px-2.5 py-1 text-xs rounded-md font-mono ${
-              selectedZone === zone
+            onClick={() => handleSelectDistrict(district, true)}
+            className={`px-3 py-1.5 text-xs rounded-lg font-mono transition-colors ${
+              selectedZone === district
                 ? 'bg-[#a3e635] text-[#0e261d] font-bold'
-                : 'text-cream/60'
+                : 'text-cream/70 bg-white/5'
             }`}
           >
-            {zone}
+            {district}
           </button>
         ))}
       </div>
 
-      {/* 3. HAZARD ZONES SLIDESHOW MODAL */}
-      <HazardSlideshowModal
+      {/* 3. DISTRICT RISK ASSESSMENT POP-UP (Connected to Live Backend) */}
+      <DistrictRiskModal
         isOpen={isSlideshowOpen}
         zone={selectedZone}
         onClose={() => setIsSlideshowOpen(false)}
