@@ -22,7 +22,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-black/60 backdrop-blur-sm ${className}`}>
-      <div className="w-full max-w-3xl max-h-[90vh] bg-gov-bg-light dark:bg-gov-bg rounded-2xl border border-gov-bg/20 dark:border-gov-bg-light/20 shadow-2xl flex flex-col overflow-hidden text-gov-bg dark:text-cream">
+      <div className="w-full max-w-3xl max-h-[90vh] bg-gov-bg-light dark:bg-gov-bg rounded-3xl border border-gov-bg/20 dark:border-gov-bg-light/20 shadow-2xl flex flex-col overflow-hidden text-gov-bg dark:text-cream">
         {/* MODAL HEADER */}
         <div className="p-6 border-b border-gov-bg/10 dark:border-gov-bg-light/10 flex items-start justify-between bg-gov-surface-light/50 dark:bg-gov-surface/50">
           <div>
@@ -43,7 +43,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gov-bg/50 dark:text-cream/50 hover:text-gov-bg dark:hover:text-cream hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-gov-bg/50 dark:text-cream/50 hover:text-gov-bg dark:hover:text-cream hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 transition-colors cursor-pointer"
           >
             ✕
           </button>
@@ -52,7 +52,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
         {/* MODAL BODY (4 CORE DIMENSIONS) */}
         <div className="p-6 overflow-y-auto flex-1 flex flex-col gap-6">
           {/* DIMENSION 1: HAZARD & TERRAIN */}
-          <div className="p-4 rounded-xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
+          <div className="p-4 rounded-2xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-gov-bg/8 dark:border-gov-bg-light/8">
               <span className="text-xs font-bold uppercase tracking-wider text-gov-red flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-gov-red" />
@@ -64,19 +64,19 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">Primary Hazard</div>
                 <div className="font-bold text-sm mt-0.5">{habitation.hazardType}</div>
               </div>
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">Mean Slope</div>
                 <div className="font-bold text-sm mt-0.5 font-mono">34.2° (Critical)</div>
               </div>
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">72h Rain Anomaly</div>
                 <div className="font-bold text-sm mt-0.5 font-mono text-gov-orange">+184 mm</div>
               </div>
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">Historical Events</div>
                 <div className="font-bold text-sm mt-0.5 font-mono">6 Landslides (10yr)</div>
               </div>
@@ -84,7 +84,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
           </div>
 
           {/* DIMENSION 2: EXPOSURE */}
-          <div className="p-4 rounded-xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
+          <div className="p-4 rounded-2xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-gov-bg/8 dark:border-gov-bg-light/8">
               <span className="text-xs font-bold uppercase tracking-wider text-gov-orange flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-gov-orange" />
@@ -96,19 +96,19 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">Total Population</div>
                 <div className="font-bold text-sm mt-0.5 font-mono">{habitation.population.toLocaleString()}</div>
               </div>
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">Total Households</div>
                 <div className="font-bold text-sm mt-0.5 font-mono">{habitation.households} HH</div>
               </div>
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">Critical Assets</div>
                 <div className="font-bold text-sm mt-0.5">2 Schools, 1 PHC</div>
               </div>
-              <div className="p-2.5 rounded bg-gov-bg-light/60 dark:bg-gov-bg/60">
+              <div className="p-2.5 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60">
                 <div className="text-[10px] text-gov-bg/60 dark:text-cream/60">Access Arteries</div>
                 <div className="font-bold text-sm mt-0.5">NH-58 (Vulnerable)</div>
               </div>
@@ -116,7 +116,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
           </div>
 
           {/* DIMENSION 3: VULNERABILITY (SoVI) */}
-          <div className="p-4 rounded-xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
+          <div className="p-4 rounded-2xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-gov-bg/8 dark:border-gov-bg-light/8">
               <span className="text-xs font-bold uppercase tracking-wider text-gov-amber flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-gov-amber" />
@@ -131,7 +131,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
           </div>
 
           {/* DIMENSION 4: CONFIDENCE */}
-          <div className="p-4 rounded-xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
+          <div className="p-4 rounded-2xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10">
             <div className="flex items-center justify-between pb-2 mb-3 border-b border-gov-bg/8 dark:border-gov-bg-light/8">
               <span className="text-xs font-bold uppercase tracking-wider text-gov-green flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-gov-green" />
@@ -153,7 +153,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-md border border-gov-bg/20 dark:border-gov-bg-light/20 text-xs font-semibold hover:bg-gov-bg/5 dark:hover:bg-gov-bg-light/5 transition-colors cursor-pointer"
+            className="px-4 py-2 rounded-xl border border-gov-bg/20 dark:border-gov-bg-light/20 text-xs font-semibold hover:bg-gov-bg/5 dark:hover:bg-gov-bg-light/5 transition-colors cursor-pointer"
           >
             Close
           </button>
@@ -163,7 +163,7 @@ export const GovHabitationModal: React.FC<GovHabitationModalProps> = ({
               onClose();
               onOpenRelocation(habitation);
             }}
-            className="px-5 py-2 rounded-md bg-gov-red hover:bg-gov-red/85 text-white text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
+            className="px-5 py-2 rounded-xl bg-gov-red hover:bg-gov-red/85 text-white text-xs font-bold uppercase tracking-wider shadow-md transition-all cursor-pointer"
           >
             Open Relocation Plan →
           </button>

@@ -29,7 +29,7 @@ export const SiteAssessmentNotice = ({
   return (
     <div
       className={[
-        'rounded-lg border border-line/60 bg-surface-1/40 px-3 py-2',
+        'rounded-xl border border-line/60 bg-surface-1/40 px-3 py-2',
         classNames.root ?? '',
         className,
       ]

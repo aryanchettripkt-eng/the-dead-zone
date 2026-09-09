@@ -22,7 +22,7 @@ export const TelemetrySidebar: React.FC<TelemetrySidebarProps> = ({
 
   return (
     <aside
-      className={`p-3 rounded-xl bg-gov-surface-light/90 dark:bg-gov-surface/90 backdrop-blur-md border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-xl transition-all duration-200 select-none ${
+      className={`p-3 rounded-2xl bg-gov-surface-light/90 dark:bg-gov-surface/90 backdrop-blur-md border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-xl transition-all duration-200 select-none ${
         isCollapsed ? 'w-10 overflow-hidden' : 'w-56 sm:w-64'
       } ${className}`}
     >

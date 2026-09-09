@@ -39,7 +39,7 @@ export const Hex3DTooltip: React.FC<Hex3DTooltipProps> = ({
   return (
     <div
       ref={rootRef}
-      className="pointer-events-none fixed z-50 rounded-xl glass-card p-3 shadow-2xl border border-line dark:border-white/15 backdrop-blur-xl transition-all"
+      className="pointer-events-none fixed z-50 rounded-2xl glass-card p-3 shadow-2xl border border-line dark:border-white/15 backdrop-blur-xl transition-all"
       style={{
         left: `${position.x + 14}px`,
         top: `${position.y - 48}px`,

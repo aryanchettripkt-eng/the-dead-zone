@@ -92,7 +92,7 @@ export const CandidateSiteCard = ({
         }
       }}
       className={[
-        'flex flex-col gap-3 rounded-xl border p-4 will-change-transform transition-colors duration-150',
+        'flex flex-col gap-3 rounded-2xl border p-4 will-change-transform transition-colors duration-150',
         isSelected ? 'border-accent bg-accent/[0.06]' : 'border-line/60 bg-surface-1/40',
         site.allocatable ? '' : 'opacity-90',
         onSelect ? 'cursor-pointer hover:border-line-strong' : '',

@@ -101,7 +101,7 @@ export const ForecastSignalNotice = ({
   return (
     <div
       ref={rootRef}
-      className={['rounded-md border px-3 py-2', TONE[state], classNames.root ?? '', className]
+      className={['rounded-xl border px-3 py-2', TONE[state], classNames.root ?? '', className]
         .filter(Boolean)
         .join(' ')}
     >

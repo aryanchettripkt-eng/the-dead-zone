@@ -110,7 +110,7 @@ export const CellDossier = ({
 
       {detail.drivers ? <DriverBreakdown drivers={detail.drivers} /> : null}
 
-      <ScreeningGradeNotice notice={detail.screening_grade} className="rounded-md border-t-0 border" />
+      <ScreeningGradeNotice notice={detail.screening_grade} className="rounded-xl border" />
     </div>
   );
 };

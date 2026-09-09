@@ -76,7 +76,7 @@ export const GovTelemetryMetrics: React.FC<GovTelemetryMetricsProps> = ({
             key={m.id}
             type="button"
             onClick={() => onMetricClick?.(m.id)}
-            className="flex flex-col text-left px-3 py-1.5 rounded-md bg-gov-surface-light/60 dark:bg-gov-surface/60 border border-gov-bg/8 dark:border-gov-bg-light/8 hover:border-gov-bg/20 dark:hover:border-gov-bg-light/20 hover:bg-gov-surface-light/90 dark:hover:bg-gov-surface-hover/80 transition-all duration-150 group cursor-pointer"
+            className="flex flex-col text-left px-3 py-1.5 rounded-xl bg-gov-surface-light/60 dark:bg-gov-surface/60 border border-gov-bg/8 dark:border-gov-bg-light/8 hover:border-gov-bg/20 dark:hover:border-gov-bg-light/20 hover:bg-gov-surface-light/90 dark:hover:bg-gov-surface-hover/80 transition-all duration-150 group cursor-pointer"
           >
             <div className="flex items-center justify-between w-full">
               <span className="text-[10px] font-semibold tracking-wider text-gov-bg/60 dark:text-cream/60 uppercase">

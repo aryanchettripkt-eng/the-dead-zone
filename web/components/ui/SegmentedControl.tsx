@@ -77,7 +77,7 @@ export const SegmentedControl = <T extends string | number>({
       <div
         role="radiogroup"
         className={[
-          'inline-flex rounded-md border border-line bg-surface-2 p-0.5',
+          'inline-flex rounded-xl border border-line bg-surface-2 p-0.5',
           classNames.group ?? '',
         ].join(' ')}
       >
@@ -95,7 +95,7 @@ export const SegmentedControl = <T extends string | number>({
               data-selected={selected}
               onClick={() => onValueChange?.(option.value)}
               className={[
-                'flex-1 rounded px-2.5 py-1 text-[11px] font-medium transition-colors duration-150',
+                'flex-1 rounded-lg px-2.5 py-1 text-[11px] font-medium transition-colors duration-150',
                 'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent',
                 'disabled:cursor-not-allowed disabled:opacity-40',
                 selected ? 'bg-accent/15 text-accent' : 'text-ink-muted hover:text-ink',

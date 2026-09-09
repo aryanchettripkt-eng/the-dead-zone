@@ -74,7 +74,7 @@ export const MapLegendPanel = ({
     <div
       ref={rootRef}
       className={[
-        'pointer-events-auto absolute bottom-8 left-3 z-10 w-60 rounded-lg border border-line bg-panel/92 p-3 shadow-lg backdrop-blur-md',
+        'pointer-events-auto absolute bottom-8 left-3 z-10 w-60 rounded-2xl border border-line bg-panel/92 p-3 shadow-lg backdrop-blur-md',
         classNames.root ?? '',
         className,
       ]

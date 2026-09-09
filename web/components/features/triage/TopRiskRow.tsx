@@ -76,7 +76,7 @@ export const TopRiskRow = ({
       onMouseEnter={() => onHover?.(cell.h3)}
       onMouseLeave={() => onHover?.(null)}
       className={[
-        'flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left will-change-transform',
+        'flex w-full items-center gap-2 rounded-xl border px-2 py-1.5 text-left will-change-transform',
         'transition-colors duration-150',
         isSelected ? 'border-accent bg-accent/10' : 'border-transparent hover:border-line',
         classNames.root ?? '',
@@ -101,7 +101,7 @@ export const TopRiskRow = ({
         {formatH3(cell.h3)}
       </span>
       {isPrzCandidate ? (
-        <span className="shrink-0 rounded-sm border border-critical/45 px-1 text-[9px] font-semibold uppercase text-critical">
+        <span className="shrink-0 rounded-full border border-critical/45 px-1.5 text-[9px] font-semibold uppercase text-critical">
           PRZ
         </span>
       ) : null}

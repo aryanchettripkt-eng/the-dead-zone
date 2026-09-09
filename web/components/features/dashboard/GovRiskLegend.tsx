@@ -15,7 +15,7 @@ export const GovRiskLegend: React.FC<GovRiskLegendProps> = ({
 }) => {
   return (
     <div
-      className={`bg-gov-bg-light/95 dark:bg-gov-bg/95 backdrop-blur-md rounded-lg border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-md p-2.5 text-xs select-none transition-all duration-200 z-10 ${className}`}
+      className={`bg-gov-bg-light/95 dark:bg-gov-bg/95 backdrop-blur-md rounded-2xl border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-md p-2.5 text-xs select-none transition-all duration-200 z-10 ${className}`}
     >
       <div className="flex items-center justify-between gap-3 mb-1.5">
         <span className="text-[10px] font-bold tracking-wider text-gov-bg/70 dark:text-cream/70 uppercase">

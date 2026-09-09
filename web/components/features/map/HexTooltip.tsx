@@ -41,7 +41,7 @@ export const HexTooltip = ({
     <div
       style={{ left: x + 14, top: y + 14 }}
       className={[
-        'pointer-events-none absolute z-30 w-56 rounded-md border border-line bg-panel/95 p-2.5 shadow-xl backdrop-blur-md',
+        'pointer-events-none absolute z-30 w-56 rounded-2xl border border-line bg-panel/95 p-2.5 shadow-xl backdrop-blur-md',
         classNames.root ?? '',
         className,
       ]

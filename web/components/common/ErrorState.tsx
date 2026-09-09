@@ -28,7 +28,7 @@ export const ErrorState = ({
   <div
     role="alert"
     className={[
-      'flex flex-col gap-2 rounded-lg border border-critical/40 bg-critical/8 px-3.5 py-3',
+      'flex flex-col gap-2 rounded-xl border border-critical/40 bg-critical/8 px-3.5 py-3',
       classNames.root ?? '',
       className,
     ]

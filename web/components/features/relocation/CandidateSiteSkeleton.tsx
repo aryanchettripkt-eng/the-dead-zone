@@ -22,7 +22,7 @@ export const CandidateSiteSkeleton = ({
       <div
         key={index}
         className={[
-          'h-[260px] animate-pulse rounded-xl border border-line/40 bg-surface-1/40',
+          'h-[260px] animate-pulse rounded-2xl border border-line/40 bg-surface-1/40',
           classNames.card ?? '',
         ].join(' ')}
       />

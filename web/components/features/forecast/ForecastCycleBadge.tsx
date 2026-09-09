@@ -78,7 +78,7 @@ export const ForecastCycleBadge = ({
     <div
       ref={rootRef}
       className={[
-        'rounded-md border border-line bg-surface-0 px-3 py-2 dark:border-white/10 dark:bg-forest-surface/60',
+        'rounded-xl border border-line bg-surface-0 px-3 py-2 dark:border-white/10 dark:bg-forest-surface/60',
         classNames.root ?? '',
         className,
       ]
@@ -95,7 +95,7 @@ export const ForecastCycleBadge = ({
           {label}
         </p>
         {areaLabel ? (
-          <span className="rounded-sm border border-line px-1 text-[9px] font-semibold uppercase tracking-wider text-text-secondary dark:border-white/15">
+          <span className="rounded-full border border-line px-1.5 text-[9px] font-semibold uppercase tracking-wider text-text-secondary dark:border-white/15">
             {areaLabel}
           </span>
         ) : null}

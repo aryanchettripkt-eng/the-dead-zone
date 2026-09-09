@@ -29,7 +29,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
           <button
             type="button"
             onClick={onBackToMap}
-            className="p-1.5 rounded-md hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <span>←</span>
             <span>Back to Map</span>
@@ -49,11 +49,11 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
         </div>
 
         <div className="flex items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded bg-gov-red/10 border border-gov-red/30 text-gov-red font-semibold">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gov-red/10 border border-gov-red/30 text-gov-red font-semibold">
             <span className="w-1.5 h-1.5 rounded-full bg-gov-red" />
             <span>Caseload: {habitation.households} Households</span>
           </div>
-          <div className="px-3 py-1 rounded bg-gov-surface-light dark:bg-gov-bg border border-gov-bg/15 dark:border-gov-bg-light/15 font-mono">
+          <div className="px-3 py-1 rounded-xl bg-gov-surface-light dark:bg-gov-bg border border-gov-bg/15 dark:border-gov-bg-light/15 font-mono">
             Origin Risk: {habitation.riskScore.toFixed(2)}
           </div>
         </div>
@@ -84,7 +84,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
                 <div
                   key={candidate.id}
                   onClick={() => setSelectedCandidate(candidate)}
-                  className={`p-5 rounded-xl border transition-all duration-200 cursor-pointer relative flex flex-col justify-between ${
+                  className={`p-5 rounded-2xl border transition-all duration-200 cursor-pointer relative flex flex-col justify-between ${
                     isSelected
                       ? 'bg-gov-surface-light dark:bg-gov-surface-hover border-gov-orange shadow-lg ring-1 ring-gov-orange/50'
                       : 'bg-gov-surface-light/70 dark:bg-gov-surface/70 border-gov-bg/10 dark:border-gov-bg-light/10 hover:border-gov-bg/25 dark:hover:border-gov-bg-light/25'
@@ -123,7 +123,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
                     </div>
 
                     {/* CAPACITY PROGRESS */}
-                    <div className="mt-4 p-3 rounded-lg bg-gov-bg-light/80 dark:bg-gov-bg/80 border border-gov-bg/8 dark:border-gov-bg-light/8">
+                    <div className="mt-4 p-3 rounded-xl bg-gov-bg-light/80 dark:bg-gov-bg/80 border border-gov-bg/8 dark:border-gov-bg-light/8">
                       <div className="flex justify-between text-xs mb-1 font-mono">
                         <span className="text-gov-bg/70 dark:text-cream/70">Households Accommodated:</span>
                         <span className="font-bold">
@@ -144,7 +144,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
                     <span className="text-[10px] font-bold text-gov-bg/50 dark:text-cream/50 uppercase">
                       Binding Constraint:
                     </span>
-                    <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-gov-red/15 text-gov-red border border-gov-red/30 uppercase">
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-gov-red/15 text-gov-red border border-gov-red/30 uppercase">
                       {candidate.bindingConstraint}
                     </span>
                   </div>
@@ -155,7 +155,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
         </div>
 
         {/* DETAILED INSPECTION FOR SELECTED CANDIDATE */}
-        <div className="p-6 rounded-xl bg-gov-surface-light dark:bg-gov-surface-hover border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-sm">
+        <div className="p-6 rounded-2xl bg-gov-surface-light dark:bg-gov-surface-hover border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-gov-bg/10 dark:border-gov-bg-light/10">
             <div>
               <span className="text-[10px] font-mono font-bold tracking-widest text-gov-orange uppercase">
@@ -182,7 +182,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
           {/* CRITERIA BARS GRID */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-6">
             {/* Land Suitability */}
-            <div className="p-3 rounded-lg bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
+            <div className="p-3 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
               <div className="flex justify-between text-xs font-semibold mb-1.5">
                 <span>Land Suitability</span>
                 <span className="font-mono text-gov-green">
@@ -198,7 +198,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
             </div>
 
             {/* Water Availability */}
-            <div className="p-3 rounded-lg bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
+            <div className="p-3 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
               <div className="flex justify-between text-xs font-semibold mb-1.5">
                 <span>Water Availability</span>
                 <span className="font-mono text-gov-orange">
@@ -214,7 +214,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
             </div>
 
             {/* Road & Accessibility */}
-            <div className="p-3 rounded-lg bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
+            <div className="p-3 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
               <div className="flex justify-between text-xs font-semibold mb-1.5">
                 <span>Road & Transport Access</span>
                 <span className="font-mono text-gov-amber">
@@ -230,7 +230,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
             </div>
 
             {/* School Access */}
-            <div className="p-3 rounded-lg bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
+            <div className="p-3 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
               <div className="flex justify-between text-xs font-semibold mb-1.5">
                 <span>School & Education Access</span>
                 <span className="font-mono text-gov-green">
@@ -246,7 +246,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
             </div>
 
             {/* Healthcare Access */}
-            <div className="p-3 rounded-lg bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
+            <div className="p-3 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
               <div className="flex justify-between text-xs font-semibold mb-1.5">
                 <span>Healthcare / PHC Access</span>
                 <span className="font-mono text-gov-green">
@@ -262,7 +262,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
             </div>
 
             {/* Elevation Buffer */}
-            <div className="p-3 rounded-lg bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
+            <div className="p-3 rounded-xl bg-gov-bg-light/60 dark:bg-gov-bg/60 border border-gov-bg/8 dark:border-gov-bg-light/8">
               <div className="flex justify-between text-xs font-semibold mb-1.5">
                 <span>Safe Elevation</span>
                 <span className="font-mono text-gov-bg dark:text-cream">
@@ -285,7 +285,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
               <button
                 type="button"
                 onClick={onBackToMap}
-                className="px-4 py-2 rounded-md border border-gov-bg/20 dark:border-gov-bg-light/20 text-xs font-semibold hover:bg-gov-bg/5 dark:hover:bg-gov-bg-light/5 transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-gov-bg/20 dark:border-gov-bg-light/20 text-xs font-semibold hover:bg-gov-bg/5 dark:hover:bg-gov-bg-light/5 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -294,7 +294,7 @@ export const GovRelocationPlanner: React.FC<GovRelocationPlannerProps> = ({
                 type="button"
                 onClick={() => setIsApproved(true)}
                 disabled={isApproved}
-                className={`px-5 py-2 rounded-md text-xs font-bold uppercase tracking-wider transition-all duration-150 shadow-md cursor-pointer ${
+                className={`px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-150 shadow-md cursor-pointer ${
                   isApproved
                     ? 'bg-gov-green text-white cursor-default'
                     : 'bg-gov-red hover:bg-gov-red/85 text-white'

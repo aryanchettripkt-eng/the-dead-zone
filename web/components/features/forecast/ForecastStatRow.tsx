@@ -54,7 +54,7 @@ export const ForecastStatRow = ({
         <div
           key={stat.key}
           className={[
-            'forecast-stat-tile rounded-md border border-line bg-surface-0 px-2.5 py-2 dark:border-white/10 dark:bg-forest-surface/60',
+            'forecast-stat-tile rounded-xl border border-line bg-surface-0 px-2.5 py-2 dark:border-white/10 dark:bg-forest-surface/60',
             stat.muted ? 'opacity-60' : '',
             classNames.tile ?? '',
           ]

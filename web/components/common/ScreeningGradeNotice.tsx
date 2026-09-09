@@ -27,7 +27,7 @@ export const ScreeningGradeNotice = ({
 }: ScreeningGradeNoticeProps) => (
   <div
     className={[
-      'flex items-start gap-2 border-t border-line bg-surface-0 px-3 py-1.5',
+      'flex items-start gap-2 rounded-xl border border-line/60 bg-surface-0 px-3 py-2',
       classNames.root ?? '',
       className,
     ]
@@ -36,7 +36,7 @@ export const ScreeningGradeNotice = ({
   >
     <span
       className={[
-        'mt-px shrink-0 rounded-sm border border-warning/50 bg-warning/12 px-1 text-[9px] font-semibold uppercase tracking-wider text-warning',
+        'mt-px shrink-0 rounded-md border border-warning/50 bg-warning/12 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-warning',
         classNames.label ?? '',
       ].join(' ')}
     >

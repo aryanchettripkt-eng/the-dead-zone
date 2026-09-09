@@ -28,7 +28,7 @@ export const CoverageNotice = ({ flag, className = '', classNames = {} }: Covera
   return (
     <div
       className={[
-        'rounded-md border px-2.5 py-2',
+        'rounded-xl border px-3 py-2.5',
         VARIANT_CLASSES[flag],
         classNames.root ?? '',
         className,

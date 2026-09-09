@@ -22,7 +22,7 @@ export const HabitationQueueSkeleton = ({
       <div
         key={index}
         className={[
-          'h-[58px] animate-pulse rounded-lg border border-line/40 bg-surface-1/40',
+          'h-[58px] animate-pulse rounded-xl border border-line/40 bg-surface-1/40',
           classNames.row ?? '',
         ].join(' ')}
       />
