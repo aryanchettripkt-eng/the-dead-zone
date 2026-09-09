@@ -1,6 +1,9 @@
 export { CellDossier } from './CellDossier';
 export type { CellDossierProps } from './CellDossier';
 
+export { CellMetricsBox } from './CellMetricsBox';
+export type { CellMetricsBoxProps } from './CellMetricsBox';
+
 export { CoverageNotice } from './CoverageNotice';
 export type { CoverageNoticeProps } from './CoverageNotice';
 

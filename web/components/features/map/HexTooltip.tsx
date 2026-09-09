@@ -1,7 +1,8 @@
 'use client';
 
+import React from 'react';
 import { CoverageStatusPill } from '@/components/common/StatusPill';
-import type { HazardCell } from '@/lib/api/types';
+import type { HazardCell, ForecastAlertItem } from '@/lib/api/types';
 import { normaliseConfidence, renderClassFor } from '@/lib/map/colorScale';
 import { formatH3, formatPercent, formatScore } from '@/lib/map/format';
 
@@ -11,6 +12,7 @@ export interface HexTooltipProps {
   x: number;
   y: number;
   confidenceCeiling: number;
+  forecastItem?: ForecastAlertItem | null;
   className?: string;
   classNames?: {
     root?: string;
@@ -25,15 +27,16 @@ const RENDER_CLASS_COPY: Record<string, string> = {
   no_coverage: 'Not observed. The 0.00 is a fill, not a measurement.',
 };
 
-/** Cursor-following readout for the hovered hexagon. */
-export const HexTooltip = ({
+/** Cursor-following readout for the hovered hexagon, including live forecast MHI. */
+export const HexTooltip: React.FC<HexTooltipProps> = ({
   cell,
   x,
   y,
   confidenceCeiling,
+  forecastItem,
   className = '',
   classNames = {},
-}: HexTooltipProps) => {
+}) => {
   const renderClass = renderClassFor(cell);
   const note = RENDER_CLASS_COPY[renderClass];
 
@@ -41,7 +44,7 @@ export const HexTooltip = ({
     <div
       style={{ left: x + 14, top: y + 14 }}
       className={[
-        'pointer-events-none absolute z-30 w-56 rounded-2xl border border-line bg-panel/95 p-2.5 shadow-xl backdrop-blur-md',
+        'pointer-events-none absolute z-30 w-60 rounded-2xl border border-line bg-panel/95 p-2.5 shadow-xl backdrop-blur-md',
         classNames.root ?? '',
         className,
       ]
@@ -50,7 +53,14 @@ export const HexTooltip = ({
     >
       <div className={['flex items-center justify-between gap-2', classNames.header ?? ''].join(' ')}>
         <span className="font-mono text-[10px] text-ink-faint">{formatH3(cell.h3)}</span>
-        <CoverageStatusPill flag={cell.quality_flag} />
+        <div className="flex items-center gap-1">
+          {forecastItem ? (
+            <span className="flex items-center gap-1 rounded bg-crimson/20 border border-crimson/40 px-1 py-0.2 text-[9px] font-mono font-bold text-crimson animate-pulse">
+              LIVE FCST
+            </span>
+          ) : null}
+          <CoverageStatusPill flag={cell.quality_flag} />
+        </div>
       </div>
 
       <div className={['mt-1.5 font-mono text-lg leading-none text-ink', classNames.score ?? ''].join(' ')}>
@@ -64,6 +74,19 @@ export const HexTooltip = ({
             {formatPercent(normaliseConfidence(cell.confidence, confidenceCeiling))}
           </span>
         </div>
+
+        {forecastItem ? (
+          <div className="flex justify-between text-[10px] text-crimson dark:text-red-400 font-medium">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-crimson animate-pulse" />
+              Live Forecast MHI
+            </span>
+            <span className="font-mono font-bold">
+              {forecastItem.mhi_fcst.toFixed(3)} (+{forecastItem.horizon_hours}h)
+            </span>
+          </div>
+        ) : null}
+
         {cell.hard_zero_fraction !== null ? (
           <div className="flex justify-between text-[10px]">
             <span className="text-ink-faint">Hard-zero area</span>

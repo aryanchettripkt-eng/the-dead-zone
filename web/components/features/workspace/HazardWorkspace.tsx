@@ -184,7 +184,12 @@ export const HazardWorkspace = ({
               errorMessage={forecast.error?.message ?? null}
               onRetry={forecast.refetch}
             />
-            <CellDossier h3={selectedH3} hazardType={hazardType} przThreshold={przThreshold} />
+            <CellDossier
+              h3={selectedH3}
+              hazardType={hazardType}
+              przThreshold={przThreshold}
+              forecastItems={forecast.items}
+            />
           </div>
         </RightPanel>
       }
