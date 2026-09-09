@@ -7,7 +7,7 @@ import gsap from 'gsap';
 export interface StoriesHeroTextProps {
   /** Optional custom category pill / super-title */
   category?: string;
-  /** Active zone label e.g. North, South */
+  /** Active district/zone label e.g. Wayanad, Kodagu, Barpeta */
   activeZoneLabel?: string;
   /** Dynamic short summary of the active region */
   summary?: string;
@@ -23,9 +23,9 @@ export interface StoriesHeroTextProps {
 }
 
 export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
-  category = 'VEOLA STORIES',
-  activeZoneLabel = 'North',
-  summary = 'Frontline climate hazard red zones, lived community experiences, and environmental intelligence across India\'s fragile terrains.',
+  category = 'SETU-DRR TOURIST HAZARD ADVISORY',
+  activeZoneLabel = 'Wayanad',
+  summary = 'Authoritative geological, landslide, and flood risk assessment for travellers and tourists. Evaluate active danger levels, historical disaster records, and terrain vulnerability across high-risk destinations before planning your journey.',
   className = '',
   classNames = {},
 }) => {
@@ -56,23 +56,26 @@ export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
       className={`max-w-md select-none pointer-events-auto ${classNames.root || ''} ${className}`}
     >
       {/* Category Monospace Subtitle */}
-      <div
-        className={`text-[11px] font-mono tracking-[0.25em] text-cream/60 uppercase mb-4 ${
-          classNames.category || ''
-        }`}
-      >
-        {category}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="w-2 h-2 rounded-full bg-citron animate-pulse" />
+        <div
+          className={`text-[11px] font-mono tracking-[0.25em] text-cream/70 uppercase ${
+            classNames.category || ''
+          }`}
+        >
+          {category}
+        </div>
       </div>
 
-      {/* Main Display Headline with Lime Accent */}
+      {/* Main Display Headline with Foliage Accent */}
       <h1
         className={`font-sans text-4xl sm:text-5xl lg:text-6xl font-normal text-cream tracking-tight leading-[1.1] mb-6 ${
           classNames.title || ''
         }`}
       >
-        Discover{' '}
+        Assess{' '}
         <span className="text-m3-accent-foliage font-medium transition-colors duration-300">
-          stories
+          travel risk
         </span>
         <br />
         across India
@@ -87,6 +90,13 @@ export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
       >
         {summary}
       </p>
+
+      {/* Active Selection Indicator */}
+      <div className="mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-forest-surface/70 border border-white/10 text-xs font-mono text-cream/80">
+        <span className="text-m3-accent-foliage">●</span>
+        <span>Active Assessment:</span>
+        <span className="text-citron font-semibold">{activeZoneLabel}</span>
+      </div>
     </div>
   );
 };
