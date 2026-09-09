@@ -4,7 +4,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * SETU-DRR operations console & atmospheric forest palette.
+ * T.E.R.R.A. operations console & atmospheric forest palette.
  * Dual theme configuration:
  *  - Dark: Calibrated against dark ground for hazard luminous contrast.
  *  - Light: Calibrated for sunlight & command clarity with crisp high-contrast dark forest ink.
@@ -20,7 +20,7 @@
 html.dark {
   color-scheme: dark;
 
-  /* SETU-DRR operations console palette (Dark) */
+  /* T.E.R.R.A. operations console palette (Dark) */
   --surface-0: #0b0f16;
   --surface-1: #111823;
   --surface-2: #18212e;
@@ -87,7 +87,7 @@ html.dark {
 html.light {
   color-scheme: light;
 
-  /* SETU-DRR operations console palette (Light - crisp daylight readability) */
+  /* T.E.R.R.A. operations console palette (Light - crisp daylight readability) */
   --surface-0: #ffffff;
   --surface-1: #f4f8f1;
   --surface-2: #e7eee2;

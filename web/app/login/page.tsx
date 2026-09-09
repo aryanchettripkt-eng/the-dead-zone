@@ -32,7 +32,7 @@ export default function LoginPage() {
         homeHref={APP_ROUTES.home}
         portalHref={APP_ROUTES.login}
         tabs={NAV_TABS}
-        activeTabId="planetary"
+        activeTabId=""
       />
 
       {/* Centered Login Card */}

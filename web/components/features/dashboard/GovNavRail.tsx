@@ -39,10 +39,10 @@ export const GovNavRail: React.FC<GovNavRailProps> = ({
         <button
           type="button"
           onClick={() => onTabChange('overview')}
-          title="SETU-DRR Platform"
+          title="T.E.R.R.A. Platform"
           className="w-10 h-10 rounded-xl bg-gov-surface border border-gov-sage/30 text-gov-sage-light flex items-center justify-center shadow-inner hover:scale-105 transition-transform cursor-pointer"
         >
-          <span className="font-serif font-black text-base text-gov-amber">S</span>
+          <span className="font-serif font-black text-base text-gov-amber">T</span>
         </button>
 
         {/* Navigation Item Icons */}

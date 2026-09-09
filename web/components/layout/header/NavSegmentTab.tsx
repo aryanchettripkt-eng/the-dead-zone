@@ -90,11 +90,13 @@ export const NavSegmentTab: React.FC<NavSegmentTabProps> = ({
   const body = (
     <>
       <StateLayer ref={stateLayerRef} disabled={disableAnimation} />
-      <span
-        className={`nav-tab-icon material-symbols-outlined ${iconSizeClass} ${classNames.icon ?? ''}`}
-      >
-        {tab.icon}
-      </span>
+      {tab.icon ? (
+        <span
+          className={`nav-tab-icon material-symbols-outlined ${iconSizeClass} ${classNames.icon ?? ''}`}
+        >
+          {tab.icon}
+        </span>
+      ) : null}
       <span className={`whitespace-nowrap ${classNames.label ?? ''}`}>{tab.label}</span>
       {tab.badge && (
         <span

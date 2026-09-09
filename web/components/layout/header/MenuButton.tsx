@@ -23,7 +23,7 @@ export interface MenuButtonProps {
 
 export const MenuButton: React.FC<MenuButtonProps> = ({
   href = '/',
-  label = 'SETU-DRR',
+  label = 'T.E.R.R.A.',
   onClick,
   className = '',
   icon,

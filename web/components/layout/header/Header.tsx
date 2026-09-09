@@ -104,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
       >
         {/* Left Brand / Close Button Pill */}
         <div className="header-slot flex items-center shrink-0">
-          <MenuButton href={homeHref} label="SETU-DRR" disableAnimation={!animate} />
+          <MenuButton href={homeHref} label="T.E.R.R.A." disableAnimation={!animate} />
         </div>
 
         {/* Center Segmented Navigation Tabs */}
@@ -130,7 +130,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               onClick={() => logout()}
               className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-surface-1 hover:bg-surface-2 text-text-muted hover:text-red-500 border border-line text-xs font-mono transition-colors cursor-pointer"
-              title="Log out from SETU-DRR"
+              title="Log out from T.E.R.R.A."
             >
               <span className="material-symbols-outlined text-sm">logout</span>
               <span className="hidden sm:inline">Logout</span>

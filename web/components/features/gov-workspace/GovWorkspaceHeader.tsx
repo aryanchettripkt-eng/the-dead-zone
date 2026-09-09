@@ -71,10 +71,10 @@ export const GovWorkspaceHeader: React.FC<GovWorkspaceHeaderProps> = ({
           </span>
           <div className="flex flex-col">
             <span className="text-xs font-mono font-bold tracking-wider text-citron">
-              SETU-DRR
+              T.E.R.R.A.
             </span>
             <span className="text-[10px] font-mono text-text-muted">
-              GOV DECISION PLATFORM
+              TERRAIN & RELOCATION ANALYTICS
             </span>
           </div>
         </Link>

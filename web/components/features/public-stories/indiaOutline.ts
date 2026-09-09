@@ -21,16 +21,12 @@ export const projectLonLat = (lon: number, lat: number): { x: number; y: number 
 
 /** True lon/lat of each story hotspot (single source of truth). */
 export const HOTSPOT_LONLAT = {
-  Wayanad: { lon: 76.126, lat: 11.554, label: 'Wayanad (Kerala)' },
-  Kodagu: { lon: 75.738, lat: 12.424, label: 'Kodagu / Coorg (Karnataka)' },
-  Barpeta: { lon: 91.01, lat: 26.32, label: 'Barpeta (Assam)' },
-  South: { lon: 76.126, lat: 11.554, label: 'Wayanad (Kerala)' },
-  East: { lon: 91.01, lat: 26.32, label: 'Barpeta (Assam)' },
-  West: { lon: 75.738, lat: 12.424, label: 'Kodagu / Coorg (Karnataka)' },
-  North: { lon: 76.126, lat: 11.554, label: 'Wayanad (Kerala)' },
-  Central: { lon: 75.738, lat: 12.424, label: 'Kodagu / Coorg (Karnataka)' },
+  North: { lon: 79.567, lat: 30.556, label: 'Joshimath (Chamoli)' },
+  Central: { lon: 77.761, lat: 22.505, label: 'Satpura Plateau' },
+  South: { lon: 76.126, lat: 11.554, label: 'Wayanad (Meppadi)' },
+  East: { lon: 91.01, lat: 26.32, label: 'Barpeta & Teesta' },
+  West: { lon: 69.821, lat: 23.342, label: 'Kutch Basin' },
 } as const;
-
 
 /** Mainland + island polygons (index 0 = mainland). */
 export const INDIA_OUTLINE_PATHS: string[] = [

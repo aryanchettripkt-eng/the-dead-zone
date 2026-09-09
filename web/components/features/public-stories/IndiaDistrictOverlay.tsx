@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
-import { ZoneId, FEATURED_DISTRICTS } from './storyData';
+import type { ZoneId } from './storyData';
 import { DISTRICT_BOUNDARIES } from './districtBoundaries';
 
 export interface IndiaDistrictOverlayProps {
@@ -22,7 +22,7 @@ export interface IndiaDistrictOverlayProps {
 }
 
 /**
- * Renders the story administrative district outlines across India.
+ * Renders the 5 story administrative district outlines across India.
  *
  * Implements Option 1: Scaled Floating District Silhouette Callouts.
  * - 1:1 ground district boundaries on the national map act as interactive anchor nodes.
@@ -45,7 +45,7 @@ export const IndiaDistrictOverlay: React.FC<IndiaDistrictOverlayProps> = ({
   const isInitializedRef = useRef(false);
 
   const displayedZone = hoveredZone ?? selectedZone;
-  const activeDistrict = DISTRICT_BOUNDARIES[displayedZone] || DISTRICT_BOUNDARIES.Wayanad;
+  const activeDistrict = DISTRICT_BOUNDARIES[displayedZone];
 
   useGSAP(
     () => {
@@ -119,7 +119,7 @@ export const IndiaDistrictOverlay: React.FC<IndiaDistrictOverlayProps> = ({
     <g ref={containerRef} className={`district-overlay-group ${className}`}>
       <defs>
         {/* District polygon clipPaths for photographic image masking */}
-        {FEATURED_DISTRICTS.map((zone) => {
+        {(Object.keys(DISTRICT_BOUNDARIES) as ZoneId[]).map((zone) => {
           const district = DISTRICT_BOUNDARIES[zone];
           return (
             <clipPath key={district.zone} id={`clip-district-${district.zone}`}>
@@ -148,11 +148,10 @@ export const IndiaDistrictOverlay: React.FC<IndiaDistrictOverlayProps> = ({
       </defs>
 
       {/* Layer 1: Ground 1:1 District Outlines & Interactive Hit Areas on India Map */}
-      {FEATURED_DISTRICTS.map((zone) => {
+      {(Object.keys(DISTRICT_BOUNDARIES) as ZoneId[]).map((zone) => {
         const district = DISTRICT_BOUNDARIES[zone];
         const isSelected = zone === selectedZone;
         const isDisplayed = zone === displayedZone;
-
 
         return (
           <g

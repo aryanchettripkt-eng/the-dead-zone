@@ -25,7 +25,7 @@ export const HeroTypography: React.FC<HeroTypographyProps> = ({
   line3 = 'ZONE',
   tagline1 = 'Change the World',
   tagline2 = 'Live Safely!',
-  description = 'National Disaster Red Zone Decision Support & Autonomous Resettlement Routing Engine.',
+  description = 'T.E.R.R.A. (Terrain-based Environmental Risk and Relocation Analytics) — National Disaster Red Zone Decision Support & Autonomous Resettlement Routing Engine.',
   className = '',
 }) => {
   return (

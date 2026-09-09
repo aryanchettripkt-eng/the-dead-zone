@@ -24,9 +24,6 @@ export type AppRoute = (typeof APP_ROUTES)[AppRouteKey];
  * is the case for the SAR mesh sweep, which has no route of its own).
  */
 export const NAV_TABS: NavTabItem[] = [
-  { id: 'planetary', label: 'Planetary View', icon: 'public', href: APP_ROUTES.home },
-  { id: 'sar_mesh', label: 'Real-time SAR Mesh', icon: 'vital_signs' },
-  { id: 'hazards', label: 'Hazards', icon: 'warning', href: APP_ROUTES.workspace },
   { id: 'relocation', label: 'Relocation', icon: 'moving', href: APP_ROUTES.relocation },
   { id: 'data', label: 'Data', icon: 'database', href: APP_ROUTES.gov },
   { id: 'research', label: 'Research', icon: 'menu_book', href: APP_ROUTES.stories },
@@ -34,7 +31,7 @@ export const NAV_TABS: NavTabItem[] = [
 ];
 
 /** Maps a pathname back to the tab that should read as selected. */
-export function navTabIdForPath(pathname: string, fallback = 'planetary'): string {
+export function navTabIdForPath(pathname: string, fallback = ''): string {
   const match = NAV_TABS.find((tab) => tab.href === pathname);
   return match ? match.id : fallback;
 }

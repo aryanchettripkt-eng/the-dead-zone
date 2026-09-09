@@ -22,10 +22,10 @@ export const FooterBrand: React.FC<FooterBrandProps> = ({ className = '' }) => {
           </div>
           <div className="flex flex-col">
             <span className="font-display font-black text-sm tracking-tight text-ink dark:text-text-primary group-hover:text-accent transition-colors">
-              SETU-DRR
+              T.E.R.R.A.
             </span>
             <span className="text-[10px] font-mono tracking-wider uppercase text-text-muted">
-              Planetary Resilience Command
+              Terrain-based Environmental Risk and Relocation Analytics
             </span>
           </div>
         </Link>

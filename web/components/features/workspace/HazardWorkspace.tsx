@@ -67,8 +67,8 @@ const DEFAULT_FORECAST_HORIZON_HOURS = 72;
 export const HazardWorkspace = ({
   initialHazardType = 'riverine_flood',
   admin,
-  title = 'SETU-DRR',
-  subtitle = 'Hazard red zone screening',
+  title = 'T.E.R.R.A.',
+  subtitle = 'Terrain-based Environmental Risk & Relocation Analytics',
   className = '',
 }: HazardWorkspaceProps) => {
   const [hazardType, setHazardType] = useState<HazardType>(initialHazardType);

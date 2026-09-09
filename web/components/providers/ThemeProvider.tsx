@@ -65,7 +65,7 @@ function getStoredTheme(storageKey: string): Theme | null {
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   children,
   defaultTheme = 'dark',
-  storageKey = 'setu-drr-theme',
+  storageKey = 'terra-theme',
 }) => {
   const isMounted = useSyncExternalStore(
     emptySubscribe,
