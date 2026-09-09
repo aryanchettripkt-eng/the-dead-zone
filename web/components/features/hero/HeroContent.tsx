@@ -87,12 +87,12 @@ export const HeroContent: React.FC<HeroContentProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative z-10 w-full h-full flex flex-col justify-between pt-24 pb-8 sm:pb-12 px-6 sm:px-12 lg:px-20 pointer-events-none ${className}`}
+      className={`relative z-10 w-full h-full flex flex-col justify-between pt-20 sm:pt-24 pb-6 sm:pb-8 px-6 sm:px-10 lg:px-16 xl:px-20 pointer-events-none ${className}`}
     >
       {/* Upper Content Column */}
-      <div className="max-w-xl flex flex-col items-start pt-4 sm:pt-8">
+      <div className="max-w-lg xl:max-w-xl flex flex-col items-start pt-1 sm:pt-3 lg:pt-4">
         {/* Status observation badge */}
-        <div className="hero-badge-wrap mb-4 sm:mb-6 pointer-events-auto">
+        <div className="hero-badge-wrap mb-3 sm:mb-4 lg:mb-5 pointer-events-auto">
           <ObservationBadge />
         </div>
 

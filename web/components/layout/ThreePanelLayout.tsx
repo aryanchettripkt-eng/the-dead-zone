@@ -30,7 +30,7 @@ export const ThreePanelLayout = ({
       .join(' ')}
   >
     {header}
-    <div className={['flex min-h-0 flex-1', classNames.body ?? ''].join(' ')}>
+    <div className={['flex min-h-0 flex-1 overflow-x-auto', classNames.body ?? ''].join(' ')}>
       {left}
       {center}
       {right}

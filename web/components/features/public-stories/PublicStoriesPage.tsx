@@ -36,7 +36,7 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
 
   return (
     <div
-      className={`relative w-screen h-screen overflow-hidden bg-bg-base text-text-primary dark:bg-[#0e261d] dark:text-cream flex flex-col justify-between p-6 sm:p-8 lg:p-10 select-none transition-colors duration-300 ${className}`}
+      className={`relative w-full min-h-screen lg:h-screen lg:overflow-hidden bg-bg-base text-text-primary dark:bg-[#0e261d] dark:text-cream flex flex-col justify-between p-4 sm:p-6 lg:p-8 xl:p-10 select-none transition-colors duration-300 ${className}`}
     >
       {/* Background Subtle Ambient Vignette */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-forest-mid/25 via-bg-base to-forest-deep/15 dark:from-[#143d2c]/40 dark:via-[#0e261d] dark:to-[#081813] pointer-events-none" />
@@ -54,9 +54,9 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
       </div>
 
       {/* 2. MAIN INTERACTION CANVAS: Left Text + Center Map + Right Zone Selector */}
-      <div className="relative z-10 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 items-center gap-4 min-h-0">
+      <div className="relative z-10 flex-1 w-full grid grid-cols-1 md:grid-cols-12 items-center gap-3 lg:gap-4 min-h-0">
         {/* Left Column: Headline & Region Context */}
-        <div className="hidden lg:flex lg:col-span-3 h-full flex-col justify-center pl-2">
+        <div className="hidden md:flex md:col-span-4 lg:col-span-3 h-full flex-col justify-center pl-1 lg:pl-2">
           <StoriesHeroText
             category="T.E.R.R.A. TOURIST HAZARD ADVISORY"
             activeZoneLabel={activeStory.label}
@@ -65,7 +65,7 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
         </div>
 
         {/* Center Column: Interactive India Map with Region Cutout */}
-        <div className="col-span-1 lg:col-span-7 h-full w-full flex items-center justify-center relative">
+        <div className="col-span-1 md:col-span-6 lg:col-span-7 h-full w-full flex items-center justify-center relative">
           <IndiaStoriesMap
             selectedZone={selectedZone}
             onSelectZone={(zone) => setSelectedZone(zone)}
@@ -74,7 +74,7 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
         </div>
 
         {/* Right Column: Zone Tick Ruler Selector */}
-        <div className="hidden sm:flex col-span-1 lg:col-span-2 h-full flex-col justify-center items-end pr-4">
+        <div className="hidden md:flex md:col-span-2 h-full flex-col justify-center items-end pr-2 lg:pr-4">
           <ZoneTickSelector
             selectedZone={selectedZone}
             onSelectZone={(zone) => setSelectedZone(zone)}
@@ -83,7 +83,7 @@ export const PublicStoriesPage: React.FC<PublicStoriesPageProps> = ({
       </div>
 
       {/* Mobile/Tablet Fallback Footer District Selector */}
-      <div className="sm:hidden relative z-20 flex items-center justify-center gap-2 pt-2 border-t border-line dark:border-white/10">
+      <div className="md:hidden relative z-20 flex items-center justify-center gap-2 pt-2 border-t border-line dark:border-white/10">
         {(['Wayanad', 'Kodagu', 'Barpeta'] as ZoneId[]).map((zone) => (
           <button
             key={zone}

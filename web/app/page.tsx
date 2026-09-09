@@ -168,10 +168,10 @@ export default function HomePage() {
         {/* Section 0: Hero Section (Text on Left, Globe in Empty Space on Right) */}
         <div
           id="hero"
-          className="relative min-h-screen shrink-0 w-full flex flex-col justify-between pt-24 pb-8 sm:pb-12 px-6 sm:px-12 lg:px-20 pointer-events-none snap-start snap-always"
+          className="relative min-h-screen shrink-0 w-full flex flex-col justify-between pt-20 lg:pt-24 pb-4 sm:pb-6 px-6 sm:px-10 lg:px-16 xl:px-20 pointer-events-none snap-start snap-always"
         >
           <HeroContent portalHref={APP_ROUTES.login} className="pt-0 px-0 pointer-events-none" />
-          <div className="pointer-events-auto mt-6 flex items-center justify-start">
+          <div className="pointer-events-auto mt-2 sm:mt-4 flex items-center justify-start">
             <ScrollIndicator targetId={LANDING_STORIES[0].id} />
           </div>
         </div>
@@ -186,10 +186,10 @@ export default function HomePage() {
             behind the frosted glass footer. */}
         <div
           id="command-horizon"
-          className="relative min-h-screen shrink-0 w-full flex flex-col justify-between pt-28 pointer-events-none snap-start snap-always"
+          className="relative min-h-screen shrink-0 w-full flex flex-col justify-between pt-20 sm:pt-24 pointer-events-none snap-start snap-always"
         >
           {/* Horizon Briefing Card */}
-          <div className="max-w-xl mx-auto px-6 sm:px-12 text-center pointer-events-auto">
+          <div className="max-w-xl mx-auto px-6 sm:px-10 text-center pointer-events-auto">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-surface-0/80 dark:bg-forest-surface/80 backdrop-blur-md border border-line dark:border-white/10 text-[11px] font-mono font-semibold text-accent-emerald-bright mb-4">
               <span className="w-2 h-2 rounded-full bg-accent-emerald-bright animate-ping" />
               PLANETARY HORIZON · NDMD RESILIENCE
