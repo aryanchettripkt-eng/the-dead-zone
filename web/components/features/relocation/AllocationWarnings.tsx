@@ -21,7 +21,7 @@ export const AllocationWarnings = ({
   return (
     <div
       className={[
-        'flex flex-col gap-1 rounded-lg border border-warning/35 bg-warning/5 px-3 py-2',
+        'flex flex-col gap-1 rounded-xl border border-warning/35 bg-warning/5 px-3 py-2',
         classNames.root ?? '',
         className,
       ]

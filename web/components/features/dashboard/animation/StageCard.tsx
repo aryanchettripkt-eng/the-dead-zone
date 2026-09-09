@@ -49,7 +49,7 @@ export const StageCard: React.FC<StageCardProps> = ({
       ref={cardRef}
       type="button"
       onClick={() => onClick(stage)}
-      className={`relative flex-1 min-w-[130px] p-2 sm:p-2.5 rounded-lg border text-left transition-all duration-200 cursor-pointer overflow-hidden select-none ${
+      className={`relative flex-1 min-w-[130px] p-2 sm:p-2.5 rounded-xl border text-left transition-all duration-200 cursor-pointer overflow-hidden select-none ${
         isActive
           ? 'bg-gov-surface-light dark:bg-gov-surface border-gov-amber shadow-md ring-1 ring-gov-amber/40'
           : isPast

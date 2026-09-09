@@ -52,7 +52,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-md text-gov-bg/50 dark:text-cream/50 hover:text-gov-bg dark:hover:text-cream hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 transition-colors"
+            className="p-1 rounded-full text-gov-bg/50 dark:text-cream/50 hover:text-gov-bg dark:hover:text-cream hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 transition-colors"
             title="Close dossier"
           >
             ✕
@@ -60,7 +60,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
         </div>
 
         {/* RISK SCORE HERO BADGE */}
-        <div className="mt-4 p-3.5 rounded-lg bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10 flex items-center justify-between">
+        <div className="mt-4 p-3.5 rounded-xl bg-gov-surface-light/70 dark:bg-gov-surface/70 border border-gov-bg/10 dark:border-gov-bg-light/10 flex items-center justify-between">
           <div>
             <div className="text-[10px] font-bold text-gov-bg/50 dark:text-cream/50 uppercase tracking-wider">
               Risk Score
@@ -74,7 +74,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
           </div>
 
           <div className="flex flex-col items-end">
-            <span className={`px-2 py-1 rounded text-[11px] font-bold uppercase tracking-wider border ${priorityColor}`}>
+            <span className={`px-2 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider border ${priorityColor}`}>
               {habitation.priority}
             </span>
             <span className="text-[10px] text-gov-bg/50 dark:text-cream/50 font-mono mt-1">
@@ -92,7 +92,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
             Multivariate Risk Breakdown
           </div>
 
-          <div className="flex flex-col gap-2 bg-gov-surface-light/50 dark:bg-gov-surface/50 p-3 rounded-lg border border-gov-bg/8 dark:border-gov-bg-light/8">
+          <div className="flex flex-col gap-2 bg-gov-surface-light/50 dark:bg-gov-surface/50 p-3 rounded-xl border border-gov-bg/8 dark:border-gov-bg-light/8">
             {/* Slope */}
             <div>
               <div className="flex justify-between text-xs font-medium mb-1">
@@ -160,7 +160,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
         </div>
 
         {/* WHY THIS AREA IS FLAGGED */}
-        <div className="bg-gov-surface-light/60 dark:bg-gov-surface/60 p-3.5 rounded-lg border border-gov-bg/10 dark:border-gov-bg-light/10">
+        <div className="bg-gov-surface-light/60 dark:bg-gov-surface/60 p-3.5 rounded-xl border border-gov-bg/10 dark:border-gov-bg-light/10">
           <div className="text-[10px] font-bold tracking-wider text-gov-bg/60 dark:text-cream/60 uppercase mb-1.5 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-gov-orange" />
             Why This Area Is Flagged
@@ -171,7 +171,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
         </div>
 
         {/* RECOMMENDED ACTION */}
-        <div className="bg-gov-red/8 dark:bg-gov-red/15 p-3.5 rounded-lg border border-gov-red/25">
+        <div className="bg-gov-red/8 dark:bg-gov-red/15 p-3.5 rounded-xl border border-gov-red/25">
           <div className="text-[10px] font-bold tracking-wider text-gov-red uppercase mb-1">
             Recommended Action
           </div>
@@ -186,7 +186,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
         <button
           type="button"
           onClick={() => onOpenRelocationPlan(habitation)}
-          className="w-full py-2.5 px-4 rounded-md bg-gov-red hover:bg-gov-red/85 text-white text-xs font-bold uppercase tracking-wider transition-all duration-150 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+          className="w-full py-2.5 px-4 rounded-xl bg-gov-red hover:bg-gov-red/85 text-white text-xs font-bold uppercase tracking-wider transition-all duration-150 shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
         >
           <span>OPEN RELOCATION PLAN</span>
           <span>→</span>
@@ -195,7 +195,7 @@ export const GovDossierPanel: React.FC<GovDossierPanelProps> = ({
         <button
           type="button"
           onClick={() => onViewFullDossier(habitation)}
-          className="w-full py-2 px-4 rounded-md bg-transparent hover:bg-gov-bg/5 dark:hover:bg-gov-bg-light/5 border border-gov-bg/20 dark:border-gov-bg-light/20 text-gov-bg dark:text-cream text-xs font-semibold transition-all duration-150 cursor-pointer text-center"
+          className="w-full py-2 px-4 rounded-xl bg-transparent hover:bg-gov-bg/5 dark:hover:bg-gov-bg-light/5 border border-gov-bg/20 dark:border-gov-bg-light/20 text-gov-bg dark:text-cream text-xs font-semibold transition-all duration-150 cursor-pointer text-center"
         >
           View Full Habitation Dossier
         </button>

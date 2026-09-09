@@ -44,7 +44,7 @@ export const Badge = ({
   <span
     title={title}
     className={[
-      'inline-flex items-center rounded border font-medium uppercase tracking-wide whitespace-nowrap',
+      'inline-flex items-center rounded-full border font-medium uppercase tracking-wide whitespace-nowrap',
       VARIANT_CLASSES[variant],
       SIZE_CLASSES[size],
       classNames.root ?? '',

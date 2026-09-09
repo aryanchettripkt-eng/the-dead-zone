@@ -17,7 +17,7 @@ export const SarOverpassBadge: React.FC<SarOverpassBadgeProps> = ({
 }) => {
   return (
     <div
-      className={`flex items-center space-x-3 px-3 py-1.5 rounded-lg bg-gov-surface-light/90 dark:bg-gov-surface/90 border border-gov-bg/15 dark:border-gov-bg-light/15 text-xs font-mono select-none ${className}`}
+      className={`flex items-center space-x-3 px-3 py-1.5 rounded-xl bg-gov-surface-light/90 dark:bg-gov-surface/90 border border-gov-bg/15 dark:border-gov-bg-light/15 text-xs font-mono select-none ${className}`}
     >
       <div>
         <div className="text-[10px] font-bold tracking-widest text-gov-bg/70 dark:text-cream/70 uppercase">

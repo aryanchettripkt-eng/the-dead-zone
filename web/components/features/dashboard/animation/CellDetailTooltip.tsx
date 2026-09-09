@@ -41,7 +41,7 @@ export const CellDetailTooltip: React.FC<CellDetailTooltipProps> = ({
   return (
     <div
       ref={tooltipRef}
-      className={`absolute z-30 pointer-events-auto p-3.5 rounded-xl bg-gov-surface-light/95 dark:bg-gov-surface/95 backdrop-blur-xl border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-2xl text-xs font-sans min-w-[240px] max-w-[280px] -translate-x-1/2 -translate-y-full mb-4 select-none ${className}`}
+      className={`absolute z-30 pointer-events-auto p-3.5 rounded-2xl bg-gov-surface-light/95 dark:bg-gov-surface/95 backdrop-blur-xl border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-2xl text-xs font-sans min-w-[240px] max-w-[280px] -translate-x-1/2 -translate-y-full mb-4 select-none ${className}`}
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
     >
       {/* Top Header: H3 index and close */}
@@ -53,7 +53,7 @@ export const CellDetailTooltip: React.FC<CellDetailTooltipProps> = ({
         </div>
         <div className="flex items-center space-x-1.5">
           <span
-            className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold uppercase shadow-xs"
+            className="px-1.5 py-0.5 rounded-full text-[9px] font-mono font-bold uppercase shadow-xs"
             style={{ backgroundColor: severityColor, color: '#ffffff' }}
           >
             {severityLabel}
@@ -110,7 +110,7 @@ export const CellDetailTooltip: React.FC<CellDetailTooltipProps> = ({
           <button
             type="button"
             onClick={() => onOpenDossier(cell)}
-            className="w-full py-1.5 px-3 rounded-lg bg-gov-amber hover:bg-gov-amber/90 text-gov-surface font-semibold text-xs font-mono transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer"
+            className="w-full py-1.5 px-3 rounded-xl bg-gov-amber hover:bg-gov-amber/90 text-gov-surface font-semibold text-xs font-mono transition-all flex items-center justify-center gap-1 shadow-xs cursor-pointer"
           >
             <span>Open Risk Dossier</span>
             <span className="material-symbols-outlined text-sm">arrow_forward</span>

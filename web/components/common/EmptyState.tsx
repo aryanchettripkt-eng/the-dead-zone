@@ -25,7 +25,7 @@ export const EmptyState = ({
 }: EmptyStateProps) => (
   <div
     className={[
-      'flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line px-4 py-8 text-center',
+      'flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-line px-4 py-8 text-center',
       classNames.root ?? '',
       className,
     ]

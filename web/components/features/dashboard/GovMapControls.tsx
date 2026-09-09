@@ -42,12 +42,12 @@ export const GovMapControls: React.FC<GovMapControlsProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-wrap items-center justify-between gap-3 p-2.5 bg-gov-bg-light/95 dark:bg-gov-bg/95 backdrop-blur-md rounded-lg border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-sm text-xs ${className}`}
+      className={`flex flex-wrap items-center justify-between gap-3 p-2.5 bg-gov-bg-light/95 dark:bg-gov-bg/95 backdrop-blur-md rounded-2xl border border-gov-bg/15 dark:border-gov-bg-light/15 shadow-sm text-xs ${className}`}
     >
       {/* LEFT SECTION: FILTERS */}
       <div className="flex flex-wrap items-center gap-2">
         {/* HAZARD TYPE FILTER */}
-        <div className="flex items-center gap-1.5 bg-gov-surface-light/80 dark:bg-gov-surface/80 px-2.5 py-1 rounded border border-gov-bg/10 dark:border-gov-bg-light/10">
+        <div className="flex items-center gap-1.5 bg-gov-surface-light/80 dark:bg-gov-surface/80 px-2.5 py-1 rounded-xl border border-gov-bg/10 dark:border-gov-bg-light/10">
           <span className="text-[10px] font-bold text-gov-bg/60 dark:text-cream/60 uppercase tracking-wider">
             Hazard:
           </span>
@@ -65,7 +65,7 @@ export const GovMapControls: React.FC<GovMapControlsProps> = ({
         </div>
 
         {/* REGION / STATE SELECTOR */}
-        <div className="flex items-center gap-1.5 bg-gov-surface-light/80 dark:bg-gov-surface/80 px-2.5 py-1 rounded border border-gov-bg/10 dark:border-gov-bg-light/10">
+        <div className="flex items-center gap-1.5 bg-gov-surface-light/80 dark:bg-gov-surface/80 px-2.5 py-1 rounded-xl border border-gov-bg/10 dark:border-gov-bg-light/10">
           <span className="text-[10px] font-bold text-gov-bg/60 dark:text-cream/60 uppercase tracking-wider">
             Region:
           </span>
@@ -83,7 +83,7 @@ export const GovMapControls: React.FC<GovMapControlsProps> = ({
         </div>
 
         {/* RISK LEVEL FILTER CHIPS */}
-        <div className="flex items-center gap-1 bg-gov-surface-light/80 dark:bg-gov-surface/80 p-0.5 rounded border border-gov-bg/10 dark:border-gov-bg-light/10">
+        <div className="flex items-center gap-1 bg-gov-surface-light/80 dark:bg-gov-surface/80 p-0.5 rounded-xl border border-gov-bg/10 dark:border-gov-bg-light/10">
           {RISK_LEVELS.map((rl) => {
             const isActive = selectedRisk === rl.id;
             let activeStyle = 'bg-gov-bg text-cream dark:bg-gov-bg-light dark:text-gov-bg';
@@ -100,7 +100,7 @@ export const GovMapControls: React.FC<GovMapControlsProps> = ({
                 key={rl.id}
                 type="button"
                 onClick={() => onSelectRisk(rl.id)}
-                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-all duration-150 cursor-pointer ${
+                className={`px-2 py-0.5 rounded-lg text-[11px] font-medium transition-all duration-150 cursor-pointer ${
                   isActive
                     ? `${activeStyle} shadow-xs font-semibold`
                     : 'text-gov-bg/70 dark:text-cream/70 hover:bg-gov-bg/5 dark:hover:bg-gov-bg-light/5'
@@ -114,7 +114,7 @@ export const GovMapControls: React.FC<GovMapControlsProps> = ({
       </div>
 
       {/* RIGHT SECTION: 72-HOUR SCENARIO SCRUBBER */}
-      <div className="flex items-center gap-2 bg-gov-surface-light/80 dark:bg-gov-surface/80 px-2.5 py-1 rounded border border-gov-bg/10 dark:border-gov-bg-light/10">
+      <div className="flex items-center gap-2 bg-gov-surface-light/80 dark:bg-gov-surface/80 px-2.5 py-1 rounded-xl border border-gov-bg/10 dark:border-gov-bg-light/10">
         <div className="flex items-center gap-1">
           <svg className="w-3.5 h-3.5 text-gov-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -132,7 +132,7 @@ export const GovMapControls: React.FC<GovMapControlsProps> = ({
                 key={st.id}
                 type="button"
                 onClick={() => onSelectScenarioTime(st.id)}
-                className={`px-1.5 py-0.5 rounded font-mono text-[11px] font-semibold transition-all duration-150 cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded-lg font-mono text-[11px] font-semibold transition-all duration-150 cursor-pointer ${
                   isSelected
                     ? 'bg-gov-bg text-cream dark:bg-gov-bg-light dark:text-gov-bg shadow-xs'
                     : 'text-gov-bg/60 dark:text-cream/60 hover:text-gov-bg dark:hover:text-cream'
@@ -160,7 +160,7 @@ export const GovMapControls: React.FC<GovMapControlsProps> = ({
           <button
             type="button"
             onClick={onToggleTheme}
-            className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded ml-1 bg-gov-bg/10 dark:bg-gov-bg-light/10 text-gov-bg dark:text-cream hover:bg-gov-amber hover:text-gov-surface transition-all cursor-pointer"
+            className="flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-xl ml-1 bg-gov-bg/10 dark:bg-gov-bg-light/10 text-gov-bg dark:text-cream hover:bg-gov-amber hover:text-gov-surface transition-all cursor-pointer"
             title={isDarkTheme ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
           >
             <span className="material-symbols-outlined text-xs">

@@ -56,7 +56,7 @@ export const MapControlBar = ({
     <div
       ref={rootRef}
       className={[
-        'pointer-events-auto absolute z-10 w-56 rounded-lg border border-line bg-panel/92 p-3 shadow-lg backdrop-blur-md',
+        'pointer-events-auto absolute z-10 w-56 rounded-2xl border border-line bg-panel/92 p-3 shadow-lg backdrop-blur-md',
         POSITION_CLASSES[position],
         classNames.root ?? '',
         className,

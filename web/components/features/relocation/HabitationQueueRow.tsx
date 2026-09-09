@@ -70,7 +70,7 @@ export const HabitationQueueRow = ({
       onClick={() => onSelect?.(habitation)}
       aria-pressed={isSelected}
       className={[
-        'flex w-full flex-col gap-1.5 rounded-lg border px-3 py-2.5 text-left will-change-transform',
+        'flex w-full flex-col gap-1.5 rounded-xl border px-3 py-2.5 text-left will-change-transform',
         'transition-colors duration-150',
         isSelected
           ? 'border-accent bg-accent/10'

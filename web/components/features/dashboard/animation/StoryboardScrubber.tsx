@@ -63,7 +63,7 @@ export const StoryboardScrubber: React.FC<StoryboardScrubberProps> = ({
             type="button"
             onClick={onReset}
             title="Reset to 0:00"
-            className="p-1 rounded text-gov-bg/60 dark:text-cream/60 hover:text-gov-bg dark:hover:text-cream hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-gov-bg/60 dark:text-cream/60 hover:text-gov-bg dark:hover:text-cream hover:bg-gov-bg/10 dark:hover:bg-gov-bg-light/10 transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-base">skip_previous</span>
           </button>
@@ -72,7 +72,7 @@ export const StoryboardScrubber: React.FC<StoryboardScrubberProps> = ({
           <button
             type="button"
             onClick={onTogglePlay}
-            className="flex items-center justify-center w-7 h-7 rounded-md bg-gov-amber text-gov-surface hover:bg-gov-amber/90 font-bold transition-all shadow-xs cursor-pointer"
+            className="flex items-center justify-center w-7 h-7 rounded-xl bg-gov-amber text-gov-surface hover:bg-gov-amber/90 font-bold transition-all shadow-xs cursor-pointer"
             title={isPlaying ? 'Pause Simulation' : 'Play Simulation'}
           >
             <span className="material-symbols-outlined text-base">
@@ -86,13 +86,13 @@ export const StoryboardScrubber: React.FC<StoryboardScrubberProps> = ({
           </span>
 
           {/* Speed Toggle */}
-          <div className="hidden sm:flex items-center space-x-0.5 bg-gov-surface-light dark:bg-gov-surface rounded p-0.5 border border-gov-border/20 text-[10px] font-mono">
+          <div className="hidden sm:flex items-center space-x-0.5 bg-gov-surface-light dark:bg-gov-surface rounded-xl p-0.5 border border-gov-border/20 text-[10px] font-mono">
             {[0.5, 1, 2].map((spd) => (
               <button
                 key={spd}
                 type="button"
                 onClick={() => onSpeedChange(spd)}
-                className={`px-1.5 py-0.5 rounded transition-colors cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded-lg transition-colors cursor-pointer ${
                   playbackSpeed === spd
                     ? 'bg-gov-amber text-gov-surface font-bold'
                     : 'text-gov-bg/60 dark:text-cream/60 hover:text-gov-bg dark:hover:text-cream'
@@ -108,7 +108,7 @@ export const StoryboardScrubber: React.FC<StoryboardScrubberProps> = ({
             type="button"
             onClick={onToggleLoop}
             title={isLooping ? 'Auto-looping ON' : 'Looping OFF'}
-            className={`p-1 rounded transition-colors cursor-pointer ${
+            className={`p-1 rounded-lg transition-colors cursor-pointer ${
               isLooping
                 ? 'text-gov-amber bg-gov-amber/15'
                 : 'text-gov-bg/40 dark:text-cream/40 hover:text-gov-bg dark:hover:text-cream'

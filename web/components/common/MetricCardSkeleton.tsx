@@ -12,7 +12,7 @@ export const MetricCardSkeleton = ({ className = '', classNames = {} }: MetricCa
   <div
     aria-hidden
     className={[
-      'animate-pulse rounded-lg border border-line bg-surface-1 p-3',
+      'animate-pulse rounded-xl border border-line bg-surface-1 p-3',
       classNames.root ?? '',
       className,
     ]

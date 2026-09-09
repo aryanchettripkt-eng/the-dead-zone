@@ -35,7 +35,7 @@ export const AugmentedCapacityCallout = ({
   return (
     <div
       className={[
-        'flex flex-col gap-1.5 rounded-lg border border-accent/30 bg-accent/5 px-3 py-2.5',
+        'flex flex-col gap-1.5 rounded-xl border border-accent/30 bg-accent/5 px-3 py-2.5',
         classNames.root ?? '',
         className,
       ]

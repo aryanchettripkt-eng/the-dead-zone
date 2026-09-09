@@ -38,7 +38,7 @@ export const AllocationAssignmentRow = ({
       }
     }}
     className={[
-      'flex flex-col gap-1 rounded-lg border px-3 py-2 transition-colors duration-150',
+      'flex flex-col gap-1 rounded-xl border px-3 py-2 transition-colors duration-150',
       isHighlighted ? 'border-accent bg-accent/[0.06]' : 'border-line/60 bg-surface-1/40',
       onSelect ? 'cursor-pointer hover:border-line-strong' : '',
       classNames.root ?? '',

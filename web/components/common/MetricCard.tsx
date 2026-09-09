@@ -128,7 +128,7 @@ export const MetricCard = ({
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       className={[
-        'rounded-lg border bg-surface-1 p-3 will-change-transform',
+        'rounded-xl border bg-surface-1 p-3 will-change-transform',
         onClick ? 'cursor-pointer' : '',
         VARIANT_CLASSES[variant],
         classNames.root ?? '',
