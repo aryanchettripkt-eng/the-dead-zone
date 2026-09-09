@@ -78,7 +78,7 @@ export const AboutHero: React.FC<AboutHeroProps> = ({
 
       {/* Primary Bold Editorial Headline */}
       <h1
-        className={`about-hero-headline text-4xl sm:text-5xl md:text-6xl lg:text-[68px] font-extrabold tracking-tight text-ink dark:text-text-primary leading-[1.08] mb-6 drop-shadow-sm ${
+        className={`about-hero-headline text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-ink dark:text-text-primary leading-[1.08] mb-4 sm:mb-6 drop-shadow-sm ${
           classNames.headline ?? ''
         }`}
       >

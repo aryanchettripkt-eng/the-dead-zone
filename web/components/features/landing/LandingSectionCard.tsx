@@ -88,10 +88,10 @@ export const LandingSectionCard: React.FC<LandingSectionCardProps> = ({
   return (
     <div
       ref={cardRef}
-      className={`max-w-xl w-full p-6 sm:p-8 rounded-2xl bg-surface-0/85 dark:bg-forest-surface/85 backdrop-blur-xl border border-line dark:border-white/10 shadow-xl transition-all duration-300 hover:border-line-strong dark:hover:border-white/20 ${className}`}
+      className={`w-full p-5 sm:p-6 lg:p-7 xl:p-8 rounded-2xl bg-surface-0/85 dark:bg-forest-surface/85 backdrop-blur-xl border border-line dark:border-white/10 shadow-xl transition-all duration-300 hover:border-line-strong dark:hover:border-white/20 ${className}`}
     >
       {/* Top Meta Line: Section Number & Badge */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-3 sm:mb-4">
         <span className="font-mono text-xs font-bold text-text-muted tracking-wider">
           {`//${data.index}`}
         </span>
@@ -106,27 +106,27 @@ export const LandingSectionCard: React.FC<LandingSectionCardProps> = ({
 
       {/* Main Headline & Subtitle */}
       <h2
-        className={`text-2xl sm:text-3xl font-display font-bold text-ink dark:text-text-primary tracking-tight mb-2 ${classNames.title ?? ''}`}
+        className={`text-xl sm:text-2xl lg:text-3xl font-display font-bold text-ink dark:text-text-primary tracking-tight mb-1.5 sm:mb-2 ${classNames.title ?? ''}`}
       >
         {data.title}
       </h2>
-      <p className="text-sm font-medium text-text-secondary mb-4 leading-snug">
+      <p className="text-xs sm:text-sm font-medium text-text-secondary mb-3 sm:mb-4 leading-snug">
         {data.subtitle}
       </p>
 
       {/* Narrative Description */}
       <p
-        className={`text-sm text-text-muted mb-6 leading-relaxed ${classNames.description ?? ''}`}
+        className={`text-xs sm:text-sm text-text-muted mb-4 sm:mb-5 leading-relaxed ${classNames.description ?? ''}`}
       >
         {data.description}
       </p>
 
       {/* Capability Feature Pills */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-5">
         {data.pills.map((pill) => (
           <span
             key={pill}
-            className="px-2.5 py-1 text-xs font-mono rounded-md bg-surface-1 dark:bg-forest-deep/90 border border-line dark:border-white/10 text-ink dark:text-text-secondary"
+            className="px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-mono rounded-md bg-surface-1 dark:bg-forest-deep/90 border border-line dark:border-white/10 text-ink dark:text-text-secondary"
           >
             {pill}
           </span>
@@ -134,7 +134,7 @@ export const LandingSectionCard: React.FC<LandingSectionCardProps> = ({
       </div>
 
       {/* Key Metric Counters */}
-      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-line dark:border-white/10 mb-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-line dark:border-white/10 mb-4 sm:mb-6">
         {data.metrics.map((m) => (
           <div key={m.label} className="flex flex-col">
             <span className="text-xl sm:text-2xl font-mono font-black text-ink dark:text-text-primary">

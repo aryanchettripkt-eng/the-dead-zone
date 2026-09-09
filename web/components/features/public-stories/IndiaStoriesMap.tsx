@@ -189,7 +189,7 @@ export const IndiaStoriesMap: React.FC<IndiaStoriesMapProps> = ({
     >
       <svg
         viewBox={INDIA_VIEWBOX}
-        className="w-full h-full max-h-[88vh] object-contain drop-shadow-lg dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
+        className="w-full h-full max-h-[76vh] lg:max-h-[82vh] object-contain drop-shadow-lg dark:drop-shadow-[0_20px_40px_rgba(0,0,0,0.6)]"
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>

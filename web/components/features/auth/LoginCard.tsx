@@ -137,10 +137,10 @@ export const LoginCard: React.FC<LoginCardProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full max-w-xl glass-card p-8 sm:p-10 rounded-[28px] border border-line dark:border-white/15 shadow-2xl relative z-20 backdrop-blur-2xl transition-colors duration-200 ${className}`}
+      className={`w-full max-w-xl glass-card p-6 sm:p-8 rounded-[24px] border border-line dark:border-white/15 shadow-2xl relative z-20 backdrop-blur-2xl transition-colors duration-200 ${className}`}
     >
       {/* Top Header Pill */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4 sm:mb-5">
         <span className="pill-badge px-3 py-1 rounded-full text-[11px] font-mono font-medium text-citron border border-citron/30 bg-citron/10 flex items-center gap-2 shadow-sm">
           <span className="w-2 h-2 rounded-full bg-citron animate-ping" />
           <span>T.E.R.R.A. :: AUTHENTICATION</span>
@@ -155,7 +155,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       </div>
 
       {/* Title & Subtitle */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-5">
         <h2 className="font-display text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight leading-tight">
           Sign In to T.E.R.R.A.
         </h2>
@@ -165,7 +165,7 @@ export const LoginCard: React.FC<LoginCardProps> = ({
       </div>
 
       {/* Demo Quick-Fill Presets */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-5">
         <span className="block text-[10px] font-mono uppercase tracking-wider text-text-muted mb-2">
           Demo Evaluation Presets (Click to Auto-Fill)
         </span>

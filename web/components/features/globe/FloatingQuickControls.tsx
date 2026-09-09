@@ -63,7 +63,7 @@ export const FloatingQuickControls: React.FC<FloatingQuickControlsProps> = ({
   return (
     <aside
       ref={containerRef}
-      className={`fixed right-6 sm:right-10 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3.5 pointer-events-auto select-none ${className}`}
+      className={`fixed right-4 sm:right-6 xl:right-8 top-1/2 -translate-y-1/2 z-30 flex flex-col items-center gap-3 pointer-events-auto select-none ${className}`}
       aria-label="Spatial Quick Controls"
     >
       <QuickControlFab

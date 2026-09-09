@@ -66,7 +66,7 @@ export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
 
       {/* Main Display Headline with Foliage Accent */}
       <h1
-        className={`font-sans text-4xl sm:text-5xl lg:text-6xl font-normal text-ink dark:text-cream tracking-tight leading-[1.1] mb-6 ${
+        className={`font-sans text-3xl sm:text-4xl lg:text-4xl xl:text-5xl font-normal text-ink dark:text-cream tracking-tight leading-[1.12] mb-3 sm:mb-4 lg:mb-5 ${
           classNames.title || ''
         }`}
       >
@@ -81,7 +81,7 @@ export const StoriesHeroText: React.FC<StoriesHeroTextProps> = ({
       {/* Region Context Paragraph */}
       <p
         ref={textRef}
-        className={`text-sm sm:text-base text-ink-muted dark:text-cream/70 leading-relaxed font-sans font-light tracking-wide ${
+        className={`text-xs sm:text-sm lg:text-[15px] text-ink-muted dark:text-cream/70 leading-relaxed font-sans font-light tracking-wide ${
           classNames.description || ''
         }`}
       >

@@ -14,7 +14,7 @@ export default function LoginPage() {
   return (
     <RouteStage
       as="div"
-      className="relative w-screen h-screen overflow-hidden bg-bg-base text-text-primary select-none"
+      className="relative w-full h-screen overflow-hidden bg-bg-base text-text-primary select-none"
     >
       {/* Misty Forest Background Atmosphere */}
       <div className="fixed inset-0 forest-atmosphere z-0 pointer-events-none" />

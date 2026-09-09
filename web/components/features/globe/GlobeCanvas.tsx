@@ -72,31 +72,53 @@ export const getSectionConfig = (
   h: number,
   viewMode: 'landing' | 'login' = 'landing'
 ) => {
+  const vFovRad = (45 * Math.PI) / 180;
+  const visibleWorldHeight = 2 * 4.8 * Math.tan(vFovRad / 2); // ~3.97645 at camera z = 4.8
+  const visibleWorldWidth = visibleWorldHeight * (w / Math.max(h, 1));
+
   if (viewMode === 'login') {
-    const desktop = w > 1024;
+    const isDesktop = w >= 1024;
     return {
-      x: desktop ? 3.3 : 1.7,
+      x: isDesktop ? Math.min(visibleWorldWidth * 0.35, 2.75) : Math.min(visibleWorldWidth * 0.26, 1.7),
       y: 0,
-      scale: 1.0,
+      scale: isDesktop ? Math.min(1.0, (visibleWorldHeight * 0.52) / 2.0) : 0.82,
     };
   }
 
-  const desktop = w > 1024;
-  const vFovRad = (45 * Math.PI) / 180;
-  const visibleWorldHeight = 2 * 4.8 * Math.tan(vFovRad / 2);
-  const visibleWorldWidth = visibleWorldHeight * (w / Math.max(h, 1));
+  const isWide = w >= 1024;
+  const isTablet = w >= 640 && w < 1024;
 
-  // Target diameter fits cleanly within card height (~400px, ~0.50 of viewport height)
-  // and within the empty horizontal half of the viewport:
-  const targetStoryDiameter = desktop
-    ? Math.min(visibleWorldHeight * 0.52, visibleWorldWidth * 0.36)
-    : Math.min(visibleWorldHeight * 0.44, visibleWorldWidth * 0.65);
-  const storyScale = targetStoryDiameter / 4.0; // ~0.50 - 0.52 on desktop
+  // Proportional card width and padding calculation based on actual laptop viewport width
+  const cardPixelWidth = isWide ? Math.min(w * 0.40, 520) : isTablet ? Math.min(w * 0.52, 440) : w * 0.88;
+  const sidePaddingPx = isWide ? Math.min(w * 0.05, 64) : 24;
+  const controlsSafetyMarginPx = isWide ? 56 : 16;
 
-  const heroScale = desktop ? 0.92 : 0.80;
-  const horizonScale = desktop ? 0.95 : 0.85;
+  // Available free space width on the opposite side of the card
+  const freeSpacePx = Math.max(160, w - cardPixelWidth - sidePaddingPx - controlsSafetyMarginPx);
 
-  const ampX = desktop ? 1.55 : w > 640 ? 0.85 : 0.35;
+  // Center of the free space relative to screen center
+  const freeSpaceCenterPx = (cardPixelWidth + sidePaddingPx) + freeSpacePx / 2;
+  const offsetFromCenterPx = freeSpaceCenterPx - w / 2;
+
+  // Convert offset into 3D world units
+  let ampX = (offsetFromCenterPx / w) * visibleWorldWidth;
+  if (!isWide) {
+    ampX = isTablet ? visibleWorldWidth * 0.22 : 0;
+  }
+
+  // Safe sphere diameter that never overflows the free space or vertical window
+  const maxSafeDiamWorld = isWide
+    ? Math.min((freeSpacePx * 0.86 / w) * visibleWorldWidth, visibleWorldHeight * 0.72)
+    : Math.min(visibleWorldWidth * 0.76, visibleWorldHeight * 0.52);
+
+  const storyScale = Math.max(0.42, Math.min(0.68, maxSafeDiamWorld / 4.0));
+  const heroScale = isWide
+    ? Math.max(0.68, Math.min(0.88, (maxSafeDiamWorld * 1.05) / 4.0))
+    : isTablet
+    ? 0.70
+    : 0.60;
+
+  const horizonScale = isWide ? 0.95 : 0.85;
   const bottomY = getFooterTopY(h);
 
   switch (sectionIdx) {
